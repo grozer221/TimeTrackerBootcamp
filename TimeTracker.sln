@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32516.85
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeTracker", "TimeTracker\TimeTracker.csproj", "{6F317691-FBF0-48EE-9250-EDC793154B25}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTracker.Server", "TimeTracker.Server\TimeTracker.Server.csproj", "{6F317691-FBF0-48EE-9250-EDC793154B25}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTracker.Business", "TimeTracker.Business\TimeTracker.Business.csproj", "{524ACD30-115E-4DF5-B3A0-691E4D7BE484}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTracker.MsSql", "TimeTracker.MsSql\TimeTracker.MsSql.csproj", "{4F54A7C1-BCF5-49E0-92F1-B6FB0B7B15E5}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{6F317691-FBF0-48EE-9250-EDC793154B25}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6F317691-FBF0-48EE-9250-EDC793154B25}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6F317691-FBF0-48EE-9250-EDC793154B25}.Release|Any CPU.Build.0 = Release|Any CPU
+		{524ACD30-115E-4DF5-B3A0-691E4D7BE484}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{524ACD30-115E-4DF5-B3A0-691E4D7BE484}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{524ACD30-115E-4DF5-B3A0-691E4D7BE484}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{524ACD30-115E-4DF5-B3A0-691E4D7BE484}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F54A7C1-BCF5-49E0-92F1-B6FB0B7B15E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F54A7C1-BCF5-49E0-92F1-B6FB0B7B15E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F54A7C1-BCF5-49E0-92F1-B6FB0B7B15E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F54A7C1-BCF5-49E0-92F1-B6FB0B7B15E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
