@@ -5,6 +5,6 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
     public class AuthClaimsIdentity : ClaimsIdentity
     {
         public const string DefaultIdClaimType = "Id";
-        public const string DefaultLoginClaimType = "Login";
+        public const string DefaultEmailClaimType = "Email";
     }
 }

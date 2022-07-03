@@ -7,7 +7,7 @@ import 'antd/dist/antd.css';
 export const App = () => {
     return (
         <Routes>
-            <Route index element={<h1>## Huge TimeTracker ##</h1>}/>
+            <Route index element={<h1>## Huge TimeTracker ##!!!</h1>}/>
             <Route path={'*'} element={<Error/>}/>
         </Routes>
     );

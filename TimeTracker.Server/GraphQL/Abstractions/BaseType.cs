@@ -1,7 +1,7 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Business.Abstractions;
 
-namespace TimeTracker.Server.GraphQL.Modules.Abstractions
+namespace TimeTracker.Server.GraphQL.Abstractions
 {
     public class BaseType<T> : ObjectGraphType<T> where T : BaseModel
     {
