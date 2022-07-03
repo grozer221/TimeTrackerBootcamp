@@ -15,7 +15,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddServices();
 builder.Services.AddGraphQLApi();
+builder.Services.AddJwtAuthorization();
 builder.Services.AddMsSql();
 
 
@@ -25,7 +27,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseGraphQL<AppSchema>();
+app.UseAuthentication();
+app.UseGraphQLUpload<AppSchema>()
+    .UseGraphQL<AppSchema>();
 app.UseGraphQLAltair();
 
 app.UseSpa(spa =>

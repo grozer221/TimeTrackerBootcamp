@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dapper;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -17,9 +18,31 @@ namespace TimeTracker.MsSql.Repositories
             this.dapperContext = dapperContext;
         }
 
-        public Task<UserModel> GetByIdAsync(int id)
+        public async Task<UserModel> GetByIdAsync(Guid id)
         {
-            throw new NotImplementedException();
+            string query = $"select * from Users where id = @id";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                return await connection.QueryFirstOrDefaultAsync<UserModel>(query, new { id });
+            }
+        }
+
+        public async Task<UserModel> GetByEmailAsync(string email)
+        {
+            string query = $"select * from Users where email = @email";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                return await connection.QueryFirstOrDefaultAsync<UserModel>(query, new { email });
+            }
+        }
+
+        public async Task<IEnumerable<UserModel>> GetAsync()
+        {
+            string query = $"select * from Users";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                return await connection.QueryAsync<UserModel>(query);
+            }
         }
 
         public Task<IEnumerable<UserModel>> GetAsync(string like, int take, int skip)
@@ -27,9 +50,20 @@ namespace TimeTracker.MsSql.Repositories
             throw new NotImplementedException();
         }
 
-        public Task<UserModel> CreateAsync(UserModel model)
+        public async Task<UserModel> CreateAsync(UserModel model)
         {
-            throw new NotImplementedException();
+            model.Id = Guid.NewGuid();
+            DateTime dateTimeNow = DateTime.Now;
+            model.CreatedAt = dateTimeNow;
+            model.UpdatedAt = dateTimeNow;
+            string query = $@"insert into Users 
+                            (Id, Email, Password, FirstName, LastName, MiddleName, Role, CreatedAt, UpdatedAt) 
+                            values (@Id, @Email, @Password, @FirstName, @LastName, @MiddleName, @Role, @CreatedAt, @UpdatedAt)";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, model);
+                return model;
+            }
         }
 
         public Task<UserModel> UpdateAsync(UserModel model)
