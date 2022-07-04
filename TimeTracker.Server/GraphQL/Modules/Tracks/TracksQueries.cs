@@ -15,17 +15,24 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
 
             Field<ListGraphType<TrackType>, IEnumerable<TrackModel>>()
                 .Name("GetTracks")
-                .ResolveAsync(context =>
+                .Argument<NonNullGraphType<StringGraphType>, string>("Like", "Argument for a search")
+                .Argument<NonNullGraphType<IntGraphType>, int>("Take", "Argument represent count of tracks on page")
+                .Argument<NonNullGraphType<IntGraphType>, int>("Skip", "Argument represnt page number")
+                .ResolveAsync(async context =>
                 {
-                    return repository.GetAsync("", 1, 1);
+                    string like = context.GetArgument<string>("Like");
+                    int take = context.GetArgument<int>("Take");
+                    int skip = context.GetArgument<int>("Skip");
+                    return await repository.GetAsync(like, take, skip);
                 });
+
             Field<TrackType, TrackModel>()
                 .Name("GetTrackById")
                 .Argument<NonNullGraphType<GuidGraphType>, Guid> ("Id", "Id of track")
-                .ResolveAsync(context =>
+                .ResolveAsync(async context =>
                 {
                     var id = context.GetArgument<Guid>("Id");
-                    return repository.GetByIdAsync(id);
+                    return await repository.GetByIdAsync(id);
                 });
         }
 

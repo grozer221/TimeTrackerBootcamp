@@ -10,6 +10,6 @@ namespace TimeTracker.Business.Repositories
 {
     public interface ITrackRepository : IRepository<TrackModel>
     {
-        Task StopAsync(Guid id);
+        Task<TrackModel> StopAsync(Guid id);
     }
 }

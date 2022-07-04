@@ -22,23 +22,26 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     var model = context.GetArgument<TrackInput>("TrackInput");
                     var track = new TrackModel()
                     {
-                        Id = model.Id,
-                        UserId = model.UserId,
+                        Id = Guid.NewGuid(),
+                        UserId = Guid.NewGuid(),
                         Title = model.Title,
                         Description = model.Description
                     };
                     
                     return await repository.CreateAsync(track);
                 });
-            Field<StringGraphType>()
+
+            Field<NonNullGraphType<TrackType>, TrackModel>()
                 .Name("Stop")
                 .Argument<NonNullGraphType<GuidGraphType>, Guid>("Id", "Id of track")
                 .ResolveAsync(async context =>
                 {
                     var id = context.GetArgument<Guid>("Id");
-                    await repository.StopAsync(id);
-                    return "Stoped";
+
+                    return await repository.StopAsync(id);
+                    
                 });
+
             Field<StringGraphType>()
                 .Name("Delete")
                 .Argument<NonNullGraphType<GuidGraphType>, Guid>("Id", "Id of track")
@@ -46,21 +49,26 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                 {
                     var id = context.GetArgument<Guid>("Id");
                     await repository.RemoveAsync(id);
+
                     return "Deleted";
                 });
+
             Field<NonNullGraphType<TrackType>, TrackModel>()
                 .Name("Update")
-                .Argument<NonNullGraphType<TrackInputType>, TrackInput>("TrackInput", "Argument for update track")
+                .Argument<NonNullGraphType<TrackUpdateInputType>, TrackUpdateInput>("TrackInput", "Argument for update track")
                 .ResolveAsync(async context =>
                 {
-                    var model = context.GetArgument<TrackInput>("TrackInput");
+                    var model = context.GetArgument<TrackUpdateInput>("TrackInput");
                     var track = new TrackModel()
                     {
                         Id = model.Id,
-                        UserId = model.UserId,
                         Title = model.Title,
-                        Description = model.Description
+                        Description = model.Description,
+                        StartTime = model.StartTime,
+                        EndTime = model.EndTime
+                        
                     };
+
                     return await repository.UpdateAsync(track);
                 });
         }

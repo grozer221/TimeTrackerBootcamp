@@ -34,9 +34,13 @@ namespace TimeTracker.MsSql.Repositories
         public async Task<IEnumerable<TrackModel>> GetAsync(string like, int take, int skip)
         {
             IEnumerable<TrackModel> tracks;
+            like = "%" + like + "%";
+
+            string query = "SELECT * FROM Tracks WHERE Title LIKE @like ORDER BY Id OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                tracks = await db.QueryAsync<TrackModel>("SELECT * FROM Tracks");
+                tracks = await db.QueryAsync<TrackModel>(query, new {like, take, skip});
             }
 
             return tracks;
@@ -59,13 +63,14 @@ namespace TimeTracker.MsSql.Repositories
             return model;
         }
 
-        public async Task StopAsync(Guid id)
+        public async Task<TrackModel> StopAsync(Guid id)
         {
             var endtime = DateTime.Now;
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
                 await db.QueryAsync<TrackModel>("UPDATE Tracks SET EndTime = @EndTime WHERE id = @id", new { endtime, id });
+                return await this.GetByIdAsync(id);
             }
         }
 
