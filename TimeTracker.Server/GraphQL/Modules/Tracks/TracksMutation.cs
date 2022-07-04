@@ -1,18 +1,18 @@
 ﻿using GraphQL;
 using GraphQL.Types;
+using Microsoft.AspNetCore.Http;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.Server.Extensions;
+using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.Tracks.DTO;
 
 namespace TimeTracker.Server.GraphQL.Modules.Tracks
 {
     public class TracksMutation : ObjectGraphType
     {
-        private readonly ITrackRepository repository;
-
-        public TracksMutation(ITrackRepository repository)
+        public TracksMutation(ITrackRepository trackRepository, IHttpContextAccessor httpContextAccessor)
         {
-            this.repository = repository;
 
             Field<NonNullGraphType<TrackType>, TrackModel>()
                 .Name("Create")
@@ -23,13 +23,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     var track = new TrackModel()
                     {
                         Id = Guid.NewGuid(),
-                        UserId = Guid.NewGuid(),
+                        UserId = httpContextAccessor.HttpContext.GetUserId(),
                         Title = model.Title,
                         Description = model.Description
                     };
                     
-                    return await repository.CreateAsync(track);
-                });
+                    return await trackRepository.CreateAsync(track);
+                }).AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<NonNullGraphType<TrackType>, TrackModel>()
                 .Name("Stop")
@@ -37,10 +37,17 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                 .ResolveAsync(async context =>
                 {
                     var id = context.GetArgument<Guid>("Id");
+                    var userId = httpContextAccessor.HttpContext.GetUserId();
+                    var track = await trackRepository.GetByIdAsync(id);
 
-                    return await repository.StopAsync(id);
+                    if(track.UserId != userId)
+                    {
+                        throw new Exception("You don`t have permission");
+                    }
+
+                    return await trackRepository.StopAsync(id);
                     
-                });
+                }).AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<StringGraphType>()
                 .Name("Delete")
@@ -48,10 +55,18 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                 .ResolveAsync(async context =>
                 {
                     var id = context.GetArgument<Guid>("Id");
-                    await repository.RemoveAsync(id);
+                    var userId = httpContextAccessor.HttpContext.GetUserId();
+                    var track = await trackRepository.GetByIdAsync(id);
+                    
+                    if (track.UserId != userId)
+                    {
+                        throw new Exception("You don`t have permission");
+                    }
+                    
+                    await trackRepository.RemoveAsync(id);
 
                     return "Deleted";
-                });
+                }).AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<NonNullGraphType<TrackType>, TrackModel>()
                 .Name("Update")
@@ -59,6 +74,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                 .ResolveAsync(async context =>
                 {
                     var model = context.GetArgument<TrackUpdateInput>("TrackInput");
+                    var userId = httpContextAccessor.HttpContext.GetUserId();
                     var track = new TrackModel()
                     {
                         Id = model.Id,
@@ -69,8 +85,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                         
                     };
 
-                    return await repository.UpdateAsync(track);
-                });
+                    if (track.UserId != userId)
+                    {
+                        throw new Exception("You don`t have permission");
+                    }
+
+                    return await trackRepository.UpdateAsync(track);
+                }).AuthorizeWith(AuthPolicies.Authenticated);
         }
     }
 }

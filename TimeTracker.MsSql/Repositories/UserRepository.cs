@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 
@@ -45,7 +46,7 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public Task<IEnumerable<UserModel>> GetAsync(string like, int take, int skip)
+        public Task<GetEntitiesResponse<UserModel>> GetAsync(string like, int take, int skip)
         {
             throw new NotImplementedException();
         }

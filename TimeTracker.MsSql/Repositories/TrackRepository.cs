@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using Dapper;
+using TimeTracker.Business.Abstractions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -31,19 +32,26 @@ namespace TimeTracker.MsSql.Repositories
             return track;
         }
 
-        public async Task<IEnumerable<TrackModel>> GetAsync(string like, int take, int skip)
+        public async Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int take, int skip)
         {
             IEnumerable<TrackModel> tracks;
             like = "%" + like + "%";
 
+            int total;
             string query = "SELECT * FROM Tracks WHERE Title LIKE @like ORDER BY Id OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
                 tracks = await db.QueryAsync<TrackModel>(query, new {like, take, skip});
+                total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like", new { like });
             }
 
-            return tracks;
+            return new GetEntitiesResponse<TrackModel>
+            {
+                Entities = tracks,
+                PageSize = take,
+                Total = total
+            };
         }
 
         public async Task<TrackModel> CreateAsync(TrackModel model)
@@ -98,9 +106,15 @@ namespace TimeTracker.MsSql.Repositories
             return model;
         }
 
-        public Task<IEnumerable<TrackModel>> GetAsync()
+        public async Task<IEnumerable<TrackModel>> GetAsync()
         {
-            throw new NotImplementedException();
+            IEnumerable<TrackModel> tracks;
+            using (IDbConnection db = dapperContext.CreateConnection())
+            {
+                tracks = await db.QueryAsync<TrackModel>("SELECT * FROM Tracks");
+            }
+
+            return tracks;
         }
     }
 }
