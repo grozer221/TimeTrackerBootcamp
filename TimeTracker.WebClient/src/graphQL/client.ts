@@ -1,12 +1,20 @@
 import {ApolloClient, createHttpLink, InMemoryCache} from '@apollo/client';
 import {schema} from './schema';
+import {setContext} from '@apollo/client/link/context';
 
-const link = createHttpLink({
+const authLink = setContext((_, {headers}) => ({
+    headers: {
+        ...headers,
+        authorization: `Bearer ${localStorage.getItem('TOKEN') ?? ''}`,
+    },
+}));
+
+const httpLink  = createHttpLink({
     uri: !process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? 'https://localhost:7041/graphql' : '/graphql',
 });
 
 export const client = new ApolloClient({
-    link,
+    link: authLink.concat(httpLink),
     cache: new InMemoryCache(),
     defaultOptions: {
         watchQuery: {
@@ -18,5 +26,5 @@ export const client = new ApolloClient({
             notifyOnNetworkStatusChange: true,
         },
     },
-    typeDefs: schema,
+    typeDefs: schema
 });

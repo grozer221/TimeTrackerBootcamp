@@ -17,7 +17,9 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddServices();
 builder.Services.AddGraphQLApi();
+builder.Services.AddJwtAuthorization();
 builder.Services.AddMsSql();
 
 builder.Services.AddTransient<ITrackRepository, TrackRepository>();
@@ -25,11 +27,18 @@ builder.Services.AddTransient<ITrackRepository, TrackRepository>();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment()) 
+{ 
+    app.UseCors("DefaultPolicy");
+}
+
 app.UseStaticFiles();
 
 app.UseRouting();
 
-app.UseGraphQL<AppSchema>();
+app.UseAuthentication();
+app.UseGraphQLUpload<AppSchema>()
+    .UseGraphQL<AppSchema>();
 app.UseGraphQLAltair();
 
 app.UseSpa(spa =>

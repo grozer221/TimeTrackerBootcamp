@@ -22,6 +22,7 @@ namespace TimeTracker.MsSql.Extensions
                     .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations());
 
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
 
             return services;
         }

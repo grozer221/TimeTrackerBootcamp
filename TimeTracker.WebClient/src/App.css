@@ -3,3 +3,17 @@
     padding: 0;
     box-sizing: border-box;
 }
+
+.centered{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.centered > .authForm{
+    height: 100px;
+    width: 250px;
+}
+

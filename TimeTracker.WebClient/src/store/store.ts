@@ -7,7 +7,7 @@ import {authEpics} from "./auth/auth.epics";
 const epicMiddleware = createEpicMiddleware();
 
 export const store = createStore(combineReducers({
-    todos: authReducer,
+    auth: authReducer,
 }), composeWithDevTools(applyMiddleware(epicMiddleware)));
 
 // @ts-ignore
@@ -17,3 +17,4 @@ epicMiddleware.run(rootEpic);
 
 export type ValueOf<T> = T[keyof T]
 export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch
