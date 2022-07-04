@@ -97,5 +97,10 @@ namespace TimeTracker.MsSql.Repositories
 
             return model;
         }
+
+        public Task<IEnumerable<TrackModel>> GetAsync()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

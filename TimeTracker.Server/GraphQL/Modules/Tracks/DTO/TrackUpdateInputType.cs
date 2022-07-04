@@ -1,6 +1,6 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Business.Models;
-using TimeTracker.Server.GraphQL.Modules.Abstractions;
+using TimeTracker.Server.GraphQL.Abstractions;
 
 namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
 {
