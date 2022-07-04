@@ -5,10 +5,10 @@ import {authActions} from "./auth.actions";
 import {client} from "../../graphQL/client";
 import {User} from "../../graphQL/modules/users/users.types";
 import {
-    AUTH_LOGIN_MUTATION,
+    AUTH_LOG_IN_MUTATION,
     AuthLoginData,
     AuthLoginInputType,
-    AuthLoginVars
+    AuthLoginVars, AUTH_LOG_OUT_MUTATION
 } from "../../graphQL/modules/auth/auth.mutations";
 import {ME_QUERY, MeData} from "../../graphQL/modules/auth/auth.query";
 
@@ -17,7 +17,7 @@ export const loginEpic: Epic<ReturnType<typeof authActions.userLoginAsync>, any,
         ofType('LOGIN_USER_ASYNC'),
         mergeMap(action =>
             from(client.mutate<AuthLoginData, AuthLoginVars>({
-                mutation: AUTH_LOGIN_MUTATION,
+                mutation: AUTH_LOG_IN_MUTATION,
                 variables: {authLoginInputType: action.payload.credentials}
             })).pipe(
                 map(response => authActions.setAuthedUser(response.data?.auth.login.user as User,
@@ -38,11 +38,28 @@ export const meEpic: Epic<ReturnType<typeof authActions.meAsync>, any, RootState
                         return authActions.setAuthedUser(response.data.auth.me.user as User,
                             response.data.auth.me.token as string)
                     }
-                    return authActions.setAuthedUser({} as User, "")
+                    return authActions.setAuthedUser(null, null)
                 })
             )
         )
     );
 
+export const logOutEpic: Epic<ReturnType<typeof authActions.logOutAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType('LOG_OUT_ASYNC'),
+        mergeMap(action =>
+            from(client.mutate<MeData>({
+                mutation: AUTH_LOG_OUT_MUTATION,
+            })).pipe(
+                map(response => {
+                    if (!response.errors){
+                        return authActions.setAuthedUser(null, null)
+                    }
+                })
+            )
+        )
+    );
+
+
 // @ts-ignore
-export const authEpics = combineEpics(loginEpic, meEpic)
+export const authEpics = combineEpics(loginEpic, meEpic, logOutEpic)

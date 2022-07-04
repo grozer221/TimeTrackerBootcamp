@@ -15,8 +15,13 @@ const initialState = {
 export const authReducer: Reducer<InitialState, UsersActionTypes> = (state = initialState, action): InitialState => {
     switch (action.type) {
         case 'SET_AUTHED_USER':
-            localStorage.setItem('TOKEN', action.payload.token);
-            return {...state, authedUser: action.payload.user};
+            if (action.payload.token !== null){
+                localStorage.setItem('TOKEN', action.payload.token);
+            }
+            else {
+                localStorage.removeItem('TOKEN')
+            }
+            return {...state, authedUser: action.payload.user, isAuth: !!action.payload.user};
         default:
             return state;
     }

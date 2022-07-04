@@ -3,6 +3,8 @@ import {Col, Layout, Menu, Row} from 'antd';
 import s from './AppLayout.module.css';
 import {AppBreadcrumb} from "../AppBreadcrumb/AppBreadcrumb";
 import {Link, useLocation} from "react-router-dom";
+import {useDispatch} from "react-redux";
+import {authActions} from "../../store/auth/auth.actions";
 
 const {Header, Content} = Layout;
 
@@ -13,6 +15,7 @@ type Props = {
 export const AppLayout: FC<Props> = ({children}) => {
     const location = useLocation();
     const [defaultSelectedKey, setDefaultSelectedKey] = useState('');
+    const dispatch = useDispatch()
 
     useEffect(() => {
         const newDefaultSelectedKey = getDefaultSelectedKey(location.pathname);
@@ -27,6 +30,10 @@ export const AppLayout: FC<Props> = ({children}) => {
             return 'categories';
         else
             return '';
+    }
+
+    const logOutHandler = () => {
+        dispatch(authActions.logOutAsync())
     }
 
     return (
@@ -44,6 +51,12 @@ export const AppLayout: FC<Props> = ({children}) => {
                                 <Link to={'/categories'}>
                                     Categories
                                 </Link>
+                            </Menu.Item>
+
+                            <Menu.Item key={'logout'}>
+                                <div onClick={logOutHandler}>
+                                    Logout
+                                </div>
                             </Menu.Item>
                         </Menu>
                     </Col>
