@@ -8,7 +8,7 @@ namespace TimeTracker.Business.Abstractions
 {
     public interface IRepository<T> where T : BaseModel
     {
-        Task<T> GetByIdAsync(int id);
+        Task<T> GetByIdAsync(Guid id);
         Task<IEnumerable<T>> GetAsync(string like, int take, int skip);
         Task<T> CreateAsync(T model);
         Task<T> UpdateAsync(T model);

@@ -1,4 +1,6 @@
+using TimeTracker.Business.Repositories;
 using TimeTracker.MsSql.Extensions;
+using TimeTracker.MsSql.Repositories;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL;
 
@@ -17,6 +19,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddGraphQLApi();
 builder.Services.AddMsSql();
+
+builder.Services.AddTransient<ITrackRepository, TrackRepository>();
 
 
 var app = builder.Build();
