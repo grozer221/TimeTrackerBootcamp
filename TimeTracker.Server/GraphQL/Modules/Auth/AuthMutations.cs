@@ -6,13 +6,14 @@ using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.GraphQL.Modules.Auth.DTO;
 using TimeTracker.Server.Services;
-using TimeTracker.Server.GraphQL.Abstractions;
+using TimeTracker.Server.Extensions;
+using Microsoft.Net.Http.Headers;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
     public class AuthMutations : ObjectGraphType
     {
-        public AuthMutations(IUserRepository userRepository, AuthService authService)
+        public AuthMutations(IUserRepository userRepository, AuthService authService, ITokenRepository tokenRepository, IHttpContextAccessor httpContextAccessor)
         {
             Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
                 .Name("Login")
@@ -20,16 +21,37 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 .ResolveAsync(async context =>
                 {
                     AuthLoginInput authLoginInput = context.GetArgument<AuthLoginInput>("AuthLoginInputType");
-                    new AuthLoginInputValidator().ValidateAndThrow(authLoginInput);
+                    new AuthLoginInputValidator().ValidateAndThrowExceptions(authLoginInput);
                     var user = await userRepository.GetByEmailAsync(authLoginInput.Email);
                     if (user != null && user.Password != authLoginInput.Password)
                         throw new Exception("Bad credentials");
-                    return new AuthResponse()
+                    TokenModel token = new TokenModel
                     {
                         Token = authService.GenerateAccessToken(user.Id, user.Email, user.RoleEnum),
+                        UserId = user.Id,
+                    };
+                    token = await tokenRepository.CreateAsync(token);
+                    return new AuthResponse()
+                    {
+                        Token = token.Token,
                         User = user,
                     };
                 });
+            
+            Field<NonNullGraphType<BooleanGraphType>, bool>()
+                .Name("Logout")
+                .ResolveAsync(async context =>
+                {
+                    var userId = httpContextAccessor.HttpContext.GetUserId();
+                    var fullToken = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
+                    var token = fullToken.ToString().Replace("Bearer ", string.Empty, StringComparison.OrdinalIgnoreCase);
+                    var tokenInDb = await tokenRepository.GetByToken(token);
+                    if (tokenInDb == null)
+                        throw new Exception("Bad token");
+                    await tokenRepository.RemoveAsync(token);
+                    return true;
+                })
+                .AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
                 .Name("Register")
@@ -41,7 +63,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         throw new Exception("You can not register manually. Contact an administrator");
 
                     AuthRegisterInput authRegisterInput = context.GetArgument<AuthRegisterInput>("AuthRegisterInputType");
-                    await new AuthRegisterInputValidator(userRepository).ValidateAndThrowAsync(authRegisterInput);
+                    await new AuthRegisterInputValidator(userRepository).ValidateAndThrowExceptionsAsync(authRegisterInput);
 
                     UserModel user = await userRepository.CreateAsync(new UserModel
                     {
@@ -52,9 +74,15 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         MiddleName = authRegisterInput.MiddleName,
                         RoleEnum = Role.Administrator,
                     });
-                    return new AuthResponse()
+                    TokenModel token = new TokenModel
                     {
                         Token = authService.GenerateAccessToken(user.Id, user.Email, user.RoleEnum),
+                        UserId = user.Id,
+                    };
+                    token = await tokenRepository.CreateAsync(token);
+                    return new AuthResponse()
+                    {
+                        Token = token.Token,
                         User = user,
                     };
                 });

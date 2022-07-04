@@ -1,6 +1,7 @@
 ﻿using GraphQL;
 using GraphQL.Types;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Net.Http.Headers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.Extensions;
@@ -11,24 +12,22 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
     public class AuthQueries : ObjectGraphType
     {
-        public AuthQueries(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IUserRepository userRepository, AuthService authService)
+        public AuthQueries(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IUserRepository userRepository, ITokenRepository tokenRepository)
         {
             Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
                 .Name("Me")
                 .ResolveAsync(async context =>
                 {
                     var userId = httpContextAccessor.HttpContext.GetUserId();
-                    string key = $"users/{userId}";
-                    UserModel currentUser;
-                    if (!memoryCache.TryGetValue(key, out currentUser))
-                    {
-                        currentUser = await userRepository.GetByIdAsync(userId);
-                        memoryCache.Set(key, currentUser, new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromDays(1)));
-                    }
+                    var fullToken = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
+                    var token = fullToken.ToString().Replace("Bearer ", string.Empty, StringComparison.OrdinalIgnoreCase);
+                    var tokens = await tokenRepository.GetByUserId(userId);
+                    if (!tokens.Any(t => t.Token == token))
+                        throw new Exception("Bad token");
                     return new AuthResponse()
                     {
-                        Token = authService.GenerateAccessToken(currentUser.Id, currentUser.Email, currentUser.RoleEnum),
-                        User = currentUser,
+                        Token = token,
+                        User = await userRepository.GetByIdAsync(userId),
                     };
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
