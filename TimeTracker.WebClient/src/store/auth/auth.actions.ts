@@ -1,10 +1,15 @@
 import {User} from "../../graphQL/modules/users/users.types";
 import {ValueOf} from "../store";
+import {AuthLoginInputType} from "../../graphQL/modules/auth/auth.mutations";
 
 export const authActions = {
-    userLoginAsync: () => ({
+    userLoginAsync: (credentials: AuthLoginInputType) => ({
         type: 'LOGIN_USER_ASYNC',
-        payload: null,
+        payload: {credentials},
+    } as const),
+    meAsync: () => ({
+        type: 'ME_ASYNC',
+        payload: {},
     } as const),
     setAuthedUser: (user: User, token: string) => ({
         type: 'SET_AUTHED_USER',

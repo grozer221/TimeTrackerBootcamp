@@ -4,10 +4,12 @@ import {User} from "../../graphQL/modules/users/users.types";
 
 type InitialState = {
     authedUser: User | null,
+    isAuth: boolean
 }
 
 const initialState = {
     authedUser: null,
+    isAuth: false
 }
 
 export const authReducer: Reducer<InitialState, UsersActionTypes> = (state = initialState, action): InitialState => {

@@ -23,6 +23,11 @@ builder.Services.AddMsSql();
 
 var app = builder.Build();
 
+if (app.Environment.IsDevelopment()) 
+{ 
+    app.UseCors("DefaultPolicy");
+}
+
 app.UseStaticFiles();
 
 app.UseRouting();
