@@ -3,7 +3,7 @@
 namespace TimeTracker.MsSql.Migrations
 {
     [Migration(202207011320)]
-    public class Init_202207011320 : Migration
+    public class _202207011320_Init : Migration
     {
         public override void Up()
         {

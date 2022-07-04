@@ -1,10 +1,12 @@
-﻿using GraphQL;
+﻿using FluentValidation;
+using GraphQL;
 using GraphQL.Types;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.GraphQL.Modules.Auth.DTO;
 using TimeTracker.Server.Services;
+using TimeTracker.Server.GraphQL.Abstractions;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
@@ -18,6 +20,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 .ResolveAsync(async context =>
                 {
                     AuthLoginInput authLoginInput = context.GetArgument<AuthLoginInput>("AuthLoginInputType");
+                    new AuthLoginInputValidator().ValidateAndThrow(authLoginInput);
                     var user = await userRepository.GetByEmailAsync(authLoginInput.Email);
                     if (user != null && user.Password != authLoginInput.Password)
                         throw new Exception("Bad credentials");
@@ -35,9 +38,11 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 {
                     var users = await userRepository.GetAsync();
                     if (users.Count() > 0)
-                        throw new Exception("Ви не можете самостійно зареєструватися. Зверніться до адміністратора");
+                        throw new Exception("You can not register manually. Contact an administrator");
 
                     AuthRegisterInput authRegisterInput = context.GetArgument<AuthRegisterInput>("AuthRegisterInputType");
+                    await new AuthRegisterInputValidator(userRepository).ValidateAndThrowAsync(authRegisterInput);
+
                     UserModel user = await userRepository.CreateAsync(new UserModel
                     {
                         Email = authRegisterInput.Email,

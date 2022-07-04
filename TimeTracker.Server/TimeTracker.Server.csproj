@@ -10,6 +10,7 @@
 		<PackageReference Include="FluentMigrator" Version="3.3.2" />
 		<PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
 		<PackageReference Include="FluentMigrator.Runner.SqlServer" Version="3.3.2" />
+		<PackageReference Include="FluentValidation" Version="11.1.0" />
 		<PackageReference Include="GraphQL" Version="4.7.1" />
 		<PackageReference Include="GraphQL.Server.Authorization.AspNetCore" Version="5.2.0" />
 		<PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="5.2.0" />
