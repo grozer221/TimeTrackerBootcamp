@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 
@@ -54,7 +55,7 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public Task<IEnumerable<TokenModel>> GetAsync(string like, int take, int skip)
+        public Task<GetEntitiesResponse<TokenModel>> GetAsync(string like, int take, int skip)
         {
             throw new NotImplementedException();
         }
@@ -94,6 +95,15 @@ namespace TimeTracker.MsSql.Repositories
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new { userId, token });
+            }
+        }
+
+        public async Task RemoveAllForUserAsync(Guid userId)
+        {
+            string query = "delete from Tokens where userId = @userId";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, new { userId });
             }
         }
     }

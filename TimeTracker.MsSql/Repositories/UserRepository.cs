@@ -1,9 +1,5 @@
 ﻿using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 
@@ -45,9 +41,29 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public Task<IEnumerable<UserModel>> GetAsync(string like, int take, int skip)
+        public async Task<GetEntitiesResponse<UserModel>> GetAsync(string like, int take, int skip)
         {
-            throw new NotImplementedException();
+            like = "%" + like + "%";
+
+            string getCountQuery = @"select count(*) FROM Users 
+                                    where Email like @like";
+
+            string getEntitieQuery = @"select * FROM Users 
+                                     where Email like @like 
+                                     ORDER BY Id
+                                     OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                var reader = await connection.QueryMultipleAsync($"{getCountQuery};{getEntitieQuery}", new { like, take, skip });
+                int total = reader.Read<int>().FirstOrDefault();
+                var users = reader.Read<UserModel>();
+                return new GetEntitiesResponse<UserModel>
+                {
+                    Entities = users,
+                    Total = total,
+                    PageSize = take,
+                };
+            }
         }
 
         public async Task<UserModel> CreateAsync(UserModel model)
@@ -66,14 +82,40 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public Task<UserModel> UpdateAsync(UserModel model)
+        public async Task UpdatePasswordAsync(Guid id, string password)
         {
-            throw new NotImplementedException();
+            string query = @"update Users
+                            SET Password = @Password
+                            WHERE Id = @Id";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, new {id, password});
+            }
         }
 
-        public Task RemoveAsync(Guid id)
+        public async Task<UserModel> UpdateAsync(UserModel model)
         {
-            throw new NotImplementedException();
+            model.UpdatedAt = DateTime.Now;
+            string query = @"update Users
+                            SET Email = @Email, FirstName = @FirstName, 
+                                LastName = @LastName, MiddleName = @MiddleName, Role = @RoleEnum
+                            WHERE Id = @Id";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, model);
+            }
+            return model;
         }
+
+        public async Task RemoveAsync(Guid id)
+        {
+            string query = "delete from Users where Id = @id";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, new { id });
+            }
+        }
+
+       
     }
 }

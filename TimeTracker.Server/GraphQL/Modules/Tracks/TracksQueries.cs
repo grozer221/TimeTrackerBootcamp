@@ -1,7 +1,9 @@
 ﻿using GraphQL;
 using GraphQL.Types;
+using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.Server.GraphQL.Abstractions;
 
 namespace TimeTracker.Server.GraphQL.Modules.Tracks
 {
@@ -13,7 +15,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
         {
             this.repository = repository;
 
-            Field<ListGraphType<TrackType>, IEnumerable<TrackModel>>()
+            Field<GetEntitiesResponseType<TrackType, TrackModel>, GetEntitiesResponse<TrackModel>>()
                 .Name("GetTracks")
                 .Argument<NonNullGraphType<StringGraphType>, string>("Like", "Argument for a search")
                 .Argument<NonNullGraphType<IntGraphType>, int>("Take", "Argument represent count of tracks on page")

@@ -1,5 +1,4 @@
-﻿using FluentValidation;
-using GraphQL;
+﻿using GraphQL;
 using GraphQL.Types;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
@@ -82,23 +81,45 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     };
                 });
 
-            //Field<BooleanGraphType, bool>()
-            //    .Name("ChangePassword")
-            //    .Argument<NonNullGraphType<ChangePasswordInputType>, ChangePassword>("ChangePasswordInputType", "Argument for change User password")
-            //    .ResolveAsync(async context =>
-            //    {
-            //        var changePassword = context.GetArgument<ChangePassword>("ChangePasswordInputType");
-            //        string userLogin = httpContextAccessor.HttpContext.GetUserLogin();
-            //        UserModel user = await usersRepository.GetByLoginAsync(userLogin);
-            //        if (user.Password != changePassword.OldPassword)
-            //            throw new Exception("Bad old password");
-            //        if (changePassword.NewPassword.Length < 3)
-            //            throw new Exception("Lenght of new password must be greater then 3 symbols");
-            //        user.Password = changePassword.NewPassword;
-            //        await usersRepository.UpdateAsync(user);
-            //        return true;
-            //    })
-            //    .AuthorizeWith(AuthPolicies.Authenticated);
+            Field<BooleanGraphType, bool>()
+                .Name("ChangePassword")
+                .Argument<NonNullGraphType<AuthChangePasswordInputType>, AuthChangePasswordInput>("AuthChangePasswordInputType", "Argument for change User password")
+                .ResolveAsync(async context =>
+                {
+                    var authChangePasswordInput = context.GetArgument<AuthChangePasswordInput>("AuthChangePasswordInputType");
+                    new AuthChangePasswordInputValidation().ValidateAndThrowExceptions(authChangePasswordInput);
+                    var userId = httpContextAccessor.HttpContext.GetUserId();
+                    var user = await userRepository.GetByIdAsync(userId);
+                    if (user.Password != authChangePasswordInput.OldPassword)
+                        throw new Exception("Bad old password");
+                    await userRepository.UpdatePasswordAsync(user.Id, authChangePasswordInput.NewPassword);
+                    await tokenRepository.RemoveAllForUserAsync(userId);
+                    return true;
+                })
+                .AuthorizeWith(AuthPolicies.Authenticated);
+
+            Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
+                .Name("Impersonate")
+                .Argument<NonNullGraphType<GuidGraphType>, Guid>("UserId", "Argument for Impersonate User")
+                .ResolveAsync(async context =>
+                {
+                    var impersonateUserId = context.GetArgument<Guid>("UserId");
+                    var impersonateUser = await userRepository.GetByIdAsync(impersonateUserId);
+                    if (impersonateUser == null)
+                        throw new ExecutionError("User not found");
+                    TokenModel token = new TokenModel
+                    {
+                        Token = authService.GenerateAccessToken(impersonateUser.Id, impersonateUser.Email, impersonateUser.RoleEnum),
+                        UserId = impersonateUser.Id,
+                    };
+                    token = await tokenRepository.CreateAsync(token);
+                    return new AuthResponse()
+                    {
+                        Token = token.Token,
+                        User = impersonateUser,
+                    };
+                })
+                .AuthorizeWith(AuthPolicies.Administrator);
         }
     }
 }

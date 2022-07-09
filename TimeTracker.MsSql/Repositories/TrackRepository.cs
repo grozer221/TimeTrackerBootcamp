@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Data;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using Dapper;
+using TimeTracker.Business.Abstractions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -31,7 +26,7 @@ namespace TimeTracker.MsSql.Repositories
             return track;
         }
 
-        public async Task<IEnumerable<TrackModel>> GetAsync(string like, int take, int skip)
+        public async Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int take, int skip)
         {
             IEnumerable<TrackModel> tracks;
             like = "%" + like + "%";
@@ -43,7 +38,10 @@ namespace TimeTracker.MsSql.Repositories
                 tracks = await db.QueryAsync<TrackModel>(query, new {like, take, skip});
             }
 
-            return tracks;
+            return new GetEntitiesResponse<TrackModel>
+            {
+                Entities = tracks,
+            };
         }
 
         public async Task<TrackModel> CreateAsync(TrackModel model)
