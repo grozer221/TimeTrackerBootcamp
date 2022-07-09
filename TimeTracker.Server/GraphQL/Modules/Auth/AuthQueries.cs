@@ -19,14 +19,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 .ResolveAsync(async context =>
                 {
                     var userId = httpContextAccessor.HttpContext.GetUserId();
-                    var fullToken = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
-                    var token = fullToken.ToString().Replace("Bearer ", string.Empty, StringComparison.OrdinalIgnoreCase);
-                    var tokens = await tokenRepository.GetByUserId(userId);
-                    if (!tokens.Any(t => t.Token == token))
-                        throw new Exception("Bad token");
                     return new AuthResponse()
                     {
-                        Token = token,
+                        Token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization],
                         User = await userRepository.GetByIdAsync(userId),
                     };
                 })

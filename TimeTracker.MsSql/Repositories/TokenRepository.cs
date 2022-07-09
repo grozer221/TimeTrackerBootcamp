@@ -89,12 +89,12 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public async Task RemoveAsync(string token)
+        public async Task RemoveAsync(Guid userId, string token)
         {
-            string query = "delete from Tokens where token = @token";
+            string query = "delete from Tokens where userId = @userId and token = @token";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, new { token });
+                await connection.ExecuteAsync(query, new { userId, token });
             }
         }
     }

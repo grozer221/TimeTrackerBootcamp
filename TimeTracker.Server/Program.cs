@@ -22,7 +22,6 @@ builder.Services.AddGraphQLApi();
 builder.Services.AddJwtAuthorization();
 builder.Services.AddMsSql();
 
-builder.Services.AddTransient<ITrackRepository, TrackRepository>();
 
 
 var app = builder.Build();
