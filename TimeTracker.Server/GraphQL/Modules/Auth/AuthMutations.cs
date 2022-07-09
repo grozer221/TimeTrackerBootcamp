@@ -43,12 +43,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 .ResolveAsync(async context =>
                 {
                     var userId = httpContextAccessor.HttpContext.GetUserId();
-                    var fullToken = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
-                    var token = fullToken.ToString().Replace("Bearer ", string.Empty, StringComparison.OrdinalIgnoreCase);
-                    var tokenInDb = await tokenRepository.GetByToken(token);
-                    if (tokenInDb == null)
-                        throw new Exception("Bad token");
-                    await tokenRepository.RemoveAsync(token);
+                    var token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
+                    await tokenRepository.RemoveAsync(userId, token);
                     return true;
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
@@ -64,7 +60,6 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
 
                     AuthRegisterInput authRegisterInput = context.GetArgument<AuthRegisterInput>("AuthRegisterInputType");
                     await new AuthRegisterInputValidator(userRepository).ValidateAndThrowExceptionsAsync(authRegisterInput);
-
                     UserModel user = await userRepository.CreateAsync(new UserModel
                     {
                         Email = authRegisterInput.Email,

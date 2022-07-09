@@ -49,29 +49,9 @@ namespace TimeTracker.Server.Extensions
 
         public static IServiceCollection AddJwtAuthorization(this IServiceCollection services)
         {
-            services.AddAuthentication(options =>
-            {
-                options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateAudience = true,
-                    ValidateIssuer = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidAudience = Environment.GetEnvironmentVariable("AuthValidAudience"),
-                    ValidIssuer = Environment.GetEnvironmentVariable("AuthValidIssuer"),
-                    RequireSignedTokens = false,
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("AuthIssuerSigningKey"))),
-                };
-                options.RequireHttpsMetadata = false;
-                options.SaveToken = true;
-            });
-
+            services
+                .AddAuthentication(BasicAuthenticationHandler.SchemeName)
+                .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, options => { });
             return services;
         }
 

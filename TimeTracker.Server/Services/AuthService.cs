@@ -3,7 +3,6 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TimeTracker.Business.Enums;
-using TimeTracker.Business.Repositories;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 
 namespace TimeTracker.Server.Services
@@ -14,7 +13,6 @@ namespace TimeTracker.Server.Services
         {
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("AuthIssuerSigningKey")));
             SigningCredentials signingCredentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
             List<Claim> claims = new List<Claim>
             {
                 new Claim(AuthClaimsIdentity.DefaultIdClaimType, userId.ToString()),
@@ -22,8 +20,6 @@ namespace TimeTracker.Server.Services
                 new Claim(AuthClaimsIdentity.DefaultRoleClaimType, role.ToString()),
             };
             JwtSecurityToken token = new JwtSecurityToken(
-                issuer: Environment.GetEnvironmentVariable("AuthValidIssuer"),
-                audience: Environment.GetEnvironmentVariable("AuthValidAudience"),
                 claims: claims,
                 expires: DateTime.Now.AddDays(30),
                 signingCredentials: signingCredentials);
