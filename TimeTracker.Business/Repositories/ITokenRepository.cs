@@ -8,5 +8,6 @@ namespace TimeTracker.Business.Repositories
         Task<IEnumerable<TokenModel>> GetByUserId(Guid userId);
         Task<TokenModel> GetByToken(string token);
         Task RemoveAsync(Guid userId, string token);
+        Task RemoveAllForUserAsync(Guid userId);
     }
 }
