@@ -2,6 +2,7 @@
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Server.GraphQL.Abstractions;
+using TimeTracker.Server.GraphQL.EnumTypes;
 
 namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
 {
@@ -12,12 +13,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
-        public string Role { get; private set; }
-        public Role RoleEnum
-        {
-            get => Enum.Parse<Role>(Role);
-            set => Role = value.ToString();
-        }
+        public IEnumerable<Permission> Permissions { get; set; }
 
         public UserModel ToModel()
         {
@@ -28,7 +24,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
                 FirstName = this.FirstName,
                 LastName = this.LastName,
                 MiddleName = this.MiddleName,
-                RoleEnum = this.RoleEnum,
+                Permissions = this.Permissions,
             };
         }
     }
@@ -40,7 +36,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
             Field<NonNullGraphType<GuidGraphType>, Guid>()
                  .Name("Id")
                  .Resolve(context => context.Source.Id);
-            
+
             Field<NonNullGraphType<StringGraphType>, string>()
                  .Name("Email")
                  .Resolve(context => context.Source.Email);
@@ -48,18 +44,18 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
             Field<NonNullGraphType<StringGraphType>, string>()
                  .Name("FirstName")
                  .Resolve(context => context.Source.FirstName);
-            
+
             Field<NonNullGraphType<StringGraphType>, string>()
                  .Name("LastName")
                  .Resolve(context => context.Source.LastName);
-            
+
             Field<NonNullGraphType<StringGraphType>, string>()
                  .Name("MiddleName")
                  .Resolve(context => context.Source.MiddleName);
-            
-            Field<NonNullGraphType<RoleType>, Role>()
-                 .Name("RoleEnum")
-                 .Resolve(context => context.Source.RoleEnum);
+
+            Field<NonNullGraphType<ListGraphType<PermissionType>>, IEnumerable<Permission>>()
+                .Name("Permissions")
+                .Resolve(context => context.Source.Permissions);
         }
     }
 }

@@ -32,10 +32,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
             RuleFor(l => l.MiddleName)
                 .NotEmpty()
                 .NotNull();
-            
-            RuleFor(l => l.Role)
-                .NotEmpty()
-                .NotNull();
+
+            RuleFor(l => l.Permissions);
         }
     }
 }

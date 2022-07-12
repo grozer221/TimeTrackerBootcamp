@@ -80,12 +80,16 @@ namespace TimeTracker.MsSql.Repositories
             throw new NotImplementedException();
         }
 
-        public async Task RemoveAsync(Guid id)
+        public async Task<TokenModel> RemoveAsync(Guid id)
         {
+            var previousModel = await GetByIdAsync(id);
+            if (previousModel == null)
+                throw new Exception("Token not found");
             string query = "delete from Tokens where Id = @id";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new { id });
+                return previousModel;   
             }
         }
 

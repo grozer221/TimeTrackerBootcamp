@@ -1,4 +1,6 @@
-﻿using TimeTracker.Business.Abstractions;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Enums;
 
 namespace TimeTracker.Business.Models
@@ -10,11 +12,19 @@ namespace TimeTracker.Business.Models
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
-        public string Role { get; private set; }
-        public Role RoleEnum
+        public int RoleNumber { get; private set; }
+        public Role Role
         {
-            get => Enum.Parse<Role>(Role);
-            set => Role = value.ToString();
+            get => (Role)RoleNumber;
+            set => RoleNumber = (int)value;
         }
+        public string PermissionsString { get; private set; }
+        public IEnumerable<Permission> Permissions
+        {
+            get => JsonConvert.DeserializeObject<IEnumerable<Permission>>(PermissionsString);
+            set => PermissionsString = JsonConvert.SerializeObject(value, new StringEnumConverter());
+        }
+        public Employment Employment { get; set; }
+        public int AmountHoursPerMonth { get; set; }
     }
 }

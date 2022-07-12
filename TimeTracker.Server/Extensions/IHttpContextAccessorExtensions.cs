@@ -1,5 +1,4 @@
 ﻿using TimeTracker.Business.Enums;
-using TimeTracker.Server.GraphQL.Modules.Auth;
 
 namespace TimeTracker.Server.Extensions
 {
@@ -7,22 +6,32 @@ namespace TimeTracker.Server.Extensions
     {
         public static Guid GetUserId(this HttpContext httpContext)
         {
-            return new Guid(httpContext.User.Claims.First(c => c.Type == AuthClaimsIdentity.DefaultIdClaimType).Value);
+            return httpContext.User.Claims.GetUserId();
         }
 
         public static string GetUserEmail(this HttpContext httpContext)
         {
-            return httpContext.User.Claims.First(c => c.Type == AuthClaimsIdentity.DefaultEmailClaimType).Value;
+            return httpContext.User.Claims.GetUserEmail();
         }
 
         public static Role GetRole(this HttpContext httpContext)
         {
-            Role role;
-            if (!Enum.TryParse(httpContext.User.Claims.First(c => c.Type == AuthClaimsIdentity.DefaultRoleClaimType).Value, out role))
-            {
-                throw new Exception("Bad role");
-            }
-            return role;
+            return httpContext.User.Claims.GetRole();
+        }
+
+        public static IEnumerable<Permission> GetPermissions(this HttpContext httpContext)
+        {
+            return httpContext.User.Claims.GetPermissions();
+        }
+
+        public static bool IsHavePermissions(this HttpContext httpContext, params Permission[] requestPermissions)
+        {
+            return httpContext.User.Claims.IsHavePermissions(requestPermissions);
+        }
+
+        public static bool IsAdministratOrHavePermissions(this HttpContext httpContext, params Permission[] requestPermissions)
+        {
+            return httpContext.User.Claims.IsAdministratOrHavePermissions(requestPermissions);
         }
     }
 }

@@ -13,6 +13,6 @@ namespace TimeTracker.Business.Abstractions
         Task<GetEntitiesResponse<T>> GetAsync(string like, int take, int skip);
         Task<T> CreateAsync(T model);
         Task<T> UpdateAsync(T model);
-        Task RemoveAsync(Guid id);
+        Task<T> RemoveAsync(Guid id);
     }
 }

@@ -2,6 +2,7 @@
 using GraphQL.Types;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Net.Http.Headers;
+using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.Extensions;
@@ -12,7 +13,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
     public class AuthQueries : ObjectGraphType
     {
-        public AuthQueries(IHttpContextAccessor httpContextAccessor, IMemoryCache memoryCache, IUserRepository userRepository, ITokenRepository tokenRepository)
+        public AuthQueries(IHttpContextAccessor httpContextAccessor, IUserRepository userRepository, ITokenRepository tokenRepository)
         {
             Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
                 .Name("Me")
