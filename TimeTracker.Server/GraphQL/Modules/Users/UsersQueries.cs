@@ -24,7 +24,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                    var skip = context.GetArgument<int>("Skip");
                    return await userRepository.GetAsync(like, take, skip);
                })
-               .AuthorizeWith(AuthPolicies.Administrator);
+               .AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<NonNullGraphType<UserType>, UserModel>()
                 .Name("GetById")
@@ -37,7 +37,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                         throw new ExecutionError("User not found");
                     return user;
                 })
-                .AuthorizeWith(AuthPolicies.Administrator);
+                .AuthorizeWith(AuthPolicies.Authenticated);
         }
     }
 }

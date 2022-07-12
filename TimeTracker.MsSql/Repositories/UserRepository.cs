@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TimeTracker.Business.Abstractions;
+using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 
@@ -78,8 +79,8 @@ namespace TimeTracker.MsSql.Repositories
             model.CreatedAt = dateTimeNow;
             model.UpdatedAt = dateTimeNow;
             string query = $@"insert into Users 
-                            (Id, Email, Password, FirstName, LastName, MiddleName, Role, CreatedAt, UpdatedAt) 
-                            values (@Id, @Email, @Password, @FirstName, @LastName, @MiddleName, @Role, @CreatedAt, @UpdatedAt)";
+                            (Id, Email, Password, FirstName, LastName, MiddleName, RoleNumber, PermissionsString, Employment, AmountHoursPerMonth, CreatedAt, UpdatedAt) values 
+                            (@Id, @Email, @Password, @FirstName, @LastName, @MiddleName, @RoleNumber, @PermissionsString, @Employment, @AmountHoursPerMonth, @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, model);
@@ -89,6 +90,9 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task UpdatePasswordAsync(Guid id, string password)
         {
+            var previousModel = await GetByIdAsync(id);
+            if (previousModel == null)
+                throw new Exception("User not found");
             string query = @"update Users
                             SET Password = @Password
                             WHERE Id = @Id";
@@ -100,10 +104,14 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task<UserModel> UpdateAsync(UserModel model)
         {
+            var previousModel = await GetByIdAsync(model.Id);
+            if (previousModel == null)
+                throw new Exception("User not found");
             model.UpdatedAt = DateTime.Now;
             string query = @"update Users
-                            SET Email = @Email, FirstName = @FirstName, 
-                                LastName = @LastName, MiddleName = @MiddleName, Role = @RoleEnum
+                            SET Email = @Email, FirstName = @FirstName, LastName = @LastName, 
+                                MiddleName = @MiddleName, PermissionsString = @PermissionsString, 
+                                Employment = @Employment, AmountHoursPerMonth = @AmountHoursPerMonth
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {
@@ -112,15 +120,17 @@ namespace TimeTracker.MsSql.Repositories
             return model;
         }
 
-        public async Task RemoveAsync(Guid id)
+        public async Task<UserModel> RemoveAsync(Guid id)
         {
+            var previousModel = await GetByIdAsync(id);
+            if (previousModel == null)
+                throw new Exception("User not found");
             string query = "delete from Users where Id = @id";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new { id });
+                return previousModel;
             }
         }
-
-       
     }
 }

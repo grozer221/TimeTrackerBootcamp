@@ -2,6 +2,7 @@
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Server.GraphQL.Abstractions;
+using TimeTracker.Server.GraphQL.EnumTypes;
 
 namespace TimeTracker.Server.GraphQL.Modules.Users
 {
@@ -27,10 +28,20 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
 
             Field<NonNullGraphType<RoleType>, Role>()
                .Name("Role")
-               .Resolve(context => context.Source.RoleEnum);
+               .Resolve(context => context.Source.Role);
+
+            Field<ListGraphType<PermissionType>, IEnumerable<Permission>?>()
+               .Name("Permissions")
+               .Resolve(context => context.Source.Permissions);
+            
+            Field<TimeTypeType, Employment>()
+               .Name("TimeType")
+               .Resolve(context => context.Source.Employment);
+            
+            Field<NonNullGraphType<IntGraphType>, int>()
+               .Name("AmountHoursPerMonth")
+               .Resolve(context => context.Source.AmountHoursPerMonth);
         }
     }
-    public class RoleType : EnumerationGraphType<Role>
-    {
-    }
+  
 }

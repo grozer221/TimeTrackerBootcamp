@@ -17,7 +17,7 @@ namespace TimeTracker.Server.Services
         }
     }
 
-    internal class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
+    public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
         public const string SchemeName = "TimeTrackerSchemeName";
         private readonly ITokenRepository tokenRepository;

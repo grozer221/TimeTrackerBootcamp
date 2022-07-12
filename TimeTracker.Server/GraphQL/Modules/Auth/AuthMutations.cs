@@ -26,7 +26,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         throw new Exception("Bad credentials");
                     TokenModel token = new TokenModel
                     {
-                        Token = authService.GenerateAccessToken(user.Id, user.Email, user.RoleEnum),
+                        Token = authService.GenerateAccessToken(user.Id, user.Email, user.Role, user.Permissions),
                         UserId = user.Id,
                     };
                     token = await tokenRepository.CreateAsync(token);
@@ -59,18 +59,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
 
                     AuthRegisterInput authRegisterInput = context.GetArgument<AuthRegisterInput>("AuthRegisterInputType");
                     await new AuthRegisterInputValidator(userRepository).ValidateAndThrowExceptionsAsync(authRegisterInput);
-                    UserModel user = await userRepository.CreateAsync(new UserModel
-                    {
-                        Email = authRegisterInput.Email,
-                        Password = authRegisterInput.Password,
-                        FirstName = authRegisterInput.FirstName,
-                        LastName = authRegisterInput.LastName,
-                        MiddleName = authRegisterInput.MiddleName,
-                        RoleEnum = Role.Administrator,
-                    });
+                    var user = authRegisterInput.ToModel();
+                    user.Role = Role.Administrator;
+                    user.Permissions = new List<Permission>();
+                    user = await userRepository.CreateAsync(user);
                     TokenModel token = new TokenModel
                     {
-                        Token = authService.GenerateAccessToken(user.Id, user.Email, user.RoleEnum),
+                        Token = authService.GenerateAccessToken(user.Id, user.Email, user.Role, user.Permissions),
                         UserId = user.Id,
                     };
                     token = await tokenRepository.CreateAsync(token);
@@ -109,7 +104,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         throw new ExecutionError("User not found");
                     TokenModel token = new TokenModel
                     {
-                        Token = authService.GenerateAccessToken(impersonateUser.Id, impersonateUser.Email, impersonateUser.RoleEnum),
+                        Token = authService.GenerateAccessToken(impersonateUser.Id, impersonateUser.Email, impersonateUser.Role, impersonateUser.Permissions),
                         UserId = impersonateUser.Id,
                     };
                     token = await tokenRepository.CreateAsync(token);

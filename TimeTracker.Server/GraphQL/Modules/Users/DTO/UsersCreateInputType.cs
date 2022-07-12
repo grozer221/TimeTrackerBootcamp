@@ -2,6 +2,7 @@
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Server.GraphQL.Abstractions;
+using TimeTracker.Server.GraphQL.EnumTypes;
 
 namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
 {
@@ -12,12 +13,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string MiddleName { get; set; }
-        public string Role { get; private set; }
-        public Role RoleEnum
-        {
-            get => Enum.Parse<Role>(Role);
-            set => Role = value.ToString();
-        }
+        public IEnumerable<Permission> Permissions { get; set; }
 
         public UserModel ToModel()
         {
@@ -28,7 +24,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
                 FirstName = this.FirstName,
                 LastName = this.LastName,
                 MiddleName = this.MiddleName,
-                RoleEnum = this.RoleEnum,
+                Permissions = this.Permissions,
             };
         }
     }
@@ -57,9 +53,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
                  .Name("MiddleName")
                  .Resolve(context => context.Source.MiddleName);
             
-            Field<NonNullGraphType<RoleType>, Role>()
-                 .Name("RoleEnum")
-                 .Resolve(context => context.Source.RoleEnum);
+            Field<NonNullGraphType<ListGraphType<PermissionType>>, IEnumerable<Permission>>()
+                 .Name("Permissions")
+                 .Resolve(context => context.Source.Permissions);
         }
     }
 }

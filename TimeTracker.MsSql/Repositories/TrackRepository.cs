@@ -77,11 +77,12 @@ namespace TimeTracker.MsSql.Repositories
         }
 
         
-        public async Task RemoveAsync(Guid id)
+        public async Task<TrackModel> RemoveAsync(Guid id)
         {
             using (IDbConnection db = dapperContext.CreateConnection())
             {
                 await db.QuerySingleOrDefaultAsync("DELETE FROM Tracks WHERE Id = @id", new { id });
+                return new TrackModel();
             }
         }
 
