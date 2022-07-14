@@ -30,7 +30,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                .Name("Role")
                .Resolve(context => context.Source.Role);
 
-            Field<ListGraphType<PermissionType>, IEnumerable<Permission>?>()
+            Field<NonNullGraphType<ListGraphType<PermissionType>>, IEnumerable<Permission>?>()
                .Name("Permissions")
                .Resolve(context => context.Source.Permissions);
             

@@ -1,5 +1,6 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Server.GraphQL.Modules.Auth;
+using TimeTracker.Server.GraphQL.Modules.CalendarDays;
 using TimeTracker.Server.GraphQL.Modules.Tracks;
 using TimeTracker.Server.GraphQL.Modules.Users;
 
@@ -19,6 +20,10 @@ namespace TimeTracker.Server.GraphQL
             
             Field<UsersQueries>()
                 .Name("Users")
+                .Resolve(_ => new { });
+            
+            Field<CalendarDaysQueries>()
+                .Name("CalendarDays")
                 .Resolve(_ => new { });
         }
     }

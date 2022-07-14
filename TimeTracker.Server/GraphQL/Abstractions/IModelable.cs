@@ -2,7 +2,7 @@
 
 namespace TimeTracker.Server.GraphQL.Abstractions
 {
-    public interface IModelable<T> where T : BaseModel
+    public interface IModelable<T> where T : class
     {
         T ToModel();
     }

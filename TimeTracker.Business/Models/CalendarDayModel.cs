@@ -1,0 +1,12 @@
+﻿using TimeTracker.Business.Abstractions;
+using TimeTracker.Business.Enums;
+
+namespace TimeTracker.Business.Models
+{
+    public class CalendarDayModel : BaseModel
+    {
+        public DateTime Date { get; set; }
+        public DayKind Kind { get; set; }
+        public int PercentageWorkHours { get; set; }
+    }
+}

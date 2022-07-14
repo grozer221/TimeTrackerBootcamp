@@ -1,10 +1,10 @@
 import React, {FC} from "react";
 import {Button, Checkbox, Form, Input} from "antd";
 import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "../../store/auth/auth.actions";
-import {AuthLoginInputType} from "../../graphQL/modules/auth/auth.mutations";
+import {authActions} from "../../../store/auth/auth.actions";
+import {AuthLoginInputType} from "../../../graphQL/modules/auth/auth.mutations";
 import './LoginPage.css'
-import {RootState} from "../../store/store";
+import {RootState} from "../../../store/store";
 
 export const LogInPage: FC = () => {
     const dispatch = useDispatch()

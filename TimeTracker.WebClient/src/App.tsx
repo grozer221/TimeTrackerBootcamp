@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 import {Navigate, Route, Routes} from "react-router-dom";
-import {LogInPage} from "./pages/Auth/LogInPage";
+import {LogInPage} from "./pages/auth/AuthLoginPage/LogInPage";
 import {useDispatch, useSelector} from "react-redux";
 import {authActions} from "./store/auth/auth.actions";
 import {RootState} from "./store/store";
