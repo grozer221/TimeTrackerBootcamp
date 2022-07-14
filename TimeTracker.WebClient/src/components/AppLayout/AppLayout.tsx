@@ -1,73 +1,50 @@
-import React, {FC, useEffect, useState} from 'react';
-import {Col, Layout, Menu, Row} from 'antd';
-import s from './AppLayout.module.css';
-import {AppBreadcrumb} from "../AppBreadcrumb/AppBreadcrumb";
-import {Link, useLocation} from "react-router-dom";
+import React, {FC, useState} from 'react';
+import {Layout, Menu} from 'antd';
+import {Link} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {authActions} from "../../store/auth/auth.actions";
-
-const {Header, Content} = Layout;
+import s from './AppLayout.module.css';
+import {AppBreadcrumb} from "../AppBreadcrumb/AppBreadcrumb";
+import Sider from "antd/es/layout/Sider";
+import {LineChartOutlined, LogoutOutlined} from "@ant-design/icons";
+import {Content} from "antd/es/layout/layout";
+import SanaLogo from '../../assets/images/SanaLogo.png'
 
 type Props = {
     children?: React.ReactNode
 }
 
 export const AppLayout: FC<Props> = ({children}) => {
-    const location = useLocation();
-    const [defaultSelectedKey, setDefaultSelectedKey] = useState('');
+    const [collapsed, setCollapsed] = useState(false);
     const dispatch = useDispatch()
 
-    useEffect(() => {
-        const newDefaultSelectedKey = getDefaultSelectedKey(location.pathname);
-        if (newDefaultSelectedKey !== defaultSelectedKey)
-            setDefaultSelectedKey(newDefaultSelectedKey);
-    }, [location.pathname]);
-
-    const getDefaultSelectedKey = (path: string): string => {
-        if (path.match(/todos/i))
-            return 'todos';
-        else if (path.match(/categories/i))
-            return 'categories';
-        else
-            return '';
-    }
-
-    const logOutHandler = () => {
+    const logoutHandler = () => {
         dispatch(authActions.logOutAsync())
     }
 
     return (
         <Layout className={s.layout}>
-            <Header>
-                <Row>
-                    <Col span={22}>
-                        <Menu theme="dark" mode="horizontal" defaultSelectedKeys={[defaultSelectedKey]}>
-                            <Menu.Item key={'todos'}>
-                                <Link to={'/users'}>
-                                    Todos
-                                </Link>
-                            </Menu.Item>
-                            <Menu.Item key={'categories'}>
-                                <Link to={'/categories'}>
-                                    Categories
-                                </Link>
-                            </Menu.Item>
-
-                            <Menu.Item key={'logout'}>
-                                <div onClick={logOutHandler}>
-                                    Logout
-                                </div>
-                            </Menu.Item>
-                        </Menu>
-                    </Col>
-                </Row>
-            </Header>
-            <Content className={s.content}>
-                <div className={s.appBreadcrumb}>
+            <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed} className={s.wrapperMenu}>
+                <img alt={'Logo'} src={SanaLogo} className={s.logo}/>
+                <Menu theme="dark" mode="inline">
+                    <Menu.Item key="/" icon={<LineChartOutlined/>}>
+                        <Link to={'./'}>Головна</Link>
+                    </Menu.Item>
+                    <Menu.Item key="/calendar" icon={<LineChartOutlined/>}>
+                        <Link to={'calendar'}>Calendar</Link>
+                    </Menu.Item>
+                    <Menu.Item key="logout" icon={<LogoutOutlined/>} onClick={logoutHandler}>
+                        Вийти
+                    </Menu.Item>
+                    <div style={{height: '48px'}}/>
+                </Menu>
+            </Sider>
+            <Layout className="site-layout">
+                <Content className={s.content}>
                     <AppBreadcrumb/>
-                </div>
-                <div className={s.siteLayoutContent}>{children}</div>
-            </Content>
+                    <div className={s.siteLayoutBackground}>{children}</div>
+                </Content>
+            </Layout>
         </Layout>
     );
 };

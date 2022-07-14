@@ -5,11 +5,11 @@ import {setContext} from '@apollo/client/link/context';
 const authLink = setContext((_, {headers}) => ({
     headers: {
         ...headers,
-        authorization: `Bearer ${localStorage.getItem('TOKEN') ?? ''}`,
+        authorization: localStorage.getItem('TOKEN') || '',
     },
 }));
 
-const httpLink  = createHttpLink({
+const httpLink = createHttpLink({
     uri: !process.env.NODE_ENV || process.env.NODE_ENV === 'development' ? 'https://localhost:7041/graphql' : '/graphql',
 });
 
