@@ -11,6 +11,7 @@ export type CalendarDaysCreateVars = {
 }
 export type CalendarDaysCreateInputType = {
     date: string,
+    title: string,
     kind: DayKind,
     percentageWorkHours: number,
 }
@@ -33,6 +34,7 @@ export type CalendarDaysCreateRangeVars = {
 export type CalendarDaysCreateRangeInputType = {
     from: string,
     to: string,
+    title: string,
     daysOfWeek: DayOfWeek[],
     kind: DayKind,
     percentageWorkHours: number,
@@ -53,6 +55,7 @@ export type CalendarDaysUpdateVars = { calendarDaysUpdateInputType: CalendarDays
 export type CalendarDaysUpdateInputType = {
     id: string,
     date: string,
+    title: string,
     kind: DayKind,
     percentageWorkHours: number,
 }

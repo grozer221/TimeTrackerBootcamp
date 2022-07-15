@@ -15,6 +15,7 @@ import {
     CalendarDaysCreateInputType,
     CalendarDaysCreateRangeInputType
 } from "../../../graphQL/modules/calendarDays/calendarDays.mutations";
+import Input from "antd/es/input/Input";
 
 const {Title} = Typography;
 const {TabPane} = Tabs;
@@ -36,6 +37,7 @@ export const CalendarDaysCreatePage = () => {
         try {
             await form.validateFields();
             const override = form.getFieldValue('override');
+            const title = form.getFieldValue('title');
             const kind = form.getFieldValue('kind');
             const percentageWorkHours = form.getFieldValue('percentageWorkHours')
             switch (tab) {
@@ -46,6 +48,7 @@ export const CalendarDaysCreatePage = () => {
                     }
                     const calendarDaysCreateInputType: CalendarDaysCreateInputType = {
                         date: (form.getFieldValue('date') as Moment).format('YYYY-MM-DD'),
+                        title,
                         kind,
                         percentageWorkHours,
                     }
@@ -65,6 +68,7 @@ export const CalendarDaysCreatePage = () => {
                     const calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType = {
                         from: fromAndTo[0].format('YYYY-MM-DD'),
                         to: fromAndTo[1].format('YYYY-MM-DD'),
+                        title,
                         daysOfWeek: daysOfWeek,
                         kind,
                         percentageWorkHours,
@@ -105,6 +109,7 @@ export const CalendarDaysCreatePage = () => {
                     >
                         <Form.Item name="date">
                             <DatePicker
+                                placeholder={'Date'}
                                 className={'w-100'}
                                 dateRender={current => dateRender(current, calendarDays)}
                             />
@@ -138,11 +143,14 @@ export const CalendarDaysCreatePage = () => {
                         </Form.Item>
                     </TabPane>
                 </Tabs>
+                <Form.Item name="title">
+                    <Input placeholder={'Title'}/>
+                </Form.Item>
                 <Form.Item
                     name="kind"
                     rules={[{required: true, message: 'Kind is required'}]}
                 >
-                    <Select className={'w-100'}>
+                    <Select className={'w-100'} placeholder={'Kind'}>
                         {(Object.values(DayKind) as Array<DayKind>).map((value) => (
                             <Select.Option key={value} value={value}>
                                 {uppercaseToWords(value)}
@@ -154,7 +162,7 @@ export const CalendarDaysCreatePage = () => {
                     name="percentageWorkHours"
                     rules={[{required: true, message: 'Percentage work hours is required'}]}
                 >
-                    <InputNumber type={'number'} className={'w-100'} min={0} max={100}/>
+                    <InputNumber placeholder={'Percentage work hours'} type={'number'} className={'w-100'} min={0} max={100}/>
                 </Form.Item>
                 <Form.Item name="override" valuePropName="checked">
                     <Checkbox>Override</Checkbox>

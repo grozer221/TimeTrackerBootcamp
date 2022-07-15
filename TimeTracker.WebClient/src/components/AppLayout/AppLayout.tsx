@@ -6,7 +6,7 @@ import {authActions} from "../../store/auth/auth.actions";
 import s from './AppLayout.module.css';
 import {AppBreadcrumb} from "../AppBreadcrumb/AppBreadcrumb";
 import Sider from "antd/es/layout/Sider";
-import {LineChartOutlined, LogoutOutlined} from "@ant-design/icons";
+import {HomeOutlined, LineChartOutlined, LogoutOutlined} from "@ant-design/icons";
 import {Content} from "antd/es/layout/layout";
 import SanaLogo from '../../assets/images/SanaLogo.png'
 
@@ -27,14 +27,14 @@ export const AppLayout: FC<Props> = ({children}) => {
             <Sider collapsible collapsed={collapsed} onCollapse={setCollapsed} className={s.wrapperMenu}>
                 <img alt={'Logo'} src={SanaLogo} className={s.logo}/>
                 <Menu theme="dark" mode="inline">
-                    <Menu.Item key="/" icon={<LineChartOutlined/>}>
-                        <Link to={'./'}>Головна</Link>
+                    <Menu.Item key="/" icon={<HomeOutlined/>}>
+                        <Link to={'./'}>Home</Link>
                     </Menu.Item>
                     <Menu.Item key="/calendar" icon={<LineChartOutlined/>}>
                         <Link to={'calendar'}>Calendar</Link>
                     </Menu.Item>
                     <Menu.Item key="logout" icon={<LogoutOutlined/>} onClick={logoutHandler}>
-                        Вийти
+                        Logout
                     </Menu.Item>
                     <div style={{height: '48px'}}/>
                 </Menu>

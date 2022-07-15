@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Calendar, Row, Space} from "antd";
+import {Calendar, Row, Space, Tooltip, Typography} from "antd";
 import moment, {Moment} from 'moment';
 import {useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -11,6 +11,8 @@ import {DayKind} from "../../graphQL/enums/DayKind";
 import {ButtonRemove} from "../../components/ButtonRemove/ButtonRemove";
 import {ButtonUpdate} from "../../components/ButtonUpdate/ButtonUpdate";
 import {uppercaseToWords} from "../../utils/stringUtils";
+
+const {Text} = Typography;
 
 export const CalendarPage = () => {
     const [value, setValue] = useState<Moment | undefined>();
@@ -47,18 +49,25 @@ export const CalendarPage = () => {
                 break;
         }
         return (
-            <div className={[s.day, dayKindClass].join(' ')}>
-                <div className={s.kind}>{currentCalendarDay && uppercaseToWords(currentCalendarDay.kind)}</div>
-                <Row align={'bottom'} className={s.buttons}>
-                    {currentCalendarDay
-                        ? <Space size={3}>
-                            <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
-                            <ButtonUpdate to={`days/update/${currentCalendarDay?.date}`} popup={location}/>
-                        </Space>
-                        : <ButtonCreate to={`days/create?date=${current.format('YYYY-MM-DD')}`} popup={location}/>
-                    }
-                </Row>
-            </div>
+            <Tooltip
+                title={currentCalendarDay && `${currentCalendarDay.title || ''} (${uppercaseToWords(currentCalendarDay.kind)})`}>
+                <div className={[s.day, dayKindClass].join(' ')}>
+                    <div className={s.titleAndKind}>
+                        <Text style={{textAlign: 'center'}}>{currentCalendarDay?.title}</Text>
+                        <Text style={{fontSize: '12px'}}
+                              type="secondary">{currentCalendarDay && uppercaseToWords(currentCalendarDay.kind)}</Text>
+                    </div>
+                    <Row align={'bottom'} className={s.buttons}>
+                        {currentCalendarDay
+                            ? <Space size={3}>
+                                <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
+                                <ButtonUpdate to={`days/update/${currentCalendarDay?.date}`} popup={location}/>
+                            </Space>
+                            : <ButtonCreate to={`days/create?date=${current.format('YYYY-MM-DD')}`} popup={location}/>
+                        }
+                    </Row>
+                </div>
+            </Tooltip>
         );
     }
 

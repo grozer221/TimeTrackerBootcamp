@@ -8,6 +8,8 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
     {
         public CalendarDaysCreateInputValidation(ICalendarDayRepository calendarDayRepository, bool overrideDay)
         {
+            RuleFor(l => l.Title);
+
             RuleFor(l => l.Date)
                 .NotNull()
                 .MustAsync(async (input, date, cancellationToken) =>

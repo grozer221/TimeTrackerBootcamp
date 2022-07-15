@@ -63,6 +63,8 @@ export const CalendarDaysRemovePage = () => {
             confirmLoading={loading}
             visible={true}
             onOk={onFinish}
+            cancelButtonProps={{type: 'primary'}}
+            okButtonProps={{danger: true}}
             okText={'Remove'}
             onCancel={() => navigate(-1)}
         >

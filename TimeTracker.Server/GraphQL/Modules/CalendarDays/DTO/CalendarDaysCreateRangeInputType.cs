@@ -9,6 +9,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
     public class CalendarDaysCreateRangeInput
     {
+        public string? Title { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
         public IEnumerable<DayOfWeek> DaysOfWeek { get; set; }
@@ -33,6 +34,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                     }
                     list.Add(new CalendarDayModel
                     {
+                        Title = this.Title,
                         Date = fromCopy,
                         Kind = this.Kind,
                         PercentageWorkHours = this.PercentageWorkHours,
@@ -48,6 +50,10 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
     {
         public CalendarDaysCreateRangeInputType()
         {
+            Field<StringGraphType, string?>()
+                 .Name("Title")
+                 .Resolve(context => context.Source.Title);
+            
             Field<NonNullGraphType<DateGraphType>, DateTime>()
                  .Name("From")
                  .Resolve(context => context.Source.From);

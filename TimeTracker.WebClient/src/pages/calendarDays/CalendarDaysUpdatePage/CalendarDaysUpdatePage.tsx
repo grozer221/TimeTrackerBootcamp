@@ -27,6 +27,7 @@ export const CalendarDaysUpdatePage = () => {
             dispatch(calendarDaysActions.updateAsync({
                 id: form.getFieldValue('id'),
                 date: (form.getFieldValue('date') as Moment).format('YYYY-MM-DD'),
+                title: form.getFieldValue('title'),
                 kind: form.getFieldValue('kind'),
                 percentageWorkHours: form.getFieldValue('percentageWorkHours'),
             }))
@@ -36,7 +37,6 @@ export const CalendarDaysUpdatePage = () => {
     }
 
     if (!dayInUpdate) {
-        console.log('error')
         navigate('/error');
     }
 
@@ -65,15 +65,19 @@ export const CalendarDaysUpdatePage = () => {
                 </Form.Item>
                 <Form.Item name="date">
                     <DatePicker
+                        placeholder={'Date'}
                         className={'w-100'}
                         dateRender={current => dateRender(current, calendarDays)}
                     />
+                </Form.Item>
+                <Form.Item name="title">
+                    <Input placeholder={'Title'}/>
                 </Form.Item>
                 <Form.Item
                     name="kind"
                     rules={[{required: true, message: 'Kind is required'}]}
                 >
-                    <Select className={'w-100'}>
+                    <Select className={'w-100'} placeholder={'Kind'}>
                         {(Object.values(DayKind) as Array<DayKind>).map((value) => (
                             <Select.Option key={value} value={value}>
                                 {uppercaseToWords(value)}
@@ -85,7 +89,8 @@ export const CalendarDaysUpdatePage = () => {
                     name="percentageWorkHours"
                     rules={[{required: true, message: 'Percentage work hours is required'}]}
                 >
-                    <InputNumber type={'number'} className={'w-100'} min={0} max={100}/>
+                    <InputNumber placeholder={'Percentage work hours'} type={'number'} className={'w-100'} min={0}
+                                 max={100}/>
                 </Form.Item>
             </Form>
         </Modal>

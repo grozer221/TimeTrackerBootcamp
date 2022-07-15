@@ -2,6 +2,8 @@ import React, {CSSProperties} from "react";
 import {DayKind} from "../graphQL/enums/DayKind";
 import {Moment} from "moment";
 import {CalendarDay} from "../graphQL/modules/calendarDays/calendarDays.types";
+import {Tooltip} from "antd";
+import {uppercaseToWords} from "../utils/stringUtils";
 
 export const dateRender = (current: Moment, calendarDays: CalendarDay[]) => {
     const style: CSSProperties = {};
@@ -22,8 +24,13 @@ export const dateRender = (current: Moment, calendarDays: CalendarDay[]) => {
         }
     }
     return (
-        <div className="ant-picker-cell-inner" style={style}>
-            {current.date()}
-        </div>
+        <Tooltip
+            title={currentCalendarDay && `${currentCalendarDay.title || ''} (${uppercaseToWords(currentCalendarDay.kind)})`}
+        >
+            <div className="ant-picker-cell-inner" style={style}>
+                {current.date()}
+            </div>
+        </Tooltip>
+
     );
 }
