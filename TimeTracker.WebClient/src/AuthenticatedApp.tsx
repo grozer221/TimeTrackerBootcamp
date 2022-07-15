@@ -13,10 +13,6 @@ export const AuthenticatedApp = () => {
     // @ts-ignore
     const popup = location.state && location.state.popup;
 
-    useEffect(() => {
-        navigate(-1)
-    }, [])
-
     return (
         <AppLayout>
             <Routes location={popup || location}>

@@ -12,12 +12,15 @@ import {
     CALENDAR_DAYS_CREATE_MUTATION,
     CALENDAR_DAYS_CREATE_RANGE_MUTATION,
     CALENDAR_DAYS_REMOVE_MUTATION,
+    CALENDAR_DAYS_REMOVE_RANGE_MUTATION,
     CALENDAR_DAYS_UPDATE_MUTATION,
     CalendarDaysCreateData,
     CalendarDaysCreateRangeData,
     CalendarDaysCreateRangeVars,
     CalendarDaysCreateVars,
     CalendarDaysRemoveData,
+    CalendarDaysRemoveRangeData,
+    CalendarDaysRemoveRangeVars,
     CalendarDaysRemoveVars,
     CalendarDaysUpdateData,
     CalendarDaysUpdateVars
@@ -32,9 +35,8 @@ export const calendarDaysGetEpic: Epic<ReturnType<typeof calendarDaysActions.get
             from(client.query<CalendarDaysGetData, CalendarDaysGetVars>({
                 query: CALENDAR_DAYS_GET_QUERY,
             })).pipe(
-                map(response => response.errors?.length
-                    ? response.errors.map(error => notificationsActions.addError(error.message))
-                    : calendarDaysActions.addCalendarDays(response.data.calendarDays.get))
+                map(response => calendarDaysActions.addCalendarDays(response.data.calendarDays.get)),
+                catchError(error => of(notificationsActions.addError(error.message))),
             )
         )
     );
@@ -45,11 +47,15 @@ export const calendarDaysCreateEpic: Epic<ReturnType<typeof calendarDaysActions.
         mergeMap(action =>
             from(client.mutate<CalendarDaysCreateData, CalendarDaysCreateVars>({
                 mutation: CALENDAR_DAYS_CREATE_MUTATION,
-                variables: {calendarDaysCreateInputType: action.payload},
+                variables: {
+                    calendarDaysCreateInputType: action.payload.calendarDaysCreateInputType,
+                    override: action.payload.override,
+                },
             })).pipe(
                 mergeMap(response =>
                     response.data
                         ? [
+                            calendarDaysActions.removeCalendarDayByDates([response.data.calendarDays.create.date]),
                             calendarDaysActions.addCalendarDays([response.data.calendarDays.create]),
                             navigateActions.navigate(-1),
                         ]
@@ -68,11 +74,15 @@ export const calendarDaysCreateRangeEpic: Epic<ReturnType<typeof calendarDaysAct
         mergeMap(action =>
             from(client.mutate<CalendarDaysCreateRangeData, CalendarDaysCreateRangeVars>({
                 mutation: CALENDAR_DAYS_CREATE_RANGE_MUTATION,
-                variables: {calendarDaysCreateRangeInputType: action.payload},
+                variables: {
+                    calendarDaysCreateRangeInputType: action.payload.calendarDaysCreateRangeInputType,
+                    override: action.payload.override,
+                },
             })).pipe(
                 mergeMap(response =>
                     response.data
                         ? [
+                            calendarDaysActions.removeCalendarDayByDates(response.data.calendarDays.createRange.map(day => day.date)),
                             calendarDaysActions.addCalendarDays(response.data.calendarDays.createRange),
                             navigateActions.navigate(-1),
                         ]
@@ -131,5 +141,41 @@ export const calendarDaysRemoveEpic: Epic<ReturnType<typeof calendarDaysActions.
         )
     );
 
-// @ts-ignore
-export const calendarDaysEpics = combineEpics(calendarDaysGetEpic, calendarDaysCreateEpic, calendarDaysCreateRangeEpic, calendarDaysUpdateEpic, calendarDaysRemoveEpic)
+export const calendarDaysRemoveRangeEpic: Epic<ReturnType<typeof calendarDaysActions.removeRangeAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType('CALENDAR_DAYS_REMOVE_RANGE_ASYNC'),
+        mergeMap(action =>
+            from(client.mutate<CalendarDaysRemoveRangeData, CalendarDaysRemoveRangeVars>({
+                mutation: CALENDAR_DAYS_REMOVE_RANGE_MUTATION,
+                variables: {
+                    calendarDaysRemoveRangeInputType: {
+                        from: action.payload.from,
+                        to: action.payload.to,
+                        daysOfWeek: action.payload.daysOfWeek,
+                    }
+                },
+            })).pipe(
+                mergeMap(response =>
+                    response.data
+                        ? [
+                            calendarDaysActions.removeCalendarDayByDates(response.data.calendarDays.removeRange.map(d => d.date)),
+                            navigateActions.navigate(-1),
+                        ]
+                        : [notificationsActions.addError('Response is empty')]
+                ),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(calendarDaysActions.setLoadingRemove(true)),
+                endWith(calendarDaysActions.setLoadingRemove(false)),
+            )
+        )
+    );
+
+export const calendarDaysEpics = combineEpics(
+    calendarDaysGetEpic,
+    // @ts-ignore
+    calendarDaysCreateEpic,
+    calendarDaysCreateRangeEpic,
+    calendarDaysUpdateEpic,
+    calendarDaysRemoveEpic,
+    calendarDaysRemoveRangeEpic
+)

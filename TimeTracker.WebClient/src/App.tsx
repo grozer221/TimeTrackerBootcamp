@@ -7,16 +7,21 @@ import {RootState} from "./store/store";
 import {AuthenticatedApp} from './AuthenticatedApp';
 import {Notifications} from "./components/Notifications/Notifications";
 import {NavigateTo} from "./components/NavigateTo/NavigateTo";
+import {Loading} from "./components/Loading/Loading";
 import 'antd/dist/antd.css';
 import './App.css';
 
 export const App = () => {
+    const initialised = useSelector((state: RootState) => state.app.initialised)
     const isAuth = useSelector((state: RootState) => state.auth.isAuth)
     const dispatch = useDispatch()
 
     useEffect(() => {
         dispatch(authActions.meAsync())
     }, [])
+
+    if (!initialised)
+        return <Loading/>
 
     return (
         <>

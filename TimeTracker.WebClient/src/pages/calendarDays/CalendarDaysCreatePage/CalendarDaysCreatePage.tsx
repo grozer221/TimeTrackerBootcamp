@@ -1,4 +1,4 @@
-import {DatePicker, Form, InputNumber, Modal, Select, Tabs, Typography} from 'antd';
+import {Checkbox, DatePicker, Form, InputNumber, Modal, Select, Tabs, Typography} from 'antd';
 import React, {useState} from 'react';
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useForm} from "antd/es/form/Form";
@@ -11,8 +11,12 @@ import {DayKind} from "../../../graphQL/enums/DayKind";
 import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
 import {uppercaseToWords} from "../../../utils/stringUtils";
 import {dateRender} from "../../../convertors/dateRender";
+import {
+    CalendarDaysCreateInputType,
+    CalendarDaysCreateRangeInputType
+} from "../../../graphQL/modules/calendarDays/calendarDays.mutations";
 
-const { Title } = Typography;
+const {Title} = Typography;
 const {TabPane} = Tabs;
 const {RangePicker} = DatePicker;
 
@@ -31,36 +35,41 @@ export const CalendarDaysCreatePage = () => {
     const onFinish = async () => {
         try {
             await form.validateFields();
+            const override = form.getFieldValue('override');
+            const kind = form.getFieldValue('kind');
+            const percentageWorkHours = form.getFieldValue('percentageWorkHours')
             switch (tab) {
                 case 'One':
                     if (!form.getFieldValue('date')) {
                         form.setFields([{name: 'date', errors: ['Date is required']}])
                         break
                     }
-                    dispatch(calendarDaysActions.createAsync({
+                    const calendarDaysCreateInputType: CalendarDaysCreateInputType = {
                         date: (form.getFieldValue('date') as Moment).format('YYYY-MM-DD'),
-                        kind: form.getFieldValue('kind'),
-                        percentageWorkHours: form.getFieldValue('percentageWorkHours'),
-                    }))
+                        kind,
+                        percentageWorkHours,
+                    }
+                    dispatch(calendarDaysActions.createAsync(calendarDaysCreateInputType, override))
                     break;
                 case 'Range':
                     if (!form.getFieldValue('fromAndTo')) {
                         form.setFields([{name: 'fromAndTo', errors: ['From and to is required']}])
                         break
                     }
-                    if (!form.getFieldValue('dayOfWeeks')) {
-                        form.setFields([{name: 'dayOfWeeks', errors: ['Day of weeks is required']}])
+                    if (!form.getFieldValue('daysOfWeek')) {
+                        form.setFields([{name: 'daysOfWeek', errors: ['Day of weeks is required']}])
                         break
                     }
                     const fromAndTo = form.getFieldValue('fromAndTo') as Moment[];
-                    const dayOfWeeks = form.getFieldValue('dayOfWeeks') as DayOfWeek[];
-                    dispatch(calendarDaysActions.createRangeAsync({
+                    const daysOfWeek = form.getFieldValue('daysOfWeek') as DayOfWeek[];
+                    const calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType = {
                         from: fromAndTo[0].format('YYYY-MM-DD'),
                         to: fromAndTo[1].format('YYYY-MM-DD'),
-                        dayOfWeeks: dayOfWeeks,
-                        kind: form.getFieldValue('kind'),
-                        percentageWorkHours: form.getFieldValue('percentageWorkHours'),
-                    }))
+                        daysOfWeek: daysOfWeek,
+                        kind,
+                        percentageWorkHours,
+                    }
+                    dispatch(calendarDaysActions.createRangeAsync(calendarDaysCreateRangeInputType, override))
                     break;
             }
         } catch (e) {
@@ -83,8 +92,10 @@ export const CalendarDaysCreatePage = () => {
                 onFinish={onFinish}
                 initialValues={{
                     date: date,
+                    daysOfWeek: Object.values(DayOfWeek),
                     kind: DayKind.DayOff,
                     percentageWorkHours: 0,
+                    override: false,
                 }}
             >
                 <Tabs defaultActiveKey={tab} onChange={tab => setTab(tab as Tab)}>
@@ -110,7 +121,7 @@ export const CalendarDaysCreatePage = () => {
                             />
                         </Form.Item>
                         <Form.Item
-                            name="dayOfWeeks"
+                            name="daysOfWeek"
                         >
                             <Select
                                 className={'w-100'}
@@ -144,6 +155,9 @@ export const CalendarDaysCreatePage = () => {
                     rules={[{required: true, message: 'Percentage work hours is required'}]}
                 >
                     <InputNumber type={'number'} className={'w-100'} min={0} max={100}/>
+                </Form.Item>
+                <Form.Item name="override" valuePropName="checked">
+                    <Checkbox>Override</Checkbox>
                 </Form.Item>
             </Form>
         </Modal>

@@ -1,5 +1,5 @@
-import React, {CSSProperties, useEffect, useState} from 'react';
-import {Calendar, Row} from "antd";
+import React, {useEffect, useState} from 'react';
+import {Calendar, Row, Space} from "antd";
 import moment, {Moment} from 'moment';
 import {useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
@@ -10,6 +10,7 @@ import {ButtonCreate} from "../../components/ButtonCreate/ButtonCreate";
 import {DayKind} from "../../graphQL/enums/DayKind";
 import {ButtonRemove} from "../../components/ButtonRemove/ButtonRemove";
 import {ButtonUpdate} from "../../components/ButtonUpdate/ButtonUpdate";
+import {uppercaseToWords} from "../../utils/stringUtils";
 
 export const CalendarPage = () => {
     const [value, setValue] = useState<Moment | undefined>();
@@ -46,13 +47,14 @@ export const CalendarPage = () => {
                 break;
         }
         return (
-            <div className={[s.day, dayKindClass].join(' ')} >
+            <div className={[s.day, dayKindClass].join(' ')}>
+                <div className={s.kind}>{currentCalendarDay && uppercaseToWords(currentCalendarDay.kind)}</div>
                 <Row align={'bottom'} className={s.buttons}>
                     {currentCalendarDay
-                        ? <>
+                        ? <Space size={3}>
                             <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
                             <ButtonUpdate to={`days/update/${currentCalendarDay?.date}`} popup={location}/>
-                        </>
+                        </Space>
                         : <ButtonCreate to={`days/create?date=${current.format('YYYY-MM-DD')}`} popup={location}/>
                     }
                 </Row>
@@ -62,8 +64,10 @@ export const CalendarPage = () => {
 
     return (
         <>
-            <ButtonCreate to={'days/create'} popup={location}/>
-            <ButtonRemove to={'days/remove'} popup={location}/>
+            <Space size={3}>
+                <ButtonCreate to={'days/create'} popup={location}/>
+                <ButtonRemove to={'days/remove'} popup={location}/>
+            </Space>
             <Calendar
                 dateCellRender={dateCellRender}
                 onPanelChange={onPanelChange}

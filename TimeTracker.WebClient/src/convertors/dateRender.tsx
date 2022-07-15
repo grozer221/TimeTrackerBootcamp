@@ -9,14 +9,14 @@ export const dateRender = (current: Moment, calendarDays: CalendarDay[]) => {
     if (currentCalendarDay) {
         switch (currentCalendarDay.kind) {
             case DayKind.DayOff:
-                style.border = '1px solid lightskyblue';
+                style.border = '2px solid #dcdde1';
                 break;
             case DayKind.Holiday:
-                style.border = '1px solid red';
+                style.border = '2px solid #e84118';
                 style.borderRadius = '50%';
                 break;
             case DayKind.ShortDay:
-                style.border = '1px solid orange';
+                style.border = '2px solid #fbc531';
                 style.borderRadius = '50%';
                 break;
         }

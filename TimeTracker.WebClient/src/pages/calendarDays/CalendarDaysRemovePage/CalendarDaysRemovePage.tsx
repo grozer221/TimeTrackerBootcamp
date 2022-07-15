@@ -1,5 +1,5 @@
 import {DatePicker, Form, Modal, Select, Tabs} from 'antd';
-import React, {CSSProperties, useState} from 'react';
+import React, {useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "antd/es/form/Form";
 import moment, {Moment} from "moment";
@@ -7,7 +7,6 @@ import {LineOutlined, UnorderedListOutlined} from "@ant-design/icons";
 import {useDispatch, useSelector} from "react-redux";
 import {calendarDaysActions} from "../../../store/calendarDays/calendarDays.actions";
 import {RootState} from "../../../store/store";
-import {DayKind} from "../../../graphQL/enums/DayKind";
 import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
 import {uppercaseToWords} from "../../../utils/stringUtils";
 import {dateRender} from "../../../convertors/dateRender";
@@ -21,7 +20,7 @@ type Tab = 'One' | 'Range';
 export const CalendarDaysRemovePage = () => {
     const [tab, setTab] = useState<Tab>('One')
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
-    const loading = useSelector((s: RootState) => s.calendarDays.loadingCreate);
+    const loading = useSelector((s: RootState) => s.calendarDays.loadingRemove);
     const navigate = useNavigate();
     const [form] = useForm();
     const dispatch = useDispatch();
@@ -44,12 +43,13 @@ export const CalendarDaysRemovePage = () => {
                         form.setFields([{name: 'fromAndTo', errors: ['From and to is required']}])
                         break
                     }
-                    if (!form.getFieldValue('dayOfWeeks')) {
-                        form.setFields([{name: 'dayOfWeeks', errors: ['Day of weeks is required']}])
+                    if (!form.getFieldValue('daysOfWeek')) {
+                        form.setFields([{name: 'daysOfWeek', errors: ['Day of weeks is required']}])
                         break
                     }
                     const fromAndTo = form.getFieldValue('fromAndTo') as Moment[];
-                    const dayOfWeeks = form.getFieldValue('dayOfWeeks') as DayOfWeek[];
+                    const daysOfWeek = form.getFieldValue('daysOfWeek') as DayOfWeek[];
+                    dispatch(calendarDaysActions.removeRangeAsync(fromAndTo[0].format('YYYY-MM-DD'), fromAndTo[1].format('YYYY-MM-DD'), daysOfWeek));
                     break;
             }
         } catch (e) {
@@ -72,6 +72,7 @@ export const CalendarDaysRemovePage = () => {
                 onFinish={onFinish}
                 initialValues={{
                     date: date,
+                    daysOfWeek: Object.values(DayOfWeek),
                 }}
             >
                 <Tabs defaultActiveKey={tab} onChange={tab => setTab(tab as Tab)}>
@@ -97,7 +98,7 @@ export const CalendarDaysRemovePage = () => {
                             />
                         </Form.Item>
                         <Form.Item
-                            name="dayOfWeeks"
+                            name="daysOfWeek"
                         >
                             <Select
                                 className={'w-100'}

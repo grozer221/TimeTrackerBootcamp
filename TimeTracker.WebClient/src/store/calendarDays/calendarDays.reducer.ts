@@ -34,6 +34,8 @@ export const calendarDaysReducer: Reducer<InitialState, CalendarDayActionTypes> 
         case 'CALENDAR_DAYS_SET_LOADING_UPDATE':
             return {...state, loadingUpdate: action.payload};
 
+        case 'CALENDAR_DAYS_REMOVE_CALENDAR_DAY_BY_DATES':
+            return {...state, calendarDays: state.calendarDays.filter(d => !action.payload.includes(d.date))};
         case 'CALENDAR_DAYS_REMOVE_CALENDAR_DAY':
             return {...state, calendarDays: state.calendarDays.filter(d => d.id !== action.payload.id)};
         case 'CALENDAR_DAYS_SET_LOADING_REMOVE':

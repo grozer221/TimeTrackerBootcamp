@@ -1,4 +1,4 @@
-import { applyMiddleware, combineReducers, createStore } from 'redux';
+import {applyMiddleware, combineReducers, createStore} from 'redux';
 import {composeWithDevTools} from "redux-devtools-extension";
 import {authReducer} from "./auth/auth.reducer";
 import {combineEpics, createEpicMiddleware} from "redux-observable";
@@ -7,10 +7,12 @@ import {calendarDaysReducer} from "./calendarDays/calendarDays.reducer";
 import {calendarDaysEpics} from "./calendarDays/calendarDays.epics";
 import {notificationsReducer} from "./notifications/notifications.reducer";
 import {navigateReducer} from "./navigate/navigate.reducer";
+import {appReducer} from "./app/app.reducer";
 
 const epicMiddleware = createEpicMiddleware();
 
 export const store = createStore(combineReducers({
+    app: appReducer,
     auth: authReducer,
     calendarDays: calendarDaysReducer,
     notifications: notificationsReducer,

@@ -5,7 +5,10 @@ import {DayKind} from "../../enums/DayKind";
 import {DayOfWeek} from "../../enums/DayOfWeek";
 
 export type CalendarDaysCreateData = { calendarDays: { create: CalendarDay } }
-export type CalendarDaysCreateVars = { calendarDaysCreateInputType: CalendarDaysCreateInputType }
+export type CalendarDaysCreateVars = {
+    calendarDaysCreateInputType: CalendarDaysCreateInputType
+    override: boolean,
+}
 export type CalendarDaysCreateInputType = {
     date: string,
     kind: DayKind,
@@ -13,9 +16,9 @@ export type CalendarDaysCreateInputType = {
 }
 export const CALENDAR_DAYS_CREATE_MUTATION = gql`
     ${CALENDAR_DAY_FRAGMENT}
-    mutation CalendarDaysCreate($calendarDaysCreateInputType: CalendarDaysCreateInputType!) {
+    mutation CalendarDaysCreate($calendarDaysCreateInputType: CalendarDaysCreateInputType!, $override: Boolean!) {
         calendarDays {
-            create(calendarDaysCreateInputType: $calendarDaysCreateInputType){
+            create(calendarDaysCreateInputType: $calendarDaysCreateInputType, override: $override){
                 ...CalendarDayFragment
             }
         }
@@ -23,19 +26,22 @@ export const CALENDAR_DAYS_CREATE_MUTATION = gql`
 `;
 
 export type CalendarDaysCreateRangeData = { calendarDays: { createRange: CalendarDay[] } }
-export type CalendarDaysCreateRangeVars = { calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType }
+export type CalendarDaysCreateRangeVars = {
+    calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType,
+    override: boolean,
+}
 export type CalendarDaysCreateRangeInputType = {
     from: string,
     to: string,
-    dayOfWeeks: DayOfWeek[],
+    daysOfWeek: DayOfWeek[],
     kind: DayKind,
     percentageWorkHours: number,
 }
 export const CALENDAR_DAYS_CREATE_RANGE_MUTATION = gql`
     ${CALENDAR_DAY_FRAGMENT}
-    mutation CalendarDaysCreateRange($calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType!) {
+    mutation CalendarDaysCreateRange($calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType!, $override: Boolean!) {
         calendarDays {
-            createRange(calendarDaysCreateRangeInputType: $calendarDaysCreateRangeInputType){
+            createRange(calendarDaysCreateRangeInputType: $calendarDaysCreateRangeInputType, override: $override){
                 ...CalendarDayFragment
             }
         }
@@ -68,6 +74,24 @@ export const CALENDAR_DAYS_REMOVE_MUTATION = gql`
     mutation CalendarDaysRemove($date: Date!){
         calendarDays{
             remove(date: $date){
+                ...CalendarDayFragment
+            }
+        }
+    }
+`;
+
+export type CalendarDaysRemoveRangeData = { calendarDays: { removeRange: CalendarDay[] } }
+export type CalendarDaysRemoveRangeVars = { calendarDaysRemoveRangeInputType: CalendarDaysRemoveRangeInputType }
+export type CalendarDaysRemoveRangeInputType = {
+    from: string,
+    to: string,
+    daysOfWeek: DayOfWeek[],
+}
+export const CALENDAR_DAYS_REMOVE_RANGE_MUTATION = gql`
+    ${CALENDAR_DAY_FRAGMENT}
+    mutation CalendarDaysRemoveRange($calendarDaysRemoveRangeInputType: CalendarDaysRemoveRangeInputType!){
+        calendarDays{
+            removeRange(calendarDaysRemoveRangeInputType: $calendarDaysRemoveRangeInputType){
                 ...CalendarDayFragment
             }
         }

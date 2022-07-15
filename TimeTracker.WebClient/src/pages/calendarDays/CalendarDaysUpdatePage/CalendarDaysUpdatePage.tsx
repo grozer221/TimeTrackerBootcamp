@@ -13,7 +13,7 @@ import Title from 'antd/lib/typography/Title';
 
 export const CalendarDaysUpdatePage = () => {
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
-    const loading = useSelector((s: RootState) => s.calendarDays.loadingCreate);
+    const loading = useSelector((s: RootState) => s.calendarDays.loadingUpdate);
     const params = useParams();
     const navigate = useNavigate();
     const [form] = useForm();
