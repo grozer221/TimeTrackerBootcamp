@@ -11,7 +11,7 @@ export const authActions = {
         type: 'ME_ASYNC',
         payload: {},
     } as const),
-    setAuthedUser: (user: User | null, token: string | null) => ({
+    setAuthedUser: (user?: User | null, token?: string | null) => ({
         type: 'SET_AUTHED_USER',
         payload: {user, token},
     } as const),

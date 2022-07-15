@@ -65,8 +65,8 @@ namespace TimeTracker.MsSql.Repositories
             model.CreatedAt = dateTimeNow;
             model.UpdatedAt = dateTimeNow;
             string query = $@"insert into CalendarDays 
-                            ( Id,  Date,  Kind,  PercentageWorkHours,  CreatedAt,  UpdatedAt) values 
-                            (@Id, @Date, @Kind, @PercentageWorkHours, @CreatedAt, @UpdatedAt)";
+                            ( Id,  Title,  Date,  Kind,  PercentageWorkHours,  CreatedAt,  UpdatedAt) values 
+                            (@Id, @Title, @Date, @Kind, @PercentageWorkHours, @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, model);
@@ -81,7 +81,8 @@ namespace TimeTracker.MsSql.Repositories
                 throw new Exception("Calendar day not found");
             model.UpdatedAt = DateTime.Now;
             string query = @"update CalendarDays
-                            SET Date = @Date, Kind = @Kind, PercentageWorkHours = @PercentageWorkHours
+                            SET Title = @Title, Date = @Date, Kind = @Kind, 
+                                PercentageWorkHours = @PercentageWorkHours, UpdatedAt = @UpdatedAt
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {
@@ -99,6 +100,19 @@ namespace TimeTracker.MsSql.Repositories
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new { id });
+                return previousModel;
+            }
+        }
+
+        public async Task<CalendarDayModel> RemoveAsync(DateTime date)
+        {
+            var previousModel = await GetByDateAsync(date);
+            if (previousModel == null)
+                throw new Exception("Calendar day not found");
+            string query = "delete from CalendarDays where Date = @date";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, new { date });
                 return previousModel;
             }
         }

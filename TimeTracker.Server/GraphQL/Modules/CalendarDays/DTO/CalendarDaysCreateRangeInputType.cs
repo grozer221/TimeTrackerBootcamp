@@ -9,24 +9,32 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
     public class CalendarDaysCreateRangeInput
     {
+        public string? Title { get; set; }
         public DateTime From { get; set; }
         public DateTime To { get; set; }
-        public IEnumerable<DayOfWeek> DayOfWeeks { get; set; }
+        public IEnumerable<DayOfWeek> DaysOfWeek { get; set; }
         public DayKind Kind { get; set; }
         public int PercentageWorkHours { get; set; }
 
-        public async Task<IEnumerable<CalendarDayModel>> ToListAsync(ICalendarDayRepository calendarDayRepository)
+        public async Task<IEnumerable<CalendarDayModel>> ToListAsync(ICalendarDayRepository calendarDayRepository, bool overrideDay)
         {
             var list = new List<CalendarDayModel>();
             var fromCopy = From;
             while (DateTime.Compare(fromCopy, To) < 1)
             {
-                if (DayOfWeeks.Contains(fromCopy.DayOfWeek))
+                if (DaysOfWeek.Contains(fromCopy.DayOfWeek))
                 {
+                   
                     if (await calendarDayRepository.GetByDateAsync(fromCopy) != null)
-                        throw new Exception($"Calendar day for {fromCopy.ToString("yyyy-MM-dd")} already exists");
+                    {
+                        if (overrideDay)
+                            await calendarDayRepository.RemoveAsync(fromCopy);
+                        else
+                            throw new Exception($"Calendar day for {fromCopy.ToString("yyyy-MM-dd")} already exists");
+                    }
                     list.Add(new CalendarDayModel
                     {
+                        Title = this.Title,
                         Date = fromCopy,
                         Kind = this.Kind,
                         PercentageWorkHours = this.PercentageWorkHours,
@@ -42,6 +50,10 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
     {
         public CalendarDaysCreateRangeInputType()
         {
+            Field<StringGraphType, string?>()
+                 .Name("Title")
+                 .Resolve(context => context.Source.Title);
+            
             Field<NonNullGraphType<DateGraphType>, DateTime>()
                  .Name("From")
                  .Resolve(context => context.Source.From);
@@ -51,8 +63,8 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                  .Resolve(context => context.Source.To);
 
             Field<NonNullGraphType<ListGraphType<DayOfWeekType>>, IEnumerable<DayOfWeek>>()
-                 .Name("DayOfWeeks")
-                 .Resolve(context => context.Source.DayOfWeeks);
+                 .Name("DaysOfWeek")
+                 .Resolve(context => context.Source.DaysOfWeek);
 
             Field<NonNullGraphType<DayKindType>, DayKind>()
                  .Name("Kind")

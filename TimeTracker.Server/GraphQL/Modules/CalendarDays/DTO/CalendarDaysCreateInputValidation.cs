@@ -6,13 +6,18 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
     public class CalendarDaysCreateInputValidation : AbstractValidator<CalendarDaysCreateInput>
     {
-        public CalendarDaysCreateInputValidation(ICalendarDayRepository calendarDayRepository)
+        public CalendarDaysCreateInputValidation(ICalendarDayRepository calendarDayRepository, bool overrideDay)
         {
+            RuleFor(l => l.Title);
+
             RuleFor(l => l.Date)
                 .NotNull()
                 .MustAsync(async (input, date, cancellationToken) =>
                 {
-                    return await calendarDayRepository.GetByDateAsync(date) == null;
+                    var exists = await calendarDayRepository.GetByDateAsync(date) != null;
+                    if (overrideDay && exists)
+                        await calendarDayRepository.RemoveAsync(date);
+                    return !exists;
                 }).WithMessage(input => $"Calendar day for {input.Date.ToString("yyyy-MM-dd")} already exists");
             
             RuleFor(l => l.Kind)

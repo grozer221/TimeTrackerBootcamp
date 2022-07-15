@@ -1,24 +1,24 @@
 import React, {FC} from 'react';
-import {Link} from 'react-router-dom';
+import {useNavigate, useParams} from 'react-router-dom';
 import {Button, Result} from 'antd';
 
 type Props = {
     statusCode?: number,
 }
 
-export const Error: FC<Props> = ({statusCode}) => {
-    switch (statusCode) {
+export const Error: FC<Props> = ({statusCode = 404}) => {
+    const navigate = useNavigate();
+    const params = useParams();
+    const paramsStatusCode = params.statusCode;
+
+    switch (paramsStatusCode || statusCode) {
         case 403:
             return (
                 <Result
                     status="403"
                     title="403"
-                    subTitle="Доступ заборонено."
-                    extra={
-                        <Link to={'/'}>
-                            <Button type="primary">На гловну</Button>
-                        </Link>
-                    }
+                    subTitle="You do not have permission."
+                    extra={<Button type="primary" onClick={() => navigate(-1)}>Back</Button>}
                 />
             );
         default:
@@ -26,14 +26,9 @@ export const Error: FC<Props> = ({statusCode}) => {
                 <Result
                     status="404"
                     title="404"
-                    subTitle="Сторінки не існує."
-                    extra={
-                        <Link to={'/'}>
-                            <Button type="primary">На гловну</Button>
-                        </Link>
-                    }
+                    subTitle="Page not found."
+                    extra={<Button type="primary" onClick={() => navigate(-1)}>Back</Button>}
                 />
             );
     }
-
 };

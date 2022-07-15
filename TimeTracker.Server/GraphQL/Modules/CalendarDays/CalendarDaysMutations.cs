@@ -16,12 +16,14 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
             Field<NonNullGraphType<CalendarDayType>, CalendarDayModel>()
                .Name("Create")
                .Argument<NonNullGraphType<CalendarDaysCreateInputType>, CalendarDaysCreateInput>("CalendarDaysCreateInputType", "Argument for create calendar day")
+               .Argument<NonNullGraphType<BooleanGraphType>, bool>("Override", "Argument for create calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for create calendar day");
                    var calendarDaysCreateInput = context.GetArgument<CalendarDaysCreateInput>("CalendarDaysCreateInputType");
-                   await new CalendarDaysCreateInputValidation(calendarDayRepository).ValidateAndThrowExceptionsAsync(calendarDaysCreateInput);
+                   var overrideDay = context.GetArgument<bool>("Override");
+                   await new CalendarDaysCreateInputValidation(calendarDayRepository, overrideDay).ValidateAndThrowExceptionsAsync(calendarDaysCreateInput);
                    var calendarDay = calendarDaysCreateInput.ToModel();
                    return await calendarDayRepository.CreateAsync(calendarDay);
                })
@@ -29,14 +31,16 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
 
             Field<NonNullGraphType<ListGraphType<CalendarDayType>>, IEnumerable<CalendarDayModel>>()
                .Name("CreateRange")
-               .Argument<NonNullGraphType<CalendarDaysCreateRangeInputType>, CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInput", "Argument for create calendar day")
+               .Argument<NonNullGraphType<CalendarDaysCreateRangeInputType>, CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInputType", "Argument for create calendar day")
+               .Argument<NonNullGraphType<BooleanGraphType>, bool>("Override", "Argument for create calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for create calendar day");
-                   var calendarDaysCreateRangeInput = context.GetArgument<CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInput");
+                   var calendarDaysCreateRangeInput = context.GetArgument<CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInputType");
+                   var overrideDay = context.GetArgument<bool>("Override");
                    new CalendarDaysCreateRangeInputValidation().ValidateAndThrowExceptions(calendarDaysCreateRangeInput);
-                   var calendarDays = await calendarDaysCreateRangeInput.ToListAsync(calendarDayRepository);
+                   var calendarDays = await calendarDaysCreateRangeInput.ToListAsync(calendarDayRepository, overrideDay);
                    var createdCalendarDays = new List<CalendarDayModel>();
                    foreach (var calendarDay in calendarDays)
                    {
@@ -52,7 +56,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                .Argument<NonNullGraphType<CalendarDaysUpdateInputType>, CalendarDaysUpdateInput>("CalendarDaysUpdateInputType", "Argument for update calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for update calendar day");
                    var calendarDaysUpdateInput = context.GetArgument<CalendarDaysUpdateInput>("CalendarDaysUpdateInputType");
                    new CalendarDaysUpdateInputValidation().ValidateAndThrowExceptions(calendarDaysUpdateInput);
@@ -63,13 +67,33 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
 
             Field<NonNullGraphType<CalendarDayType>, CalendarDayModel>()
                .Name("Remove")
-               .Argument<NonNullGraphType<GuidGraphType>, Guid>("Id", "Argument for remove calendar day")
+               .Argument<NonNullGraphType<DateGraphType>, DateTime>("Date", "Argument for remove calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for remove calendar day");
-                   var id = context.GetArgument<Guid>("Id");
-                   return await calendarDayRepository.RemoveAsync(id);
+                   var date = context.GetArgument<DateTime>("Date");
+                   return await calendarDayRepository.RemoveAsync(date);
+               })
+               .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<ListGraphType<CalendarDayType>>, IEnumerable<CalendarDayModel>>()
+               .Name("RemoveRange")
+               .Argument<NonNullGraphType<CalendarDaysRemoveRangeInputType>, CalendarDaysRemoveRangeInput>("CalendarDaysRemoveRangeInputType", "Argument for remove calendar day")
+               .ResolveAsync(async context =>
+               {
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
+                       throw new ExecutionError("You do not have permissions for remove calendar day");
+                   var calendarDaysRemoveRangeInput = context.GetArgument<CalendarDaysRemoveRangeInput>("CalendarDaysRemoveRangeInputType");
+                   new CalendarDaysRemoveRangeInputValidation().ValidateAndThrowExceptions(calendarDaysRemoveRangeInput);
+                   var dates = await calendarDaysRemoveRangeInput.ToDatesListAsync(calendarDayRepository);
+                   var removedCalendarDays = new List<CalendarDayModel>();
+                   foreach (var date in dates)
+                   {
+                       var removedCalendarDay = await calendarDayRepository.RemoveAsync(date);
+                       removedCalendarDays.Add(removedCalendarDay);
+                   }
+                   return removedCalendarDays;
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
         }

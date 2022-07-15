@@ -4,7 +4,7 @@
     box-sizing: border-box;
 }
 
-.centered{
+.centered {
     display: flex;
     justify-content: center;
     align-items: center;
@@ -12,8 +12,15 @@
     width: 100%;
 }
 
-.centered > .authForm{
+.centered > .authForm {
     height: 100px;
     width: 250px;
 }
 
+.w-100 {
+    width: 100%;
+}
+
+.invisible {
+    display: none;
+}

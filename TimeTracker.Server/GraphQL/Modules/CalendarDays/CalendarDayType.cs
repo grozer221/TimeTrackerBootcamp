@@ -13,6 +13,10 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
             Field<NonNullGraphType<DateGraphType>, DateTime>()
                .Name("Date")
                .Resolve(context => context.Source.Date);
+            
+            Field<StringGraphType, string?>()
+               .Name("Title")
+               .Resolve(context => context.Source.Title);
 
             Field<NonNullGraphType<DayKindType>, DayKind>()
                .Name("Kind")

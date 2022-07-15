@@ -19,12 +19,12 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                     return result < 1;
                 }).WithMessage("From must be greater than To");
 
-            RuleFor(l => l.DayOfWeeks)
+            RuleFor(l => l.DaysOfWeek)
                 .NotNull()
                 .Must((input, dayOfWeeks) =>
                 {
                     return dayOfWeeks.Count() > 0;
-                }).WithMessage("You must specify day of weeks");
+                }).WithMessage("You must specify days of week");
 
             RuleFor(l => l.Kind)
                 .NotNull()

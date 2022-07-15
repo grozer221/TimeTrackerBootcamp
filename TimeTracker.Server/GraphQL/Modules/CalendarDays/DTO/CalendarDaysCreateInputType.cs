@@ -8,6 +8,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
     public class CalendarDaysCreateInput : IModelable<CalendarDayModel>
     {
+        public string? Title { get; set; }
         public DateTime Date { get; set; }
         public DayKind Kind { get; set; }
         public int PercentageWorkHours { get; set; }
@@ -16,6 +17,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
         {
             return new CalendarDayModel
             {
+                Title = this.Title,
                 Date = this.Date,
                 Kind = this.Kind,
                 PercentageWorkHours = this.PercentageWorkHours,
@@ -27,6 +29,10 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
     {
         public CalendarDaysCreateInputType()
         {
+            Field<StringGraphType, string?>()
+                 .Name("Title")
+                 .Resolve(context => context.Source.Title);
+            
             Field<NonNullGraphType<DateGraphType>, DateTime>()
                  .Name("Date")
                  .Resolve(context => context.Source.Date);
