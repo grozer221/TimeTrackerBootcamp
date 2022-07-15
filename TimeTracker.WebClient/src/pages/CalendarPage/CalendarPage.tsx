@@ -71,8 +71,8 @@ export const CalendarPage = () => {
                         <Row align={'bottom'} className={s.buttons}>
                             {currentCalendarDay
                                 ? <Space size={3}>
-                                    <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
                                     <ButtonUpdate to={`days/update/${currentCalendarDay?.date}`} popup={location}/>
+                                    <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
                                 </Space>
                                 :
                                 <ButtonCreate to={`days/create?date=${current.format('YYYY-MM-DD')}`} popup={location}/>
