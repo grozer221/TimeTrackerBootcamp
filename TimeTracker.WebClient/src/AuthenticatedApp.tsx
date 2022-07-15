@@ -4,12 +4,14 @@ import {AppLayout} from "./components/AppLayout/AppLayout";
 import {Error} from "./components/Error/Error";
 import {CalendarPage} from "./pages/CalendarPage/CalendarPage";
 import {CalendarDaysCreatePage} from "./pages/calendarDays/CalendarDaysCreatePage/CalendarDaysCreatePage";
+import {CalendarDaysRemovePage} from "./pages/calendarDays/CalendarDaysRemovePage/CalendarDaysRemovePage";
+import {CalendarDaysUpdatePage} from "./pages/calendarDays/CalendarDaysUpdatePage/CalendarDaysUpdatePage";
 
 export const AuthenticatedApp = () => {
     const navigate = useNavigate()
     const location = useLocation();
     // @ts-ignore
-    const background = location.state && location.state.background;
+    const popup = location.state && location.state.popup;
 
     useEffect(() => {
         navigate(-1)
@@ -17,7 +19,7 @@ export const AuthenticatedApp = () => {
 
     return (
         <AppLayout>
-            <Routes location={background || location}>
+            <Routes location={popup || location}>
                 <Route path={'calendar/*'}>
                     <Route index element={<CalendarPage/>}/>
                     <Route path={'days/*'}>
@@ -27,11 +29,14 @@ export const AuthenticatedApp = () => {
                 </Route>
                 <Route path={'*'} element={<Error/>}/>
             </Routes>
-            {background && (
+            {popup && (
                 <Routes>
                     <Route path={'calendar/*'}>
                         <Route path={'days/*'}>
                             <Route path="create" element={<CalendarDaysCreatePage/>}/>
+                            <Route path="update/:date" element={<CalendarDaysUpdatePage/>}/>
+                            <Route path="remove" element={<CalendarDaysRemovePage/>}/>
+                            <Route path="remove/:date" element={<CalendarDaysRemovePage/>}/>
                         </Route>
                     </Route>
                 </Routes>

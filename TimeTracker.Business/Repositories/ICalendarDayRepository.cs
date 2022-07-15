@@ -7,5 +7,6 @@ namespace TimeTracker.Business.Repositories
     {
         Task<IEnumerable<CalendarDayModel>> GetAsync(DateTime from, DateTime to);
         Task<CalendarDayModel> GetByDateAsync(DateTime date);
+        Task<CalendarDayModel> RemoveAsync(DateTime date);
     }
 }

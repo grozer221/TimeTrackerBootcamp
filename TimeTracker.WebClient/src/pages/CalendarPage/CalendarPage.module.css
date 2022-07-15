@@ -1,18 +1,25 @@
 .day {
     height: 100%;
-    width: 100%;
-    border-radius: 2px;
-    opacity: 50%;
+    border-radius: 3px;
+}
+.day > .buttons {
+    visibility: hidden;
+    opacity: 0;
+    transition: visibility 0s, opacity 0.5s linear;
+}
+.day:hover > .buttons {
+    visibility: visible;
+    opacity: 1;
 }
 
 .dayOff {
-    background-color: lightskyblue;
+    background-color: #dcdde1;
 }
 
 .shortDay {
-    background-color: orange;
+    background-color: #fbc531;
 }
 
 .holiday {
-    background-color: red;
+    background-color: #e84118;
 }

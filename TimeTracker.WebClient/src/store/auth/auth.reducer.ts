@@ -7,7 +7,7 @@ type InitialState = {
     isAuth: boolean
 }
 
-const initialState = {
+const initialState: InitialState = {
     authedUser: null,
     isAuth: false
 }

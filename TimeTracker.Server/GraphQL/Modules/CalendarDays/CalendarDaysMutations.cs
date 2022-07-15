@@ -29,12 +29,12 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
 
             Field<NonNullGraphType<ListGraphType<CalendarDayType>>, IEnumerable<CalendarDayModel>>()
                .Name("CreateRange")
-               .Argument<NonNullGraphType<CalendarDaysCreateRangeInputType>, CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInput", "Argument for create calendar day")
+               .Argument<NonNullGraphType<CalendarDaysCreateRangeInputType>, CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInputType", "Argument for create calendar day")
                .ResolveAsync(async context =>
                {
                    if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for create calendar day");
-                   var calendarDaysCreateRangeInput = context.GetArgument<CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInput");
+                   var calendarDaysCreateRangeInput = context.GetArgument<CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInputType");
                    new CalendarDaysCreateRangeInputValidation().ValidateAndThrowExceptions(calendarDaysCreateRangeInput);
                    var calendarDays = await calendarDaysCreateRangeInput.ToListAsync(calendarDayRepository);
                    var createdCalendarDays = new List<CalendarDayModel>();
@@ -63,13 +63,13 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
 
             Field<NonNullGraphType<CalendarDayType>, CalendarDayModel>()
                .Name("Remove")
-               .Argument<NonNullGraphType<GuidGraphType>, Guid>("Id", "Argument for remove calendar day")
+               .Argument<NonNullGraphType<DateGraphType>, DateTime>("Date", "Argument for remove calendar day")
                .ResolveAsync(async context =>
                {
                    if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for remove calendar day");
-                   var id = context.GetArgument<Guid>("Id");
-                   return await calendarDayRepository.RemoveAsync(id);
+                   var date = context.GetArgument<DateTime>("Date");
+                   return await calendarDayRepository.RemoveAsync(date);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
         }

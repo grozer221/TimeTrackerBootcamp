@@ -5,12 +5,16 @@ import {combineEpics, createEpicMiddleware} from "redux-observable";
 import {authEpics} from "./auth/auth.epics";
 import {calendarDaysReducer} from "./calendarDays/calendarDays.reducer";
 import {calendarDaysEpics} from "./calendarDays/calendarDays.epics";
+import {notificationsReducer} from "./notifications/notifications.reducer";
+import {navigateReducer} from "./navigate/navigate.reducer";
 
 const epicMiddleware = createEpicMiddleware();
 
 export const store = createStore(combineReducers({
     auth: authReducer,
     calendarDays: calendarDaysReducer,
+    notifications: notificationsReducer,
+    navigate: navigateReducer,
 }), composeWithDevTools(applyMiddleware(epicMiddleware)));
 
 // @ts-ignore

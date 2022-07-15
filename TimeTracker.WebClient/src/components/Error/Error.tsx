@@ -13,10 +13,10 @@ export const Error: FC<Props> = ({statusCode}) => {
                 <Result
                     status="403"
                     title="403"
-                    subTitle="Доступ заборонено."
+                    subTitle="You do not have permission."
                     extra={
                         <Link to={'/'}>
-                            <Button type="primary">На гловну</Button>
+                            <Button type="primary">Home</Button>
                         </Link>
                     }
                 />
@@ -26,14 +26,13 @@ export const Error: FC<Props> = ({statusCode}) => {
                 <Result
                     status="404"
                     title="404"
-                    subTitle="Сторінки не існує."
+                    subTitle="Page not found"
                     extra={
                         <Link to={'/'}>
-                            <Button type="primary">На гловну</Button>
+                            <Button type="primary">Home</Button>
                         </Link>
                     }
                 />
             );
     }
-
 };
