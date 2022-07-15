@@ -1,5 +1,5 @@
 import {Checkbox, DatePicker, Form, InputNumber, Modal, Select, Tabs, Typography} from 'antd';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useForm} from "antd/es/form/Form";
 import moment, {Moment} from "moment";
@@ -16,6 +16,8 @@ import {
     CalendarDaysCreateRangeInputType
 } from "../../../graphQL/modules/calendarDays/calendarDays.mutations";
 import Input from "antd/es/input/Input";
+import {isAdministratorOrHavePermissions} from "../../../permissions/permissions";
+import {Permission} from "../../../graphQL/enums/Permission";
 
 const {Title} = Typography;
 const {TabPane} = Tabs;
@@ -25,6 +27,7 @@ type Tab = 'One' | 'Range';
 
 export const CalendarDaysCreatePage = () => {
     const [tab, setTab] = useState<Tab>('One')
+    const isAuth = useSelector((s: RootState) => s.auth.isAuth);
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
     const loading = useSelector((s: RootState) => s.calendarDays.loadingCreate);
     const [searchParams] = useSearchParams();
@@ -32,6 +35,11 @@ export const CalendarDaysCreatePage = () => {
     const [form] = useForm();
     const dispatch = useDispatch();
     const date = searchParams.get('date') && moment(searchParams.get('date'));
+
+    useEffect(() => {
+        if (!isAdministratorOrHavePermissions([Permission.UpdateCalendar]))
+            navigate('/error/403')
+    }, [isAuth])
 
     const onFinish = async () => {
         try {
@@ -162,7 +170,8 @@ export const CalendarDaysCreatePage = () => {
                     name="percentageWorkHours"
                     rules={[{required: true, message: 'Percentage work hours is required'}]}
                 >
-                    <InputNumber placeholder={'Percentage work hours'} type={'number'} className={'w-100'} min={0} max={100}/>
+                    <InputNumber placeholder={'Percentage work hours'} type={'number'} className={'w-100'} min={0}
+                                 max={100}/>
                 </Form.Item>
                 <Form.Item name="override" valuePropName="checked">
                     <Checkbox>Override</Checkbox>

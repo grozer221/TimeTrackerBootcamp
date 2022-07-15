@@ -19,7 +19,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                .Argument<NonNullGraphType<BooleanGraphType>, bool>("Override", "Argument for create calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for create calendar day");
                    var calendarDaysCreateInput = context.GetArgument<CalendarDaysCreateInput>("CalendarDaysCreateInputType");
                    var overrideDay = context.GetArgument<bool>("Override");
@@ -35,7 +35,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                .Argument<NonNullGraphType<BooleanGraphType>, bool>("Override", "Argument for create calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for create calendar day");
                    var calendarDaysCreateRangeInput = context.GetArgument<CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInputType");
                    var overrideDay = context.GetArgument<bool>("Override");
@@ -56,7 +56,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                .Argument<NonNullGraphType<CalendarDaysUpdateInputType>, CalendarDaysUpdateInput>("CalendarDaysUpdateInputType", "Argument for update calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for update calendar day");
                    var calendarDaysUpdateInput = context.GetArgument<CalendarDaysUpdateInput>("CalendarDaysUpdateInputType");
                    new CalendarDaysUpdateInputValidation().ValidateAndThrowExceptions(calendarDaysUpdateInput);
@@ -70,7 +70,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                .Argument<NonNullGraphType<DateGraphType>, DateTime>("Date", "Argument for remove calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for remove calendar day");
                    var date = context.GetArgument<DateTime>("Date");
                    return await calendarDayRepository.RemoveAsync(date);
@@ -82,7 +82,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                .Argument<NonNullGraphType<CalendarDaysRemoveRangeInputType>, CalendarDaysRemoveRangeInput>("CalendarDaysRemoveRangeInputType", "Argument for remove calendar day")
                .ResolveAsync(async context =>
                {
-                   if (!httpContextAccessor.HttpContext.IsAdministratOrHavePermissions(Permission.UpdateCalendar))
+                   if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for remove calendar day");
                    var calendarDaysRemoveRangeInput = context.GetArgument<CalendarDaysRemoveRangeInput>("CalendarDaysRemoveRangeInputType");
                    new CalendarDaysRemoveRangeInputValidation().ValidateAndThrowExceptions(calendarDaysRemoveRangeInput);

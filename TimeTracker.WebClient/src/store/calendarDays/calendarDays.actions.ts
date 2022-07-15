@@ -6,16 +6,31 @@ import {
     CalendarDaysUpdateInputType
 } from "../../graphQL/modules/calendarDays/calendarDays.mutations";
 import {DayOfWeek} from "../../graphQL/enums/DayOfWeek";
+import {Moment} from "moment";
 
 export const prefix = 'CALENDAR_DAYS_';
 
 export const calendarDaysActions = {
+    setSelectedDate: (date?: Moment) => ({
+        type: `${prefix}SET_SELECTED_DATE`,
+        payload: date,
+    } as const),
+
+    setCalendarDays: (calendarDays: CalendarDay[]) => ({
+        type: `${prefix}SET_CALENDAR_DAYS`,
+        payload: calendarDays,
+    } as const),
     addCalendarDays: (calendarDays: CalendarDay[]) => ({
         type: `${prefix}ADD_CALENDAR_DAYS`,
         payload: calendarDays,
     } as const),
-    getAsync: () => ({
+    getAsync: (from: string, to: string) => ({
         type: `${prefix}GET_ASYNC`,
+        payload: {from, to}
+    } as const),
+    setLoadingGet: (loading: boolean) => ({
+        type: `${prefix}SET_LOADING_GET`,
+        payload: loading
     } as const),
 
     createAsync: (calendarDaysCreateInputType: CalendarDaysCreateInputType, override: boolean) => ({
@@ -63,6 +78,10 @@ export const calendarDaysActions = {
     setLoadingRemove: (loading: boolean) => ({
         type: `${prefix}SET_LOADING_REMOVE`,
         payload: loading,
+    } as const),
+
+    reset: () => ({
+        type: `${prefix}RESET`,
     } as const),
 };
 

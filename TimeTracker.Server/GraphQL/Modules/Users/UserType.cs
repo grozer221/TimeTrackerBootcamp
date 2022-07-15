@@ -8,7 +8,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
 {
     public class UserType : BaseType<UserModel>
     {
-        public UserType(IServiceProvider serviceProvider) : base()
+        public UserType() : base()
         {
             Field<StringGraphType, string>()
                .Name("FirstName")
@@ -34,8 +34,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                .Name("Permissions")
                .Resolve(context => context.Source.Permissions);
             
-            Field<TimeTypeType, Employment>()
-               .Name("TimeType")
+            Field<EmploymentType, Employment>()
+               .Name("Employment")
                .Resolve(context => context.Source.Employment);
             
             Field<NonNullGraphType<IntGraphType>, int>()
