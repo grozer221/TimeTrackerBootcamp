@@ -11,7 +11,7 @@ import {Moment} from "moment";
 export const prefix = 'CALENDAR_DAYS_';
 
 export const calendarDaysActions = {
-    setSelectedDate: (date?: Moment) => ({
+    setSelectedDate: (date: Moment) => ({
         type: `${prefix}SET_SELECTED_DATE`,
         payload: date,
     } as const),

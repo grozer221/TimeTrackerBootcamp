@@ -11,6 +11,7 @@ import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
 import {uppercaseToWords} from "../../../utils/stringUtils";
 import {dateRender} from "../../../convertors/dateRender";
 import Title from "antd/lib/typography/Title";
+import {formStyles} from "../../../styles/form";
 
 const {TabPane} = Tabs;
 const {RangePicker} = DatePicker;
@@ -76,13 +77,14 @@ export const CalendarDaysRemovePage = () => {
                     date: date,
                     daysOfWeek: Object.values(DayOfWeek),
                 }}
+                labelCol={formStyles}
             >
                 <Tabs defaultActiveKey={tab} onChange={tab => setTab(tab as Tab)}>
                     <TabPane
                         tab={<><LineOutlined/>One</>}
                         key="One"
                     >
-                        <Form.Item name="date">
+                        <Form.Item name="date" label={'Date'}>
                             <DatePicker
                                 className={'w-100'}
                                 dateRender={current => dateRender(current, calendarDays)}
@@ -93,15 +95,13 @@ export const CalendarDaysRemovePage = () => {
                         tab={<><UnorderedListOutlined/>Range</>}
                         key="Range"
                     >
-                        <Form.Item name="fromAndTo">
+                        <Form.Item name="fromAndTo" label={'From and to'}>
                             <RangePicker
                                 className={'w-100'}
                                 dateRender={current => dateRender(current, calendarDays)}
                             />
                         </Form.Item>
-                        <Form.Item
-                            name="daysOfWeek"
-                        >
+                        <Form.Item name="daysOfWeek" label={'Days of week'}>
                             <Select
                                 className={'w-100'}
                                 mode="multiple"

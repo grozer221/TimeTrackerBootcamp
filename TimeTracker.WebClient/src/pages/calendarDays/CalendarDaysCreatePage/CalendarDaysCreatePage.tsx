@@ -1,6 +1,6 @@
 import {Checkbox, DatePicker, Form, InputNumber, Modal, Select, Tabs, Typography} from 'antd';
 import React, {useEffect, useState} from 'react';
-import {useNavigate, useSearchParams} from "react-router-dom";
+import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {useForm} from "antd/es/form/Form";
 import moment, {Moment} from "moment";
 import {LineOutlined, UnorderedListOutlined} from "@ant-design/icons";
@@ -18,6 +18,7 @@ import {
 import Input from "antd/es/input/Input";
 import {isAdministratorOrHavePermissions} from "../../../permissions/permissions";
 import {Permission} from "../../../graphQL/enums/Permission";
+import {formStyles} from "../../../styles/form";
 
 const {Title} = Typography;
 const {TabPane} = Tabs;
@@ -36,10 +37,10 @@ export const CalendarDaysCreatePage = () => {
     const dispatch = useDispatch();
     const date = searchParams.get('date') && moment(searchParams.get('date'));
 
-    useEffect(() => {
-        if (!isAdministratorOrHavePermissions([Permission.UpdateCalendar]))
-            navigate('/error/403')
-    }, [isAuth])
+    // useEffect(() => {
+    //     if (!isAdministratorOrHavePermissions([Permission.UpdateCalendar]))
+    //         navigate(`/error/403?from=${location.pathname}`)
+    // }, [isAuth])
 
     const onFinish = async () => {
         try {
@@ -109,13 +110,14 @@ export const CalendarDaysCreatePage = () => {
                     percentageWorkHours: 0,
                     override: false,
                 }}
+                labelCol={formStyles}
             >
                 <Tabs defaultActiveKey={tab} onChange={tab => setTab(tab as Tab)}>
                     <TabPane
                         tab={<><LineOutlined/>One</>}
                         key="One"
                     >
-                        <Form.Item name="date">
+                        <Form.Item name="date" label={'Date'}>
                             <DatePicker
                                 placeholder={'Date'}
                                 className={'w-100'}
@@ -127,15 +129,13 @@ export const CalendarDaysCreatePage = () => {
                         tab={<><UnorderedListOutlined/>Range</>}
                         key="Range"
                     >
-                        <Form.Item name="fromAndTo">
+                        <Form.Item name="fromAndTo" label={'From and to'}>
                             <RangePicker
                                 className={'w-100'}
                                 dateRender={current => dateRender(current, calendarDays)}
                             />
                         </Form.Item>
-                        <Form.Item
-                            name="daysOfWeek"
-                        >
+                        <Form.Item name="daysOfWeek" label={'Days of week'}>
                             <Select
                                 className={'w-100'}
                                 mode="multiple"
@@ -151,11 +151,12 @@ export const CalendarDaysCreatePage = () => {
                         </Form.Item>
                     </TabPane>
                 </Tabs>
-                <Form.Item name="title">
+                <Form.Item name="title" label={'Title'}>
                     <Input placeholder={'Title'}/>
                 </Form.Item>
                 <Form.Item
                     name="kind"
+                    label="Kind"
                     rules={[{required: true, message: 'Kind is required'}]}
                 >
                     <Select className={'w-100'} placeholder={'Kind'}>
@@ -168,10 +169,16 @@ export const CalendarDaysCreatePage = () => {
                 </Form.Item>
                 <Form.Item
                     name="percentageWorkHours"
-                    rules={[{required: true, message: 'Percentage work hours is required'}]}
+                    label="% work hours"
+                    rules={[{required: true, message: '% work hours is required'}]}
                 >
-                    <InputNumber placeholder={'Percentage work hours'} type={'number'} className={'w-100'} min={0}
-                                 max={100}/>
+                    <InputNumber
+                        placeholder={'% work hours'}
+                        type={'number'}
+                        className={'w-100'}
+                        min={0}
+                        max={100}
+                    />
                 </Form.Item>
                 <Form.Item name="override" valuePropName="checked">
                     <Checkbox>Override</Checkbox>

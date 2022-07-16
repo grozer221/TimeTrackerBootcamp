@@ -5,8 +5,7 @@ import moment, {Moment} from "moment";
 import {getDateNow} from "../../utils/dateUtils";
 
 type InitialState = {
-    date?: Moment,
-    selectedDate?: Moment,
+    selectedDate: Moment,
     calendarDays: CalendarDay[],
     loadingGet: boolean,
     loadingCreate: boolean,
@@ -15,7 +14,6 @@ type InitialState = {
 }
 
 const initialState: InitialState = {
-    date: moment(getDateNow()),
     selectedDate: moment(getDateNow()),
     calendarDays: [],
     loadingGet: false,
@@ -34,7 +32,8 @@ export const calendarDaysReducer: Reducer<InitialState, CalendarDayActionTypes> 
         case 'CALENDAR_DAYS_SET_CALENDAR_DAYS':
             return {...state, calendarDays: action.payload};
         case 'CALENDAR_DAYS_ADD_CALENDAR_DAYS':
-            return {...state, calendarDays: [...state.calendarDays, ...action.payload]};
+            const unique = action.payload.filter(val => !state.calendarDays.some(day => day.id === val.id));
+            return {...state, calendarDays: [...state.calendarDays, ...unique]};
         case 'CALENDAR_DAYS_SET_LOADING_CREATE':
             return {...state, loadingCreate: action.payload};
 

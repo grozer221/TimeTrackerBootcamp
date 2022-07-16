@@ -9,7 +9,7 @@ type Props = {
 export const Error: FC<Props> = ({statusCode = 404}) => {
     const navigate = useNavigate();
     const params = useParams();
-    const paramsStatusCode = params.statusCode;
+    const paramsStatusCode = params.statusCode && parseInt(params.statusCode);
 
     switch (paramsStatusCode || statusCode) {
         case 403:

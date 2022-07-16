@@ -1,6 +1,6 @@
-import React, {useEffect, useRef} from 'react';
-import {Calendar, Row, Space, Tooltip, Typography} from "antd";
-import {Moment} from 'moment';
+import React, {useEffect} from 'react';
+import {Button, Calendar, Row, Select, Space, Typography} from "antd";
+import moment, {Moment} from 'moment';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {calendarDaysActions} from "../../store/calendarDays/calendarDays.actions";
@@ -13,6 +13,7 @@ import {ButtonUpdate} from "../../components/ButtonUpdate/ButtonUpdate";
 import {uppercaseToWords} from "../../utils/stringUtils";
 import {isAuthenticated} from "../../permissions/permissions";
 import {Loading} from "../../components/Loading/Loading";
+import {getDate, getDateNow} from "../../utils/dateUtils";
 
 const {Text} = Typography;
 
@@ -31,37 +32,47 @@ export const CalendarPage = () => {
     }, [isAuth])
 
     useEffect(() => {
-        dispatch(calendarDaysActions.getAsync('2019-01-01', '2023-01-01'));
+        const fromTo = getFromTo(selectedDate);
+        dispatch(calendarDaysActions.getAsync(fromTo[0], fromTo[1]));
     }, [])
 
-    const onSelect = (newValue: Moment) => {
-        console.log('onSelect')
-        dispatch(calendarDaysActions.setSelectedDate(newValue));
+    const getFromTo = (date: Moment): string[] => {
+        let dateObj = new Date(date.format('YYYY-MM-DD'));
+        const from = new Date(dateObj.setMonth(dateObj.getMonth() - 1));
+        from.setDate(15);
+        const to = new Date(dateObj.setMonth(dateObj.getMonth() + 2));
+        to.setDate(15);
+        return [getDate(from), getDate(to)]
+    }
+
+    const onSelect = (newDate: Moment) => {
+        console.log('onSelect', newDate.format('YYYY-MM-DD'))
+        dispatch(calendarDaysActions.setSelectedDate(newDate));
     };
 
-    const onPanelChange = (newValue: Moment) => {
-        console.log('onPanelChange')
-        dispatch(calendarDaysActions.setSelectedDate(newValue));
+    const onPanelChange = (newDate: Moment) => {
+        console.log('onPanelChange', newDate.format('YYYY-MM-DD'))
+        const fromTo = getFromTo(newDate);
+        dispatch(calendarDaysActions.getAsync(fromTo[0], fromTo[1]));
     };
 
     const dateCellRender = (current: Moment) => {
         let dayKindClass;
-        const currentCalendarDay = calendarDays.find(d => d.date === current.format("YYYY-MM-DD"));
-        switch (currentCalendarDay?.kind) {
-            case DayKind.DayOff:
-                dayKindClass = s.dayOff;
-                break;
-            case DayKind.Holiday:
-                dayKindClass = s.holiday;
-                break;
-            case DayKind.ShortDay:
-                dayKindClass = s.shortDay;
-                break;
-        }
-        return (
-            <Link to={`days/${currentCalendarDay?.date}`} state={{popup: location}}>
-                <Tooltip
-                    title={currentCalendarDay && `${currentCalendarDay.title || ''} (${uppercaseToWords(currentCalendarDay.kind)})`}>
+        const currentCalendarDay = calendarDays?.find(d => d.date === current.format("YYYY-MM-DD"));
+        if (currentCalendarDay) {
+            switch (currentCalendarDay?.kind) {
+                case DayKind.DayOff:
+                    dayKindClass = s.dayOff;
+                    break;
+                case DayKind.Holiday:
+                    dayKindClass = s.holiday;
+                    break;
+                case DayKind.ShortDay:
+                    dayKindClass = s.shortDay;
+                    break;
+            }
+            return (
+                <Link to={`days/${currentCalendarDay?.date}`} state={{popup: location}}>
                     <div className={[s.day, dayKindClass].join(' ')}>
                         <div className={s.titleAndKind}>
                             <Text style={{textAlign: 'center'}}>{currentCalendarDay?.title}</Text>
@@ -69,19 +80,34 @@ export const CalendarPage = () => {
                                   type="secondary">{currentCalendarDay && uppercaseToWords(currentCalendarDay.kind)}</Text>
                         </div>
                         <Row align={'bottom'} className={s.buttons}>
-                            {currentCalendarDay
-                                ? <Space size={3}>
-                                    <ButtonUpdate to={`days/update/${currentCalendarDay?.date}`} popup={location}/>
-                                    <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
-                                </Space>
-                                :
-                                <ButtonCreate to={`days/create?date=${current.format('YYYY-MM-DD')}`} popup={location}/>
-                            }
+                            <Space size={3}>
+                                <ButtonUpdate to={`days/update/${currentCalendarDay?.date}`} popup={location}/>
+                                <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
+                            </Space>
                         </Row>
                     </div>
-                </Tooltip>
-            </Link>
-        );
+                </Link>
+            );
+        }
+        return (
+            <div className={s.day}>
+                <Row align={'bottom'} className={s.buttons}>
+                    <ButtonCreate to={`days/create?date=${current.format('YYYY-MM-DD')}`} popup={location}/>
+                </Row>
+            </div>
+        )
+    }
+
+    const headerRender = () => {
+        return (
+            <Row justify={'end'}>
+                <Space>
+                    <Select className={s.selectYear}>
+                        <Select.Option>2022</Select.Option>
+                    </Select>
+                </Space>
+            </Row>
+        )
     }
 
     return (

@@ -24,7 +24,7 @@ export const loginEpic: Epic<ReturnType<typeof authActions.userLoginAsync>, any,
             })).pipe(
                 mergeMap(response => [
                     authActions.setAuthedUser(response.data?.auth.login.user, response.data?.auth.login.token),
-                    navigateActions.navigate(-1),
+                    navigateActions.navigate(-2),
                 ]),
                 catchError(error => of(notificationsActions.addError(error.message))),
             )
