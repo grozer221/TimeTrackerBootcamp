@@ -10,6 +10,7 @@ import {DayKind} from "../../../graphQL/enums/DayKind";
 import {uppercaseToWords} from "../../../utils/stringUtils";
 import {dateRender} from "../../../convertors/dateRender";
 import Title from 'antd/lib/typography/Title';
+import {formStyles} from "../../../styles/form";
 
 export const CalendarDaysUpdatePage = () => {
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
@@ -59,22 +60,24 @@ export const CalendarDaysUpdatePage = () => {
                     kind: dayInUpdate?.kind,
                     percentageWorkHours: dayInUpdate?.percentageWorkHours,
                 }}
+                labelCol={formStyles}
             >
                 <Form.Item name="id" className={'invisible'}>
                     <Input type={'hidden'}/>
                 </Form.Item>
-                <Form.Item name="date">
+                <Form.Item name="date" label={'Date'}>
                     <DatePicker
                         placeholder={'Date'}
                         className={'w-100'}
                         dateRender={current => dateRender(current, calendarDays)}
                     />
                 </Form.Item>
-                <Form.Item name="title">
+                <Form.Item name="title" label={'Title'}>
                     <Input placeholder={'Title'}/>
                 </Form.Item>
                 <Form.Item
                     name="kind"
+                    label="Kind"
                     rules={[{required: true, message: 'Kind is required'}]}
                 >
                     <Select className={'w-100'} placeholder={'Kind'}>
@@ -87,10 +90,16 @@ export const CalendarDaysUpdatePage = () => {
                 </Form.Item>
                 <Form.Item
                     name="percentageWorkHours"
-                    rules={[{required: true, message: 'Percentage work hours is required'}]}
+                    label="$ work hours"
+                    rules={[{required: true, message: '% work hours is required'}]}
                 >
-                    <InputNumber placeholder={'Percentage work hours'} type={'number'} className={'w-100'} min={0}
-                                 max={100}/>
+                    <InputNumber
+                        placeholder={'% work hours'}
+                        type={'number'}
+                        className={'w-100'}
+                        min={0}
+                        max={100}
+                    />
                 </Form.Item>
             </Form>
         </Modal>

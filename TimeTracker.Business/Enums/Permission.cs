@@ -4,7 +4,7 @@
     {
         UpdateUsers,
         ConfigureUsersWhichCanApproveVocation,
-        GrudOthersTimeTraker,
+        UpdateOthersTimeTracker,
         NoteTheAbsenceAndVocation,
         UpdateCalendar,
     }

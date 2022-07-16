@@ -36,7 +36,7 @@ export const calendarDaysGetEpic: Epic<ReturnType<typeof calendarDaysActions.get
                 query: CALENDAR_DAYS_GET_QUERY,
                 variables: {calendarDaysGetInputType: action.payload}
             })).pipe(
-                map(response => calendarDaysActions.setCalendarDays(response.data?.calendarDays.get)),
+                map(response => calendarDaysActions.addCalendarDays(response.data?.calendarDays.get)),
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(calendarDaysActions.setLoadingGet(true)),
                 endWith(calendarDaysActions.setLoadingGet(false)),

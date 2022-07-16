@@ -1,16 +1,22 @@
 import React, {FC} from 'react';
 import {Breadcrumb} from 'antd';
-import {useLocation} from 'react-router-dom';
+import {Link, useLocation} from 'react-router-dom';
 
 export const AppBreadcrumb: FC = () => {
     const location = useLocation();
-    let modules = location.pathname.split('/');
-    modules = modules.filter(Boolean);
+    let modules = location.pathname.split('/').filter(Boolean);
 
     return (
-        <Breadcrumb>
-            <Breadcrumb.Item key={'-1'}>.</Breadcrumb.Item>
-            {modules.map((module, i) => <Breadcrumb.Item key={i}>{module}</Breadcrumb.Item>)}
+        <Breadcrumb separator=">">
+            <Breadcrumb.Item>Home</Breadcrumb.Item>
+            {modules.map((module, i) => {
+                const link = modules.slice(0, i + 1).join('/');
+                return (
+                    <Breadcrumb.Item key={module}>
+                        <Link to={link}>{module}</Link>
+                    </Breadcrumb.Item>
+                )
+            })}
         </Breadcrumb>
     );
 };

@@ -1,14 +1,13 @@
 {
   "files": {
-    "main.css": "/static/css/main.8fcd61df.css",
-    "main.js": "/static/js/main.d694227e.js",
-    "static/media/SanaLogo.png": "/static/media/SanaLogo.5c51723cfbae8d0d9d42.png",
+    "main.css": "/static/css/main.95bc8242.css",
+    "main.js": "/static/js/main.dac52dd7.js",
     "index.html": "/index.html",
-    "main.8fcd61df.css.map": "/static/css/main.8fcd61df.css.map",
-    "main.d694227e.js.map": "/static/js/main.d694227e.js.map"
+    "main.95bc8242.css.map": "/static/css/main.95bc8242.css.map",
+    "main.dac52dd7.js.map": "/static/js/main.dac52dd7.js.map"
   },
   "entrypoints": [
-    "static/css/main.8fcd61df.css",
-    "static/js/main.d694227e.js"
+    "static/css/main.95bc8242.css",
+    "static/js/main.dac52dd7.js"
   ]
 }
