@@ -50,11 +50,12 @@ namespace TimeTracker.Server.Services
                 var tokens = await tokenRepository.GetByUserId(userId);
                 if (!tokens.Any(t => t.Token == token))
                     throw new Exception("Bad token");
-                var ticket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties { IsPersistent = false }, Scheme.Name);
+                var ticket = new AuthenticationTicket(claimsPrincipal, new AuthenticationProperties { IsPersistent = false }, SchemeName);
                 return AuthenticateResult.Success(ticket);
             }
             catch (Exception ex)
             {
+                Console.WriteLine(ex.Message);
                 return AuthenticateResult.Fail(ex);
             }
         }
