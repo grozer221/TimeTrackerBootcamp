@@ -1,5 +1,4 @@
 ﻿using GraphQL.Types;
-using TimeTracker.Business.Models;
 using TimeTracker.Business.Models.Settings;
 
 namespace TimeTracker.Server.GraphQL.Modules.Settings

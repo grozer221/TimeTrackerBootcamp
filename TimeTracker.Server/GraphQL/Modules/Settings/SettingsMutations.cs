@@ -2,8 +2,8 @@
 using GraphQL;
 using GraphQL.Types;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
-using TimeTracker.Business.Repositories;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.Settings.DTO;
@@ -13,7 +13,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
     public class SettingsMutations : ObjectGraphType
     {
         public SettingsMutations(
-            ISettingsRepository settingsRepository,
+            ISettingsManager settingsManager,
             IHttpContextAccessor httpContextAccessor,
             IValidator<SettingsCommonUpdateInput> settingsCommonUpdateInputValidator)
         {
@@ -27,7 +27,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                    var settingsCommonUpdateInput = context.GetArgument<SettingsCommonUpdateInput>("SettingsCommonUpdateInputType");
                    settingsCommonUpdateInputValidator.ValidateAndThrow(settingsCommonUpdateInput);
                    var settingsCommon = settingsCommonUpdateInput.ToModel();
-                   return await settingsRepository.UpdateCommonAsync(settingsCommon);
+                   return await settingsManager.UpdateCommonAsync(settingsCommon);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
         }
