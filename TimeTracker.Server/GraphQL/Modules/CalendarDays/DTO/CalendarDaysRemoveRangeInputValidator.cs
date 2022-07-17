@@ -2,9 +2,9 @@
 
 namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
-    public class CalendarDaysRemoveRangeInputValidation : AbstractValidator<CalendarDaysRemoveRangeInput>
+    public class CalendarDaysRemoveRangeInputValidator : AbstractValidator<CalendarDaysRemoveRangeInput>
     {
-        public CalendarDaysRemoveRangeInputValidation()
+        public CalendarDaysRemoveRangeInputValidator()
         {
             RuleFor(l => l.From)
               .NotNull();

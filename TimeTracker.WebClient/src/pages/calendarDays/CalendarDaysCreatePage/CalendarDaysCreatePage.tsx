@@ -16,9 +16,9 @@ import {
     CalendarDaysCreateRangeInputType
 } from "../../../graphQL/modules/calendarDays/calendarDays.mutations";
 import Input from "antd/es/input/Input";
-import {isAdministratorOrHavePermissions} from "../../../permissions/permissions";
+import {isAdministratorOrHavePermissions} from "../../../utils/permissions";
 import {Permission} from "../../../graphQL/enums/Permission";
-import {formStyles} from "../../../styles/form";
+import {formStyles} from "../../../assets/form";
 
 const {Title} = Typography;
 const {TabPane} = Tabs;
@@ -60,8 +60,9 @@ export const CalendarDaysCreatePage = () => {
                         title,
                         kind,
                         percentageWorkHours,
+                        override,
                     }
-                    dispatch(calendarDaysActions.createAsync(calendarDaysCreateInputType, override))
+                    dispatch(calendarDaysActions.createAsync(calendarDaysCreateInputType))
                     break;
                 case 'Range':
                     if (!form.getFieldValue('fromAndTo')) {
@@ -81,8 +82,9 @@ export const CalendarDaysCreatePage = () => {
                         daysOfWeek: daysOfWeek,
                         kind,
                         percentageWorkHours,
+                        override,
                     }
-                    dispatch(calendarDaysActions.createRangeAsync(calendarDaysCreateRangeInputType, override))
+                    dispatch(calendarDaysActions.createRangeAsync(calendarDaysCreateRangeInputType))
                     break;
             }
         } catch (e) {

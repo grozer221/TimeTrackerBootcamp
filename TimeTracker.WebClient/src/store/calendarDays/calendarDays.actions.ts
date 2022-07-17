@@ -33,13 +33,13 @@ export const calendarDaysActions = {
         payload: loading
     } as const),
 
-    createAsync: (calendarDaysCreateInputType: CalendarDaysCreateInputType, override: boolean) => ({
+    createAsync: (calendarDaysCreateInputType: CalendarDaysCreateInputType) => ({
         type: `${prefix}CREATE_ASYNC`,
-        payload: {calendarDaysCreateInputType, override},
+        payload: calendarDaysCreateInputType,
     } as const),
-    createRangeAsync: (calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType, override: boolean) => ({
+    createRangeAsync: (calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType) => ({
         type: `${prefix}CREATE_RANGE_ASYNC`,
-        payload: {calendarDaysCreateRangeInputType, override},
+        payload: calendarDaysCreateRangeInputType,
     } as const),
     setLoadingCreate: (loading: boolean) => ({
         type: `${prefix}SET_LOADING_CREATE`,

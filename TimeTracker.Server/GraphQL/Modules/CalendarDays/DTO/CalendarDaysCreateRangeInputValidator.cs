@@ -4,9 +4,9 @@ using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
-    public class CalendarDaysCreateRangeInputValidation : AbstractValidator<CalendarDaysCreateRangeInput>
+    public class CalendarDaysCreateRangeInputValidator : AbstractValidator<CalendarDaysCreateRangeInput>
     {
-        public CalendarDaysCreateRangeInputValidation()
+        public CalendarDaysCreateRangeInputValidator()
         {
             RuleFor(l => l.From)
                 .NotNull();

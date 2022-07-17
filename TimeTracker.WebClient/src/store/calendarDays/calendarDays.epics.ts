@@ -50,7 +50,7 @@ export const calendarDaysCreateEpic: Epic<ReturnType<typeof calendarDaysActions.
         mergeMap(action =>
             from(client.mutate<CalendarDaysCreateData, CalendarDaysCreateVars>({
                 mutation: CALENDAR_DAYS_CREATE_MUTATION,
-                variables: action.payload,
+                variables: {calendarDaysCreateInputType: action.payload},
             })).pipe(
                 mergeMap(response =>
                     response.data
@@ -74,7 +74,7 @@ export const calendarDaysCreateRangeEpic: Epic<ReturnType<typeof calendarDaysAct
         mergeMap(action =>
             from(client.mutate<CalendarDaysCreateRangeData, CalendarDaysCreateRangeVars>({
                 mutation: CALENDAR_DAYS_CREATE_RANGE_MUTATION,
-                variables: action.payload,
+                variables: {calendarDaysCreateRangeInputType: action.payload},
             })).pipe(
                 mergeMap(response =>
                     response.data

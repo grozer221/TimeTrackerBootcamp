@@ -7,12 +7,20 @@ using TimeTracker.Server.GraphQL.Modules.Auth.DTO;
 using TimeTracker.Server.Services;
 using TimeTracker.Server.Extensions;
 using Microsoft.Net.Http.Headers;
+using FluentValidation;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
     public class AuthMutations : ObjectGraphType
     {
-        public AuthMutations(IUserRepository userRepository, AuthService authService, ITokenRepository tokenRepository, IHttpContextAccessor httpContextAccessor)
+        public AuthMutations(
+            IUserRepository userRepository, 
+            AuthService authService, 
+            ITokenRepository tokenRepository, 
+            IHttpContextAccessor httpContextAccessor,
+            IValidator<AuthLoginInput> authLoginInputValidator,
+            IValidator<AuthRegisterInput> authRegisterInputValidator,
+            IValidator<AuthChangePasswordInput> authChangePasswordInputValidation)
         {
             Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
                 .Name("Login")
@@ -20,7 +28,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 .ResolveAsync(async context =>
                 {
                     AuthLoginInput authLoginInput = context.GetArgument<AuthLoginInput>("AuthLoginInputType");
-                    new AuthLoginInputValidator().ValidateAndThrowExceptions(authLoginInput);
+                    authLoginInputValidator.ValidateAndThrow(authLoginInput);
                     var user = await userRepository.GetByEmailAsync(authLoginInput.Email);
                     if (user != null && user.Password != authLoginInput.Password)
                         throw new Exception("Bad credentials");
@@ -58,7 +66,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         throw new Exception("You can not register manually. Contact an administrator");
 
                     AuthRegisterInput authRegisterInput = context.GetArgument<AuthRegisterInput>("AuthRegisterInputType");
-                    await new AuthRegisterInputValidator(userRepository).ValidateAndThrowExceptionsAsync(authRegisterInput);
+                    await authRegisterInputValidator.ValidateAndThrowAsync(authRegisterInput);
                     var user = authRegisterInput.ToModel();
                     user.Role = Role.Administrator;
                     user.Permissions = new List<Permission>();
@@ -82,7 +90,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 .ResolveAsync(async context =>
                 {
                     var authChangePasswordInput = context.GetArgument<AuthChangePasswordInput>("AuthChangePasswordInputType");
-                    new AuthChangePasswordInputValidation().ValidateAndThrowExceptions(authChangePasswordInput);
+                    authChangePasswordInputValidation.ValidateAndThrow(authChangePasswordInput);
                     var userId = httpContextAccessor.HttpContext.GetUserId();
                     var user = await userRepository.GetByIdAsync(userId);
                     if (user.Password != authChangePasswordInput.OldPassword)
@@ -98,6 +106,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 .Argument<NonNullGraphType<GuidGraphType>, Guid>("UserId", "Argument for Impersonate User")
                 .ResolveAsync(async context =>
                 {
+                    if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.Impersonate))
+                        throw new ExecutionError("You do not have permissions for impersonate");
                     var impersonateUserId = context.GetArgument<Guid>("UserId");
                     var impersonateUser = await userRepository.GetByIdAsync(impersonateUserId);
                     if (impersonateUser == null)
@@ -114,7 +124,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         User = impersonateUser,
                     };
                 })
-                .AuthorizeWith(AuthPolicies.Administrator);
+                .AuthorizeWith(AuthPolicies.Authenticated);
         }
     }
 }

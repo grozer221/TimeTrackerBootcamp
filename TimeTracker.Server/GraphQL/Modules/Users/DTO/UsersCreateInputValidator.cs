@@ -3,23 +3,24 @@ using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
 {
-    public class UsersUpdateInputValidation : AbstractValidator<UsersUpdateInput>
+    public class UsersCreateInputValidator : AbstractValidator<UsersCreateInput>
     {
-        public UsersUpdateInputValidation(IUserRepository userRepository)
+        public UsersCreateInputValidator(IUserRepository userRepository)
         {
-            RuleFor(l => l.Id)
-              .NotEmpty()
-              .NotNull();
-
             RuleFor(l => l.Email)
                 .EmailAddress()
                 .NotEmpty()
                 .NotNull()
-                .MustAsync(async (user, email, cancellation) =>
+                .MustAsync(async (email, cancellation) =>
                 {
-                    var checkUser = await userRepository.GetByEmailAsync(user.Email);
-                    return checkUser == null || checkUser.Id == user.Id;
+                    var user = await userRepository.GetByEmailAsync(email);
+                    return user == null;
                 }).WithMessage("Email already taken");
+
+            RuleFor(l => l.Password)
+                .MinimumLength(5)
+                .NotEmpty()
+                .NotNull();
 
             RuleFor(l => l.FirstName)
                 .NotEmpty()
@@ -32,7 +33,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
             RuleFor(l => l.MiddleName)
                 .NotEmpty()
                 .NotNull();
-
+            
             RuleFor(l => l.Permissions);
         }
     }

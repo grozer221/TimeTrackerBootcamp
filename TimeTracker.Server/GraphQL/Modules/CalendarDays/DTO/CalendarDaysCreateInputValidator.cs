@@ -4,9 +4,9 @@ using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
-    public class CalendarDaysCreateInputValidation : AbstractValidator<CalendarDaysCreateInput>
+    public class CalendarDaysCreateInputValidator : AbstractValidator<CalendarDaysCreateInput>
     {
-        public CalendarDaysCreateInputValidation(ICalendarDayRepository calendarDayRepository, bool overrideDay)
+        public CalendarDaysCreateInputValidator(ICalendarDayRepository calendarDayRepository)
         {
             RuleFor(l => l.Title);
 
@@ -15,7 +15,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                 .MustAsync(async (input, date, cancellationToken) =>
                 {
                     var exists = await calendarDayRepository.GetByDateAsync(date) != null;
-                    if (overrideDay && exists)
+                    if (input.Override && exists)
                         await calendarDayRepository.RemoveAsync(date);
                     return !exists;
                 }).WithMessage(input => $"Calendar day for {input.Date.ToString("yyyy-MM-dd")} already exists");

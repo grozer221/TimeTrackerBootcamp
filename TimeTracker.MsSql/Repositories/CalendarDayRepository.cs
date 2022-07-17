@@ -14,15 +14,6 @@ namespace TimeTracker.MsSql.Repositories
             this.dapperContext = dapperContext;
         }
 
-        public async Task<CalendarDayModel> GetByIdAsync(Guid id)
-        {
-            string query = @"select * from CalendarDays where id = @id";
-            using (var connection = dapperContext.CreateConnection())
-            {
-                return await connection.QueryFirstOrDefaultAsync<CalendarDayModel>(query, new { id });
-            }
-        }
-
         public async Task<CalendarDayModel> GetByDateAsync(DateTime date)
         {
             string query = @"select * from CalendarDays where Date = @date";
@@ -53,11 +44,6 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public Task<GetEntitiesResponse<CalendarDayModel>> GetAsync(string like, int take, int skip)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<CalendarDayModel> CreateAsync(CalendarDayModel model)
         {
             model.Id = Guid.NewGuid();
@@ -76,7 +62,7 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task<CalendarDayModel> UpdateAsync(CalendarDayModel model)
         {
-            var previousModel = await GetByIdAsync(model.Id);
+            var previousModel = await GetByDateAsync(model.Date);
             if (previousModel == null)
                 throw new Exception("Calendar day not found");
             model.UpdatedAt = DateTime.Now;
@@ -89,19 +75,6 @@ namespace TimeTracker.MsSql.Repositories
                 await connection.ExecuteAsync(query, model);
             }
             return model;
-        }
-
-        public async Task<CalendarDayModel> RemoveAsync(Guid id)
-        {
-            var previousModel = await GetByIdAsync(id);
-            if (previousModel == null)
-                throw new Exception("Calendar day not found");
-            string query = "delete from CalendarDays where Id = @id";
-            using (var connection = dapperContext.CreateConnection())
-            {
-                await connection.ExecuteAsync(query, new { id });
-                return previousModel;
-            }
         }
 
         public async Task<CalendarDayModel> RemoveAsync(DateTime date)

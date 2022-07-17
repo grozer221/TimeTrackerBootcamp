@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
-import {Button, Calendar, Row, Select, Space, Typography} from "antd";
-import moment, {Moment} from 'moment';
+import {Calendar, Row, Space, Typography} from "antd";
+import {Moment} from 'moment';
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {calendarDaysActions} from "../../store/calendarDays/calendarDays.actions";
@@ -9,11 +9,12 @@ import s from './CalendarPage.module.css';
 import {ButtonCreate} from "../../components/ButtonCreate/ButtonCreate";
 import {DayKind} from "../../graphQL/enums/DayKind";
 import {ButtonRemove} from "../../components/ButtonRemove/ButtonRemove";
-import {ButtonUpdate} from "../../components/ButtonUpdate/ButtonUpdate";
 import {uppercaseToWords} from "../../utils/stringUtils";
-import {isAuthenticated} from "../../permissions/permissions";
+import {isAdministratorOrHavePermissions, isAuthenticated} from "../../utils/permissions";
 import {Loading} from "../../components/Loading/Loading";
-import {getDate, getDateNow} from "../../utils/dateUtils";
+import {getDate} from "../../utils/dateUtils";
+import {Permission} from "../../graphQL/enums/Permission";
+import {ButtonUpdate} from "../../components/ButtonUpdate/ButtonUpdate";
 
 const {Text} = Typography;
 
@@ -79,35 +80,26 @@ export const CalendarPage = () => {
                             <Text style={{fontSize: '12px'}}
                                   type="secondary">{currentCalendarDay && uppercaseToWords(currentCalendarDay.kind)}</Text>
                         </div>
-                        <Row align={'bottom'} className={s.buttons}>
-                            <Space size={3}>
-                                <ButtonUpdate to={`days/update/${currentCalendarDay?.date}`} popup={location}/>
-                                <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
-                            </Space>
-                        </Row>
+                        {isAdministratorOrHavePermissions([Permission.UpdateCalendar]) &&
+                            <Row align={'bottom'} className={s.buttons}>
+                                <Space size={3}>
+                                    <ButtonUpdate to={`days/update/${currentCalendarDay?.date}`} popup={location}/>
+                                    <ButtonRemove to={`days/remove/${currentCalendarDay?.date}`} popup={location}/>
+                                </Space>
+                            </Row>
+                        }
                     </div>
                 </Link>
             );
         }
-        return (
-            <div className={s.day}>
-                <Row align={'bottom'} className={s.buttons}>
-                    <ButtonCreate to={`days/create?date=${current.format('YYYY-MM-DD')}`} popup={location}/>
-                </Row>
-            </div>
-        )
-    }
-
-    const headerRender = () => {
-        return (
-            <Row justify={'end'}>
-                <Space>
-                    <Select className={s.selectYear}>
-                        <Select.Option>2022</Select.Option>
-                    </Select>
-                </Space>
-            </Row>
-        )
+        if (isAdministratorOrHavePermissions([Permission.UpdateCalendar]))
+            return (
+                <div className={s.day}>
+                    <Row align={'bottom'} className={s.buttons}>
+                        <ButtonCreate to={`days/create?date=${current.format('YYYY-MM-DD')}`} popup={location}/>
+                    </Row>
+                </div>
+            )
     }
 
     return (
@@ -115,10 +107,12 @@ export const CalendarPage = () => {
             {loading && <div className={s.absoluteCenter}>
                 <Loading/>
             </div>}
-            <Space size={3}>
-                <ButtonCreate to={'days/create'} popup={location}/>
-                <ButtonRemove to={'days/remove'} popup={location}/>
-            </Space>
+            {isAdministratorOrHavePermissions([Permission.UpdateCalendar]) &&
+                <Space size={3}>
+                    <ButtonCreate to={'days/create'} popup={location}/>
+                    <ButtonRemove to={'days/remove'} popup={location}/>
+                </Space>
+            }
             <Calendar
                 value={selectedDate}
                 onSelect={onSelect}

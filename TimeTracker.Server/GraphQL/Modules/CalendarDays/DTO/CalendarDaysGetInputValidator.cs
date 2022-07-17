@@ -2,9 +2,9 @@
 
 namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
-    public class CalendarDaysGetInputValidation : AbstractValidator<CalendarDaysGetInput>
+    public class CalendarDaysGetInputValidator : AbstractValidator<CalendarDaysGetInput>
     {
-        public CalendarDaysGetInputValidation()
+        public CalendarDaysGetInputValidator()
         {
             RuleFor(l => l.From)
               .NotNull();

@@ -3,9 +3,9 @@ using TimeTracker.Business.Enums;
 
 namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
-    public class CalendarDaysUpdateInputValidation : AbstractValidator<CalendarDaysUpdateInput>
+    public class CalendarDaysUpdateInputValidator : AbstractValidator<CalendarDaysUpdateInput>
     {
-        public CalendarDaysUpdateInputValidation()
+        public CalendarDaysUpdateInputValidator()
         {
             RuleFor(l => l.Id)
                 .NotEmpty()

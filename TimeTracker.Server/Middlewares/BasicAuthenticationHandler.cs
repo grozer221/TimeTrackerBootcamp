@@ -7,7 +7,7 @@ using System.Text.Encodings.Web;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.Extensions;
 
-namespace TimeTracker.Server.Services
+namespace TimeTracker.Server.Middlewares
 {
     public class BasicAuthenticationOptions : AuthenticationSchemeOptions
     {

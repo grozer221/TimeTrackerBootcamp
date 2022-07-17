@@ -16,8 +16,8 @@ import {CalendarDaysViewPage} from "./pages/calendarDays/CalendarDaysViewPage/Ca
 import {AuthLoginPage} from './pages/auth/AuthLoginPage/AuthLoginPage';
 import 'antd/dist/antd.css';
 import './App.css';
-import './styles/Table.css';
-import './styles/AntDesignOverride.css';
+import './assets/Table.css';
+import './assets/AntDesignOverride.css';
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -44,6 +44,9 @@ export const App = () => {
                         <Route index element={<Navigate to={'/time-tracker'}/>}/>
                         <Route path={'calendar/*'} element={<CalendarPage/>}>
                             <Route path={'*'} element={<Error/>}/>
+                        </Route>
+                        <Route path={"auth/*"}>
+                            <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
                         </Route>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>

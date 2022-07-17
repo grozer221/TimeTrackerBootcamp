@@ -11,7 +11,7 @@ import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
 import {uppercaseToWords} from "../../../utils/stringUtils";
 import {dateRender} from "../../../convertors/dateRender";
 import Title from "antd/lib/typography/Title";
-import {formStyles} from "../../../styles/form";
+import {formStyles} from "../../../assets/form";
 
 const {TabPane} = Tabs;
 const {RangePicker} = DatePicker;

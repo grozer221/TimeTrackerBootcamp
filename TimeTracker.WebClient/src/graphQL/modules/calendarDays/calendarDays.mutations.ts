@@ -5,21 +5,19 @@ import {DayKind} from "../../enums/DayKind";
 import {DayOfWeek} from "../../enums/DayOfWeek";
 
 export type CalendarDaysCreateData = { calendarDays: { create: CalendarDay } }
-export type CalendarDaysCreateVars = {
-    calendarDaysCreateInputType: CalendarDaysCreateInputType
-    override: boolean,
-}
+export type CalendarDaysCreateVars = { calendarDaysCreateInputType: CalendarDaysCreateInputType }
 export type CalendarDaysCreateInputType = {
     date: string,
     title: string,
     kind: DayKind,
     percentageWorkHours: number,
+    override: boolean,
 }
 export const CALENDAR_DAYS_CREATE_MUTATION = gql`
     ${CALENDAR_DAY_FRAGMENT}
-    mutation CalendarDaysCreate($calendarDaysCreateInputType: CalendarDaysCreateInputType!, $override: Boolean!) {
+    mutation CalendarDaysCreate($calendarDaysCreateInputType: CalendarDaysCreateInputType!) {
         calendarDays {
-            create(calendarDaysCreateInputType: $calendarDaysCreateInputType, override: $override){
+            create(calendarDaysCreateInputType: $calendarDaysCreateInputType){
                 ...CalendarDayFragment
             }
         }
@@ -27,10 +25,7 @@ export const CALENDAR_DAYS_CREATE_MUTATION = gql`
 `;
 
 export type CalendarDaysCreateRangeData = { calendarDays: { createRange: CalendarDay[] } }
-export type CalendarDaysCreateRangeVars = {
-    calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType,
-    override: boolean,
-}
+export type CalendarDaysCreateRangeVars = { calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType }
 export type CalendarDaysCreateRangeInputType = {
     from: string,
     to: string,
@@ -38,12 +33,13 @@ export type CalendarDaysCreateRangeInputType = {
     daysOfWeek: DayOfWeek[],
     kind: DayKind,
     percentageWorkHours: number,
+    override: boolean,
 }
 export const CALENDAR_DAYS_CREATE_RANGE_MUTATION = gql`
     ${CALENDAR_DAY_FRAGMENT}
-    mutation CalendarDaysCreateRange($calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType!, $override: Boolean!) {
+    mutation CalendarDaysCreateRange($calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType!) {
         calendarDays {
-            createRange(calendarDaysCreateRangeInputType: $calendarDaysCreateRangeInputType, override: $override){
+            createRange(calendarDaysCreateRangeInputType: $calendarDaysCreateRangeInputType){
                 ...CalendarDayFragment
             }
         }

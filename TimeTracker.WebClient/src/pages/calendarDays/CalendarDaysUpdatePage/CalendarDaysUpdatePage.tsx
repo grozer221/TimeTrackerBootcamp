@@ -10,7 +10,7 @@ import {DayKind} from "../../../graphQL/enums/DayKind";
 import {uppercaseToWords} from "../../../utils/stringUtils";
 import {dateRender} from "../../../convertors/dateRender";
 import Title from 'antd/lib/typography/Title';
-import {formStyles} from "../../../styles/form";
+import {formStyles} from "../../../assets/form";
 
 export const CalendarDaysUpdatePage = () => {
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
@@ -90,7 +90,7 @@ export const CalendarDaysUpdatePage = () => {
                 </Form.Item>
                 <Form.Item
                     name="percentageWorkHours"
-                    label="$ work hours"
+                    label="% work hours"
                     rules={[{required: true, message: '% work hours is required'}]}
                 >
                     <InputNumber

@@ -3,17 +3,18 @@
     height: 100vh;
 }
 
+.header {
+    padding: 0 20px 0 18px !important;
+}
+
 .logo {
-    height: 32px;
-    margin: 16px;
-    background: rgba(255, 255, 255, 0.2);
+    margin: 16px 16px 16px 20px;
+    width: 118px;
 }
 
 .name {
-    margin: 30px 0 5px 20px;
-    font-size: 16px;
-    font-weight: bold;
-    color: #fbc531;
+    color: #1890ff;
+    cursor: pointer;
 }
 
 .content {
@@ -25,17 +26,22 @@
 
 .siteLayoutBackground {
     background: white;
-    padding: 24px;
+    padding: 12px 24px 24px 24px;
     min-height: 360px;
     position: relative;
     flex-grow: 1;
     overflow-y: auto;
 }
 
+.breadcrumbs {
+    margin-bottom: 10px;
+}
+
 .wrapperMenu {
     overflow-y: scroll;
     scrollbar-color: #3498db #001529;
     scrollbar-width: thin;
+    padding-top: 10px;
 }
 
 .wrapperMenu::-webkit-scrollbar {
