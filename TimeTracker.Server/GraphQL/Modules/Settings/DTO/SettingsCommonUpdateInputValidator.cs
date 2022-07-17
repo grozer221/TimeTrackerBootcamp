@@ -6,7 +6,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
     {
         public SettingsCommonUpdateInputValidator()
         {
-            RuleFor(l => l.HoursInWorkday)
+            RuleFor(l => l.FullTimeHoursInWorkday)
                 .GreaterThanOrEqualTo(1)
                 .LessThanOrEqualTo(24);
         }

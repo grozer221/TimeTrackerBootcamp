@@ -6,13 +6,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
 {
     public class SettingsCommonUpdateInput : IModelable<SettingsCommon>
     {
-        public int HoursInWorkday { get; set; }
+        public int FullTimeHoursInWorkday { get; set; }
 
         public SettingsCommon ToModel()
         {
             return new SettingsCommon
             {
-                HoursInWorkday = this.HoursInWorkday,
+                FullTimeHoursInWorkday = this.FullTimeHoursInWorkday,
             };
         }
     }
@@ -22,8 +22,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
         public SettingsCommonUpdateInputType()
         {
             Field<NonNullGraphType<IntGraphType>, int>()
-                 .Name("HoursInWorkday")
-                 .Resolve(context => context.Source.HoursInWorkday);
+                 .Name("FullTimeHoursInWorkday")
+                 .Resolve(context => context.Source.FullTimeHoursInWorkday);
         }
     }
 }

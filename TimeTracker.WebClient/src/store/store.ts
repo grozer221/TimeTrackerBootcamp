@@ -8,6 +8,8 @@ import {calendarDaysEpics} from "../modules/calendarDays/store/calendarDays.epic
 import {notificationsReducer} from "../modules/notifications/store/notifications.reducer";
 import {navigateReducer} from "../modules/navigate/store/navigate.reducer";
 import {appReducer} from "../modules/app/store/app.reducer";
+import {settingsReducer} from "../modules/settings/store/settings.reducer";
+import {settingsEpics} from "../modules/settings/store/settings.epics";
 
 const epicMiddleware = createEpicMiddleware();
 
@@ -17,10 +19,15 @@ export const store = createStore(combineReducers({
     calendarDays: calendarDaysReducer,
     notifications: notificationsReducer,
     navigate: navigateReducer,
+    settings: settingsReducer,
 }), composeWithDevTools(applyMiddleware(epicMiddleware)));
 
-// @ts-ignore
-const rootEpic = combineEpics(authEpics, calendarDaysEpics);
+const rootEpic = combineEpics(
+    authEpics,
+    // @ts-ignore
+    calendarDaysEpics,
+    settingsEpics
+);
 // @ts-ignore
 epicMiddleware.run(rootEpic);
 

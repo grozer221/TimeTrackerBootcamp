@@ -18,6 +18,7 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
+import {SettingsPage} from "./modules/settings/pages/SettingsPage/SettingsPage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -45,6 +46,7 @@ export const App = () => {
                         <Route path={'calendar/*'} element={<CalendarPage/>}>
                             <Route path={'*'} element={<Error/>}/>
                         </Route>
+                        <Route path={'settings/:tab'} element={<SettingsPage/>}/>
                         <Route path={"auth/*"}>
                             <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
                         </Route>

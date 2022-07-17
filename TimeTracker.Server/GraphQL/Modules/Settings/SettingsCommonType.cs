@@ -9,8 +9,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
         public SettingsCommonType()
         {
             Field<IntGraphType, int>()
-               .Name("HoursInWorkday")
-               .Resolve(context => context.Source.HoursInWorkday);
+               .Name("FullTimeHoursInWorkday")
+               .Resolve(context => context.Source.FullTimeHoursInWorkday);
         }
     }
 }

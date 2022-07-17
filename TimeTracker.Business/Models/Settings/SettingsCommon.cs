@@ -2,6 +2,6 @@
 {
     public class SettingsCommon
     {
-        public int HoursInWorkday { get; set; }
+        public int FullTimeHoursInWorkday { get; set; }
     }
 }

@@ -6,3 +6,7 @@ export const uppercaseToWords = (str: string): string => {
 export const capitalize = (str: string) => {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
+
+export function nameof<T>(name: keyof T) {
+    return name
+}
