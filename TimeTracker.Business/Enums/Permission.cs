@@ -8,5 +8,6 @@
         NoteTheAbsenceAndVocation,
         UpdateCalendar,
         Impersonate,
+        UpdateSettings,
     }
 }
