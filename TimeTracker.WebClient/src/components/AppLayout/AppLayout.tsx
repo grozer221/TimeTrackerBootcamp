@@ -2,7 +2,7 @@ import React, {FC, useState} from 'react';
 import {Button, Dropdown, Layout, Menu, Row, Space} from 'antd';
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "../../store/auth/auth.actions";
+import {authActions} from "../../modules/auth/store/auth.actions";
 import s from './AppLayout.module.css';
 import {AppBreadcrumb} from "../AppBreadcrumb/AppBreadcrumb";
 import {

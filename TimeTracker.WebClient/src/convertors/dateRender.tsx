@@ -1,7 +1,7 @@
 import React, {CSSProperties} from "react";
 import {DayKind} from "../graphQL/enums/DayKind";
 import {Moment} from "moment";
-import {CalendarDay} from "../graphQL/modules/calendarDays/calendarDays.types";
+import {CalendarDay} from "../modules/calendarDays/graphQL/calendarDays.types";
 import {Tooltip} from "antd";
 import {uppercaseToWords} from "../utils/stringUtils";
 
