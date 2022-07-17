@@ -23,7 +23,6 @@ builder.Services.AddJwtAuthorization();
 builder.Services.AddMsSql();
 
 
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment()) 

@@ -1,11 +1,5 @@
 ﻿using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using TimeTracker.Business.Abstractions;
-using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 
@@ -120,15 +114,15 @@ namespace TimeTracker.MsSql.Repositories
             return model;
         }
 
-        public async Task<UserModel> RemoveAsync(Guid id)
+        public async Task<UserModel> RemoveAsync(string email)
         {
-            var previousModel = await GetByIdAsync(id);
+            var previousModel = await GetByEmailAsync(email);
             if (previousModel == null)
                 throw new Exception("User not found");
-            string query = "delete from Users where Id = @id";
+            string query = "delete from Users where email = @email";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, new { id });
+                await connection.ExecuteAsync(query, new { email });
                 return previousModel;
             }
         }

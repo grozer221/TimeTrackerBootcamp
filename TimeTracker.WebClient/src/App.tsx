@@ -1,23 +1,23 @@
 import React, {useEffect} from 'react';
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "./store/auth/auth.actions";
+import {authActions} from "./modules/auth/store/auth.actions";
 import {RootState} from "./store/store";
-import {Notifications} from "./components/Notifications/Notifications";
-import {NavigateTo} from "./components/NavigateTo/NavigateTo";
+import {Notifications} from "./modules/notifications/components/Notifications/Notifications";
+import {NavigateTo} from "./modules/navigate/components/NavigateTo/NavigateTo";
 import {Loading} from "./components/Loading/Loading";
-import {CalendarPage} from "./pages/CalendarPage/CalendarPage";
-import {CalendarDaysCreatePage} from "./pages/calendarDays/CalendarDaysCreatePage/CalendarDaysCreatePage";
+import {CalendarPage} from "./modules/calendar/pages/CalendarPage/CalendarPage";
+import {CalendarDaysCreatePage} from "./modules/calendarDays/pages/CalendarDaysCreatePage/CalendarDaysCreatePage";
 import {Error} from "./components/Error/Error";
-import {CalendarDaysUpdatePage} from "./pages/calendarDays/CalendarDaysUpdatePage/CalendarDaysUpdatePage";
-import {CalendarDaysRemovePage} from "./pages/calendarDays/CalendarDaysRemovePage/CalendarDaysRemovePage";
+import {CalendarDaysUpdatePage} from "./modules/calendarDays/pages/CalendarDaysUpdatePage/CalendarDaysUpdatePage";
+import {CalendarDaysRemovePage} from "./modules/calendarDays/pages/CalendarDaysRemovePage/CalendarDaysRemovePage";
 import {AppLayout} from "./components/AppLayout/AppLayout";
-import {CalendarDaysViewPage} from "./pages/calendarDays/CalendarDaysViewPage/CalendarDaysViewPage";
-import {AuthLoginPage} from './pages/auth/AuthLoginPage/AuthLoginPage';
+import {CalendarDaysViewPage} from "./modules/calendarDays/pages/CalendarDaysViewPage/CalendarDaysViewPage";
+import {AuthLoginPage} from './modules/auth/pages/AuthLoginPage/AuthLoginPage';
 import 'antd/dist/antd.css';
 import './App.css';
-import './styles/Table.css';
-import './styles/AntDesignOverride.css';
+import './assets/Table.css';
+import './assets/AntDesignOverride.css';
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -44,6 +44,9 @@ export const App = () => {
                         <Route index element={<Navigate to={'/time-tracker'}/>}/>
                         <Route path={'calendar/*'} element={<CalendarPage/>}>
                             <Route path={'*'} element={<Error/>}/>
+                        </Route>
+                        <Route path={"auth/*"}>
+                            <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
                         </Route>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>

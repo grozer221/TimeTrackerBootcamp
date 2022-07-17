@@ -1,16 +1,13 @@
-﻿using GraphQL;
+﻿using FluentValidation;
+using GraphQL;
 using GraphQL.Server;
-using GraphQL.Server.Transports.AspNetCore;
 using GraphQL.SystemTextJson;
-using GraphQL.Types;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
+using System.Reflection;
 using System.Security.Claims;
-using System.Text;
 using TimeTracker.Business.Enums;
 using TimeTracker.Server.GraphQL;
 using TimeTracker.Server.GraphQL.Modules.Auth;
+using TimeTracker.Server.Middlewares;
 using TimeTracker.Server.Services;
 
 namespace TimeTracker.Server.Extensions
@@ -19,6 +16,7 @@ namespace TimeTracker.Server.Extensions
     {
         public static IServiceCollection AddGraphQLApi(this IServiceCollection services)
         {
+            services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient);
             services.AddMemoryCache();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();

@@ -7,5 +7,6 @@
         UpdateOthersTimeTracker,
         NoteTheAbsenceAndVocation,
         UpdateCalendar,
+        Impersonate,
     }
 }

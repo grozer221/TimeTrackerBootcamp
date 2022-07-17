@@ -1,10 +1,4 @@
 ﻿using Dapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 
@@ -17,15 +11,6 @@ namespace TimeTracker.MsSql.Repositories
         public TokenRepository(DapperContext dapperContext)
         {
             this.dapperContext = dapperContext;
-        }
-
-        public async Task<TokenModel> GetByIdAsync(Guid id)
-        {
-            string query = $"select * from Tokens where id = @id";
-            using (var connection = dapperContext.CreateConnection())
-            {
-                return await connection.QueryFirstOrDefaultAsync<TokenModel>(query, new { id });
-            }
         }
 
         public async Task<TokenModel> GetByToken(string token)
@@ -46,19 +31,6 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public async Task<IEnumerable<TokenModel>> GetAsync()
-        {
-            string query = $"select * from Tokens";
-            using (var connection = dapperContext.CreateConnection())
-            {
-                return await connection.QueryAsync<TokenModel>(query);
-            }
-        }
-
-        public Task<GetEntitiesResponse<TokenModel>> GetAsync(string like, int take, int skip)
-        {
-            throw new NotImplementedException();
-        }
         public async Task<TokenModel> CreateAsync(TokenModel model)
         {
             model.Id = Guid.NewGuid();
@@ -72,24 +44,6 @@ namespace TimeTracker.MsSql.Repositories
             {
                 await connection.ExecuteAsync(query, model);
                 return model;
-            }
-        }
-
-        public Task<TokenModel> UpdateAsync(TokenModel model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<TokenModel> RemoveAsync(Guid id)
-        {
-            var previousModel = await GetByIdAsync(id);
-            if (previousModel == null)
-                throw new Exception("Token not found");
-            string query = "delete from Tokens where Id = @id";
-            using (var connection = dapperContext.CreateConnection())
-            {
-                await connection.ExecuteAsync(query, new { id });
-                return previousModel;   
             }
         }
 

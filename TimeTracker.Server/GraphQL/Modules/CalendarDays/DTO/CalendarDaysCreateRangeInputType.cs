@@ -2,7 +2,6 @@
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
-using TimeTracker.Server.GraphQL.Abstractions;
 using TimeTracker.Server.GraphQL.EnumTypes;
 
 namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
@@ -15,8 +14,9 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
         public IEnumerable<DayOfWeek> DaysOfWeek { get; set; }
         public DayKind Kind { get; set; }
         public int PercentageWorkHours { get; set; }
+        public bool Override { get; set; }
 
-        public async Task<IEnumerable<CalendarDayModel>> ToListAsync(ICalendarDayRepository calendarDayRepository, bool overrideDay)
+        public async Task<IEnumerable<CalendarDayModel>> ToListAsync(ICalendarDayRepository calendarDayRepository)
         {
             var list = new List<CalendarDayModel>();
             var fromCopy = From;
@@ -27,7 +27,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                    
                     if (await calendarDayRepository.GetByDateAsync(fromCopy) != null)
                     {
-                        if (overrideDay)
+                        if (Override)
                             await calendarDayRepository.RemoveAsync(fromCopy);
                         else
                             throw new Exception($"Calendar day for {fromCopy.ToString("yyyy-MM-dd")} already exists");
@@ -73,6 +73,10 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
             Field<NonNullGraphType<IntGraphType>, int>()
                  .Name("PercentageWorkHours")
                  .Resolve(context => context.Source.PercentageWorkHours);
+            
+            Field<NonNullGraphType<BooleanGraphType>, bool>()
+                 .Name("Override")
+                 .Resolve(context => context.Source.Override);
         }
     }
 }
