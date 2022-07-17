@@ -26,6 +26,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\TimeTracker.Caching\TimeTracker.Caching.csproj" />
 		<ProjectReference Include="..\TimeTracker.MsSql\TimeTracker.MsSql.csproj" />
 	</ItemGroup>
 

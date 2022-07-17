@@ -1,6 +1,5 @@
-using TimeTracker.Business.Repositories;
+using TimeTracker.Caching.Extensions;
 using TimeTracker.MsSql.Extensions;
-using TimeTracker.MsSql.Repositories;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL;
 
@@ -21,6 +20,7 @@ builder.Services.AddServices();
 builder.Services.AddGraphQLApi();
 builder.Services.AddJwtAuthorization();
 builder.Services.AddMsSql();
+builder.Services.AddCaching();
 
 
 var app = builder.Build();

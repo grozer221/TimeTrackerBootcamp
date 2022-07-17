@@ -21,10 +21,11 @@ namespace TimeTracker.MsSql.Extensions
                     .WithGlobalConnectionString(DapperContext.ConnectionString)
                     .ScanIn(Assembly.GetExecutingAssembly()).For.Migrations());
 
-            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<ICalendarDayRepository, CalendarDayRepository>();
+            services.AddScoped<ISettingsRepository, SettingsRepository>();
             services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddScoped<ITrackRepository, TrackRepository>();
-            services.AddScoped<ICalendarDayRepository, CalendarDayRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             return services;
         }
     }

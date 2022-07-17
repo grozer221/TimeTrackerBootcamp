@@ -8,10 +8,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {calendarDaysActions} from "../../store/calendarDays.actions";
 import {RootState} from "../../../../store/store";
 import {DayOfWeek} from "../../../../graphQL/enums/DayOfWeek";
-import {uppercaseToWords} from "../../../../utils/stringUtils";
+import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {dateRender} from "../../../../convertors/dateRender";
 import Title from "antd/lib/typography/Title";
 import {formStyles} from "../../../../assets/form";
+import {CalendarDaysRemoveRangeInputType, CalendarDaysRemoveVars} from "../../graphQL/calendarDays.mutations";
 
 const {TabPane} = Tabs;
 const {RangePicker} = DatePicker;
@@ -33,23 +34,25 @@ export const CalendarDaysRemovePage = () => {
             await form.validateFields();
             switch (tab) {
                 case 'One':
-                    if (!form.getFieldValue('date')) {
-                        form.setFields([{name: 'date', errors: ['Date is required']}])
+                    const dateInputName = nameof<CalendarDaysRemoveVars>('date');
+                    if (!form.getFieldValue(dateInputName)) {
+                        form.setFields([{name: dateInputName, errors: ['Date is required']}])
                         break
                     }
-                    dispatch(calendarDaysActions.removeAsync((form.getFieldValue('date') as Moment).format('YYYY-MM-DD')));
+                    dispatch(calendarDaysActions.removeAsync((form.getFieldValue(dateInputName) as Moment).format('YYYY-MM-DD')));
                     break;
                 case 'Range':
                     if (!form.getFieldValue('fromAndTo')) {
                         form.setFields([{name: 'fromAndTo', errors: ['From and to is required']}])
                         break
                     }
-                    if (!form.getFieldValue('daysOfWeek')) {
-                        form.setFields([{name: 'daysOfWeek', errors: ['Day of weeks is required']}])
+                    const daysOfWeekFieldName = nameof<CalendarDaysRemoveRangeInputType>('daysOfWeek');
+                    if (!form.getFieldValue(daysOfWeekFieldName)) {
+                        form.setFields([{name: daysOfWeekFieldName, errors: ['Day of weeks is required']}])
                         break
                     }
                     const fromAndTo = form.getFieldValue('fromAndTo') as Moment[];
-                    const daysOfWeek = form.getFieldValue('daysOfWeek') as DayOfWeek[];
+                    const daysOfWeek = form.getFieldValue(daysOfWeekFieldName) as DayOfWeek[];
                     dispatch(calendarDaysActions.removeRangeAsync(fromAndTo[0].format('YYYY-MM-DD'), fromAndTo[1].format('YYYY-MM-DD'), daysOfWeek));
                     break;
             }
@@ -84,7 +87,10 @@ export const CalendarDaysRemovePage = () => {
                         tab={<><LineOutlined/>One</>}
                         key="One"
                     >
-                        <Form.Item name="date" label={'Date'}>
+                        <Form.Item
+                            name={nameof<CalendarDaysRemoveVars>('date')}
+                            label={'Date'}
+                        >
                             <DatePicker
                                 className={'w-100'}
                                 dateRender={current => dateRender(current, calendarDays)}
@@ -95,13 +101,19 @@ export const CalendarDaysRemovePage = () => {
                         tab={<><UnorderedListOutlined/>Range</>}
                         key="Range"
                     >
-                        <Form.Item name="fromAndTo" label={'From and to'}>
+                        <Form.Item
+                            name="fromAndTo"
+                            label={'From and to'}
+                        >
                             <RangePicker
                                 className={'w-100'}
                                 dateRender={current => dateRender(current, calendarDays)}
                             />
                         </Form.Item>
-                        <Form.Item name="daysOfWeek" label={'Days of week'}>
+                        <Form.Item
+                            name={nameof<CalendarDaysRemoveRangeInputType>('daysOfWeek')}
+                            label={'Days of week'}
+                        >
                             <Select
                                 className={'w-100'}
                                 mode="multiple"

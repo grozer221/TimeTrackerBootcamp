@@ -1,6 +1,6 @@
 import {Checkbox, DatePicker, Form, InputNumber, Modal, Select, Tabs, Typography} from 'antd';
-import React, {useEffect, useState} from 'react';
-import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import React, {useState} from 'react';
+import {useNavigate, useSearchParams} from "react-router-dom";
 import {useForm} from "antd/es/form/Form";
 import moment, {Moment} from "moment";
 import {LineOutlined, UnorderedListOutlined} from "@ant-design/icons";
@@ -9,15 +9,10 @@ import {calendarDaysActions} from "../../store/calendarDays.actions";
 import {RootState} from "../../../../store/store";
 import {DayKind} from "../../../../graphQL/enums/DayKind";
 import {DayOfWeek} from "../../../../graphQL/enums/DayOfWeek";
-import {uppercaseToWords} from "../../../../utils/stringUtils";
+import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {dateRender} from "../../../../convertors/dateRender";
-import {
-    CalendarDaysCreateInputType,
-    CalendarDaysCreateRangeInputType
-} from "../../graphQL/calendarDays.mutations";
+import {CalendarDaysCreateInputType, CalendarDaysCreateRangeInputType} from "../../graphQL/calendarDays.mutations";
 import Input from "antd/es/input/Input";
-import {isAdministratorOrHavePermissions} from "../../../../utils/permissions";
-import {Permission} from "../../../../graphQL/enums/Permission";
 import {formStyles} from "../../../../assets/form";
 
 const {Title} = Typography;
@@ -45,18 +40,19 @@ export const CalendarDaysCreatePage = () => {
     const onFinish = async () => {
         try {
             await form.validateFields();
-            const override = form.getFieldValue('override');
-            const title = form.getFieldValue('title');
-            const kind = form.getFieldValue('kind');
-            const percentageWorkHours = form.getFieldValue('percentageWorkHours')
+            const override = form.getFieldValue(nameof<CalendarDaysCreateInputType>('override'));
+            const title = form.getFieldValue(nameof<CalendarDaysCreateInputType>('title'));
+            const kind = form.getFieldValue(nameof<CalendarDaysCreateInputType>('kind'));
+            const percentageWorkHours = form.getFieldValue(nameof<CalendarDaysCreateInputType>('percentageWorkHours'))
             switch (tab) {
                 case 'One':
-                    if (!form.getFieldValue('date')) {
-                        form.setFields([{name: 'date', errors: ['Date is required']}])
+                    const dateFieldName = nameof<CalendarDaysCreateInputType>('date');
+                    if (!form.getFieldValue(dateFieldName)) {
+                        form.setFields([{name: dateFieldName, errors: ['Date is required']}])
                         break
                     }
                     const calendarDaysCreateInputType: CalendarDaysCreateInputType = {
-                        date: (form.getFieldValue('date') as Moment).format('YYYY-MM-DD'),
+                        date: (form.getFieldValue(dateFieldName) as Moment).format('YYYY-MM-DD'),
                         title,
                         kind,
                         percentageWorkHours,
@@ -69,12 +65,13 @@ export const CalendarDaysCreatePage = () => {
                         form.setFields([{name: 'fromAndTo', errors: ['From and to is required']}])
                         break
                     }
-                    if (!form.getFieldValue('daysOfWeek')) {
-                        form.setFields([{name: 'daysOfWeek', errors: ['Day of weeks is required']}])
+                    const daysOfWeekFieldName = nameof<CalendarDaysCreateRangeInputType>('daysOfWeek');
+                    if (!form.getFieldValue(daysOfWeekFieldName)) {
+                        form.setFields([{name: daysOfWeekFieldName, errors: ['Day of weeks is required']}])
                         break
                     }
                     const fromAndTo = form.getFieldValue('fromAndTo') as Moment[];
-                    const daysOfWeek = form.getFieldValue('daysOfWeek') as DayOfWeek[];
+                    const daysOfWeek = form.getFieldValue(daysOfWeekFieldName) as DayOfWeek[];
                     const calendarDaysCreateRangeInputType: CalendarDaysCreateRangeInputType = {
                         from: fromAndTo[0].format('YYYY-MM-DD'),
                         to: fromAndTo[1].format('YYYY-MM-DD'),
@@ -119,7 +116,10 @@ export const CalendarDaysCreatePage = () => {
                         tab={<><LineOutlined/>One</>}
                         key="One"
                     >
-                        <Form.Item name="date" label={'Date'}>
+                        <Form.Item
+                            name={nameof<CalendarDaysCreateInputType>('date')}
+                            label={'Date'}
+                        >
                             <DatePicker
                                 placeholder={'Date'}
                                 className={'w-100'}
@@ -137,7 +137,10 @@ export const CalendarDaysCreatePage = () => {
                                 dateRender={current => dateRender(current, calendarDays)}
                             />
                         </Form.Item>
-                        <Form.Item name="daysOfWeek" label={'Days of week'}>
+                        <Form.Item
+                            name={nameof<CalendarDaysCreateRangeInputType>('daysOfWeek')}
+                            label={'Days of week'}
+                        >
                             <Select
                                 className={'w-100'}
                                 mode="multiple"
@@ -153,11 +156,14 @@ export const CalendarDaysCreatePage = () => {
                         </Form.Item>
                     </TabPane>
                 </Tabs>
-                <Form.Item name="title" label={'Title'}>
+                <Form.Item
+                    name={nameof<CalendarDaysCreateRangeInputType>('title')}
+                    label={'Title'}
+                >
                     <Input placeholder={'Title'}/>
                 </Form.Item>
                 <Form.Item
-                    name="kind"
+                    name={nameof<CalendarDaysCreateRangeInputType>('kind')}
                     label="Kind"
                     rules={[{required: true, message: 'Kind is required'}]}
                 >
@@ -170,7 +176,7 @@ export const CalendarDaysCreatePage = () => {
                     </Select>
                 </Form.Item>
                 <Form.Item
-                    name="percentageWorkHours"
+                    name={nameof<CalendarDaysCreateRangeInputType>('percentageWorkHours')}
                     label="% work hours"
                     rules={[{required: true, message: '% work hours is required'}]}
                 >
@@ -182,7 +188,10 @@ export const CalendarDaysCreatePage = () => {
                         max={100}
                     />
                 </Form.Item>
-                <Form.Item name="override" valuePropName="checked">
+                <Form.Item
+                    name={nameof<CalendarDaysCreateRangeInputType>('override')}
+                    valuePropName="checked"
+                >
                     <Checkbox>Override</Checkbox>
                 </Form.Item>
             </Form>

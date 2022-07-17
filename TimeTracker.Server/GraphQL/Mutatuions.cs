@@ -1,6 +1,7 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.CalendarDays;
+using TimeTracker.Server.GraphQL.Modules.Settings;
 using TimeTracker.Server.GraphQL.Modules.Tracks;
 using TimeTracker.Server.GraphQL.Modules.Users;
 
@@ -10,20 +11,24 @@ namespace TimeTracker.Server.GraphQL
     {
         public Mutations()
         {
-            Field<AuthMutations>()
+            Field<NonNullGraphType<AuthMutations>>()
                 .Name("Auth")
                 .Resolve(_ => new { });
 
-            Field<TracksMutation>()
+            Field<NonNullGraphType<TracksMutation>>()
                 .Name("Tracks")
                 .Resolve(_ => new { });
             
-            Field<UsersMutations>()
+            Field<NonNullGraphType<UsersMutations>>()
                 .Name("Users")
                 .Resolve(_ => new { });
             
-            Field<CalendarDaysMutations>()
+            Field<NonNullGraphType<CalendarDaysMutations>>()
                 .Name("CalendarDays")
+                .Resolve(_ => new { });
+            
+            Field<NonNullGraphType<SettingsMutations>>()
+                .Name("Settings")
                 .Resolve(_ => new { });
         }
     }

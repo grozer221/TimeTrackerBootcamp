@@ -17,7 +17,6 @@ namespace TimeTracker.Server.Extensions
         public static IServiceCollection AddGraphQLApi(this IServiceCollection services)
         {
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient);
-            services.AddMemoryCache();
             services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
             services.AddSingleton<IDocumentExecuter, DocumentExecuter>();
 

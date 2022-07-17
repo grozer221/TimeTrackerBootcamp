@@ -13,7 +13,7 @@ import {
     DownOutlined,
     FieldTimeOutlined,
     LogoutOutlined,
-    ProfileOutlined,
+    ProfileOutlined, SettingOutlined,
     UsergroupAddOutlined
 } from "@ant-design/icons";
 import {RootState} from "../../store/store";
@@ -84,6 +84,11 @@ export const AppLayout: FC<Props> = ({children}) => {
             key: '/users',
             icon: <UsergroupAddOutlined/>,
             label: <Link to={'users'}>Users</Link>,
+        },
+        {
+            key: '/settings',
+            icon: <SettingOutlined/>,
+            label: <Link to={'settings/common'}>Settings</Link>,
         },
     ]
 

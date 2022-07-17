@@ -7,10 +7,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {calendarDaysActions} from "../../store/calendarDays.actions";
 import {RootState} from "../../../../store/store";
 import {DayKind} from "../../../../graphQL/enums/DayKind";
-import {uppercaseToWords} from "../../../../utils/stringUtils";
+import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {dateRender} from "../../../../convertors/dateRender";
 import Title from 'antd/lib/typography/Title';
 import {formStyles} from "../../../../assets/form";
+import {CalendarDaysUpdateInputType} from "../../graphQL/calendarDays.mutations";
 
 export const CalendarDaysUpdatePage = () => {
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
@@ -26,11 +27,11 @@ export const CalendarDaysUpdatePage = () => {
         try {
             await form.validateFields();
             dispatch(calendarDaysActions.updateAsync({
-                id: form.getFieldValue('id'),
-                date: (form.getFieldValue('date') as Moment).format('YYYY-MM-DD'),
-                title: form.getFieldValue('title'),
-                kind: form.getFieldValue('kind'),
-                percentageWorkHours: form.getFieldValue('percentageWorkHours'),
+                id: form.getFieldValue(nameof<CalendarDaysUpdateInputType>('id')),
+                date: (form.getFieldValue(nameof<CalendarDaysUpdateInputType>('date')) as Moment).format('YYYY-MM-DD'),
+                title: form.getFieldValue(nameof<CalendarDaysUpdateInputType>('title')),
+                kind: form.getFieldValue(nameof<CalendarDaysUpdateInputType>('kind')),
+                percentageWorkHours: form.getFieldValue(nameof<CalendarDaysUpdateInputType>('percentageWorkHours')),
             }))
         } catch (e) {
             console.log(e);
@@ -62,21 +63,30 @@ export const CalendarDaysUpdatePage = () => {
                 }}
                 labelCol={formStyles}
             >
-                <Form.Item name="id" className={'invisible'}>
+                <Form.Item
+                    name={nameof<CalendarDaysUpdateInputType>('id')}
+                    className={'invisible'}
+                >
                     <Input type={'hidden'}/>
                 </Form.Item>
-                <Form.Item name="date" label={'Date'}>
+                <Form.Item
+                    name={nameof<CalendarDaysUpdateInputType>('date')}
+                    label={'Date'}
+                >
                     <DatePicker
                         placeholder={'Date'}
                         className={'w-100'}
                         dateRender={current => dateRender(current, calendarDays)}
                     />
                 </Form.Item>
-                <Form.Item name="title" label={'Title'}>
+                <Form.Item
+                    name={nameof<CalendarDaysUpdateInputType>('title')}
+                    label={'Title'}
+                >
                     <Input placeholder={'Title'}/>
                 </Form.Item>
                 <Form.Item
-                    name="kind"
+                    name={nameof<CalendarDaysUpdateInputType>('kind')}
                     label="Kind"
                     rules={[{required: true, message: 'Kind is required'}]}
                 >
@@ -89,7 +99,7 @@ export const CalendarDaysUpdatePage = () => {
                     </Select>
                 </Form.Item>
                 <Form.Item
-                    name="percentageWorkHours"
+                    name={nameof<CalendarDaysUpdateInputType>('percentageWorkHours')}
                     label="% work hours"
                     rules={[{required: true, message: '% work hours is required'}]}
                 >
