@@ -6,15 +6,15 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
 {
     public class SettingsTasksUpdateInput : IModelable<SettingsTasks>
     {
-        public TimeOnly CalculateSalaryForFullTimer { get; set; }
+        public TimeOnly AutoSetWorkingHoursForFullTimers { get; set; }
 
         public SettingsTasks ToModel()
         {
-            var calculateSalaryForFullTimerDateTime = new DateTime(2022, 1, 1);
-            calculateSalaryForFullTimerDateTime += CalculateSalaryForFullTimer.ToTimeSpan();
+            var autoSetWorkingHoursForFullTimersDateTime = new DateTime(2022, 1, 1);
+            autoSetWorkingHoursForFullTimersDateTime += AutoSetWorkingHoursForFullTimers.ToTimeSpan();
             return new SettingsTasks
             {
-                CalculateSalaryForFullTimer = calculateSalaryForFullTimerDateTime,
+                AutoSetWorkingHoursForFullTimers = autoSetWorkingHoursForFullTimersDateTime,
             };
         }
     }
@@ -24,8 +24,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
         public SettingsTasksUpdateInputType()
         {
             Field<TimeOnlyGraphType, TimeOnly>()
-                 .Name("CalculateSalaryForFullTimer")
-                 .Resolve(context => context.Source.CalculateSalaryForFullTimer);
+                 .Name("AutoSetWorkingHoursForFullTimers")
+                 .Resolve(context => context.Source.AutoSetWorkingHoursForFullTimers);
         }
     }
 }

@@ -2,6 +2,6 @@
 {
     public class SettingsTasks
     {
-        public DateTime CalculateSalaryForFullTimer { get; set; }
+        public DateTime AutoSetWorkingHoursForFullTimers { get; set; }
     }
 }

@@ -21,7 +21,6 @@ import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
 
-
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
     const isAuth = useSelector((state: RootState) => state.auth.isAuth)

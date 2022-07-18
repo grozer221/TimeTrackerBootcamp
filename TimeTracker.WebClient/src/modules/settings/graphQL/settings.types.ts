@@ -1,8 +1,8 @@
 export type Settings = {
     id: string,
-    employment: SettingsEmployment,
-    application: SettingsApplication,
-    tasks: SettingsTasks,
+    employment?: SettingsEmployment,
+    application?: SettingsApplication,
+    tasks?: SettingsTasks,
     createdAt: string,
     updatedAt: string,
 }
@@ -19,5 +19,5 @@ export type SettingsApplication = {
 }
 
 export type SettingsTasks = {
-    calculateSalaryForFullTimer: string,
+    autoSetWorkingHoursForFullTimers: string,
 }

@@ -8,8 +8,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes
         public SettingsTasksType()
         {
             Field<TimeOnlyGraphType, TimeOnly>()
-               .Name("CalculateSalaryForFullTimer")
-               .Resolve(context => TimeOnly.FromDateTime(context.Source.CalculateSalaryForFullTimer));
+               .Name("AutoSetWorkingHoursForFullTimers")
+               .Resolve(context => TimeOnly.FromDateTime(context.Source.AutoSetWorkingHoursForFullTimers));
         }
     }
 }

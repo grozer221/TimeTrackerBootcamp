@@ -1,11 +1,12 @@
 import {ApolloClient, createHttpLink, InMemoryCache} from '@apollo/client';
 import {schema} from './schema';
 import {setContext} from '@apollo/client/link/context';
+import {getJwtToken} from "../utils/localStorageUtils";
 
 const authLink = setContext((_, {headers}) => ({
     headers: {
         ...headers,
-        authorization: localStorage.getItem('TOKEN') || '',
+        authorization: getJwtToken() || '',
     },
 }));
 

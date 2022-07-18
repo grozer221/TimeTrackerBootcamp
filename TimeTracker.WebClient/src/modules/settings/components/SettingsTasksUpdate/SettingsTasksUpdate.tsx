@@ -1,17 +1,20 @@
-import {Col, Form, Row, TimePicker} from 'antd';
-import React, {FC} from 'react';
+import {Col, Form, Row, Space, TimePicker} from 'antd';
+import React, {FC, useEffect, useRef} from 'react';
 import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
-import {ButtonSubmit} from "../../../../components/ButtonSubmit/ButtonSubmit";
+import {ButtonSaveChanges} from "../../../../components/ButtonSaveChanges/ButtonSaveChanges";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../../store/store";
 import {nameof} from "../../../../utils/stringUtils";
 import {SettingsTasksUpdateInputType} from "../../graphQL/settings.mutations";
 import moment, {Moment} from "moment";
 import {settingsActions} from "../../store/settings.actions";
+import {getHeaderExtraButtonsElement} from "../../../../components/AppLayout/AppLayout";
+import {createPortal} from "react-dom";
+import {ButtonDiscardChanges} from "../../../../components/ButtonDiscardChanges/ButtonDiscardChanges";
 
 type FormValues = {
-    calculateSalaryForFullTimer: Moment,
+    autoSetWorkingHoursForFullTimers: Moment,
 }
 
 export const SettingsTasksUpdate: FC = () => {
@@ -19,16 +22,24 @@ export const SettingsTasksUpdate: FC = () => {
     const dispatch = useDispatch();
     const loading = useSelector((s: RootState) => s.settings.loadingUpdate)
     const settings = useSelector((s: RootState) => s.settings.settings)
+    const headerExtraButtonsElement = useRef(document.createElement('div'))
+
+    useEffect(() => {
+        getHeaderExtraButtonsElement().appendChild(headerExtraButtonsElement.current);
+        return () => {
+            getHeaderExtraButtonsElement().removeChild(headerExtraButtonsElement.current);
+        }
+    }, [])
 
     const onFinish = (values: FormValues) => {
         const settingsTasksUpdateInputType: SettingsTasksUpdateInputType = {
-            calculateSalaryForFullTimer: values.calculateSalaryForFullTimer.format('HH:mm:ss'),
+            autoSetWorkingHoursForFullTimers: values.autoSetWorkingHoursForFullTimers?.format('HH:mm:ss'),
         }
         dispatch(settingsActions.updateTasksAsync(settingsTasksUpdateInputType));
     };
 
     const initialValues: FormValues = {
-        calculateSalaryForFullTimer: moment(settings?.tasks.calculateSalaryForFullTimer, 'HH:mm:ss'),
+        autoSetWorkingHoursForFullTimers: moment(settings?.tasks?.autoSetWorkingHoursForFullTimers, 'HH:mm:ss'),
     }
 
     return (
@@ -38,20 +49,25 @@ export const SettingsTasksUpdate: FC = () => {
             onFinish={onFinish}
             labelCol={formStyles}
             initialValues={initialValues}
+            onReset={() => form.resetFields()}
         >
             <Row gutter={16}>
                 <Col span={12}>
                     <Form.Item
-                        label="Calculate salary for full timer"
-                        name={nameof<FormValues>('calculateSalaryForFullTimer')}
+                        label="Auto set working hours for full timers"
+                        name={nameof<FormValues>('autoSetWorkingHoursForFullTimers')}
                     >
-                        <TimePicker placeholder={'Calculate salary for full timer'}/>
+                        <TimePicker placeholder={'Auto set working hours for full timers'}/>
                     </Form.Item>
                 </Col>
             </Row>
-            <ButtonSubmit loading={loading}>
-                Save
-            </ButtonSubmit>
+            {createPortal(
+                <Space>
+                    <ButtonDiscardChanges onClick={() => form.resetFields()}/>
+                    <ButtonSaveChanges loading={loading} onClick={() => form.submit()}/>
+                </Space>,
+                headerExtraButtonsElement.current)
+            }
         </Form>
     );
 };

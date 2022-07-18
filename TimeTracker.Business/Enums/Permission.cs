@@ -9,5 +9,6 @@
         UpdateCalendar,
         Impersonate,
         UpdateSettings,
+        ClearCache,
     }
 }

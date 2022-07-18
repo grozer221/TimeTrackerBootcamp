@@ -31,20 +31,25 @@ namespace TimeTracker.Caching.Managers
 
         public async Task<SettingsModel> UpdateApplicationAsync(SettingsApplication settingsApplication)
         {
-            memoryCache.Remove(GetAsyncKey);
+            ResetCache();
             return await settingsRepository.UpdateApplicationAsync(settingsApplication);
         }
 
         public async Task<SettingsModel> UpdateEmploymentAsync(SettingsEmployment settingsEmployment)
         {
-            memoryCache.Remove(GetAsyncKey);
+            ResetCache();
             return await settingsRepository.UpdateEmploymentAsync(settingsEmployment);
         }
 
         public async Task<SettingsModel> UpdateTasksAsync(SettingsTasks settingsTasks)
         {
-            memoryCache.Remove(GetAsyncKey);
+            ResetCache();
             return await settingsRepository.UpdateTasksAsync(settingsTasks);
+        }
+
+        public void ResetCache()
+        {
+            memoryCache.Remove(GetAsyncKey);
         }
     }
 }

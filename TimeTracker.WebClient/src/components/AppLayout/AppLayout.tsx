@@ -14,12 +14,16 @@ import {
     FieldTimeOutlined,
     LogoutOutlined,
     ProfileOutlined,
+    ReloadOutlined,
     SettingOutlined,
     UsergroupAddOutlined
 } from "@ant-design/icons";
 import {RootState} from "../../store/store";
 import Logo from '../../assets/images/clockify-logo-with-title.png';
 import {ItemType} from "antd/lib/menu/hooks/useItems";
+import {cacheActions} from "../../modules/cache/store/cache.actions";
+import {isAdministratorOrHavePermissions} from "../../utils/permissions";
+import {Permission} from "../../graphQL/enums/Permission";
 
 const {Header, Content, Sider} = Layout;
 
@@ -27,11 +31,14 @@ type Props = {
     children?: React.ReactNode
 }
 
+export const getHeaderExtraButtonsElement = (): HTMLDivElement => document.getElementById('headerExtraButtons') as HTMLDivElement;
+
 export const AppLayout: FC<Props> = ({children}) => {
     const [collapsed, setCollapsed] = useState(false);
     const dispatch = useDispatch()
     const authedUser = useSelector((s: RootState) => s.auth.authedUser);
     const settings = useSelector((s: RootState) => s.settings.settings);
+    const loadingRefreshApp = useSelector((s: RootState) => s.cache.loadingRefreshApp);
 
     const headerMenu = (
         <Menu
@@ -49,7 +56,7 @@ export const AppLayout: FC<Props> = ({children}) => {
                 },
                 {
                     key: 'Logout',
-                    onClick: () => dispatch(authActions.logOutAsync()),
+                    onClick: () => dispatch(authActions.logoutAsync()),
                     label: (
                         <Space>
                             <LogoutOutlined/>
@@ -105,17 +112,31 @@ export const AppLayout: FC<Props> = ({children}) => {
                                 onClick={() => setCollapsed(!collapsed)}
                         />
                         <Link to={'/time-tracker'}>
-                            <img className={s.logo}
-                                 src={settings?.application.logoUrl || Logo}
+                            <img
+                                alt={'Logo'}
+                                className={s.logo}
+                                src={settings?.application?.logoUrl || Logo}
                             />
                         </Link>
                     </Row>
-                    <Dropdown overlay={headerMenu}>
-                        <Space className={s.name}>
-                            <span>{authedUser?.firstName} {authedUser?.lastName}</span>
-                            <DownOutlined/>
-                        </Space>
-                    </Dropdown>
+                    <Space size={40}>
+                        <div id={'headerExtraButtons'}>
+
+                        </div>
+                        {isAdministratorOrHavePermissions([Permission.ClearCache]) &&
+                            <Button
+                                icon={<ReloadOutlined/>}
+                                loading={loadingRefreshApp}
+                                onClick={() => dispatch(cacheActions.refreshAppAsync())}
+                            >Refresh app cache</Button>
+                        }
+                        <Dropdown overlay={headerMenu}>
+                            <Space className={s.name}>
+                                <span>{authedUser?.firstName} {authedUser?.lastName}</span>
+                                <DownOutlined/>
+                            </Space>
+                        </Dropdown>
+                    </Space>
                 </Row>
             </Header>
             <Layout>

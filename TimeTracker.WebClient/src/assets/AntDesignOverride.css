@@ -18,3 +18,7 @@
 .ant-picker {
     width: 100% !important;
 }
+
+.ant-message {
+    margin-top: 40px !important;
+}

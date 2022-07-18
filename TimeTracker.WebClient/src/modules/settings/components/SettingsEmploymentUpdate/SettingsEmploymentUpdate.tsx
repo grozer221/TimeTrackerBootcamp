@@ -1,14 +1,17 @@
-import {Col, Form, Row, Select} from 'antd';
-import React, {FC} from 'react';
+import {Col, Form, Row, Select, Space} from 'antd';
+import React, {FC, useEffect, useRef} from 'react';
 import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
-import {ButtonSubmit} from "../../../../components/ButtonSubmit/ButtonSubmit";
+import {ButtonSaveChanges} from "../../../../components/ButtonSaveChanges/ButtonSaveChanges";
 import {SettingsEmploymentUpdateInputType} from "../../graphQL/settings.mutations";
 import {useDispatch, useSelector} from "react-redux";
 import {settingsActions} from "../../store/settings.actions";
 import {RootState} from "../../../../store/store";
 import {nameof} from "../../../../utils/stringUtils";
 import {range} from "../../../../utils/arrayUtils";
+import {getHeaderExtraButtonsElement} from "../../../../components/AppLayout/AppLayout";
+import {createPortal} from "react-dom";
+import {ButtonDiscardChanges} from "../../../../components/ButtonDiscardChanges/ButtonDiscardChanges";
 
 type FromValues = {
     fullTimeHoursInWorkday?: string,
@@ -20,6 +23,14 @@ export const SettingsEmploymentUpdate: FC = () => {
     const dispatch = useDispatch();
     const loading = useSelector((s: RootState) => s.settings.loadingUpdate)
     const settings = useSelector((s: RootState) => s.settings.settings)
+    const headerExtraButtonsElement = useRef(document.createElement('div'))
+
+    useEffect(() => {
+        getHeaderExtraButtonsElement().appendChild(headerExtraButtonsElement.current);
+        return () => {
+            getHeaderExtraButtonsElement().removeChild(headerExtraButtonsElement.current);
+        }
+    }, [])
 
     const onFinish = (values: FromValues) => {
         const settingsEmploymentUpdateInputType: SettingsEmploymentUpdateInputType = {
@@ -30,8 +41,8 @@ export const SettingsEmploymentUpdate: FC = () => {
     };
 
     const initialValues: FromValues = {
-        fullTimeHoursInWorkday: settings?.employment.fullTimeHoursInWorkday.toString(),
-        partTimeHoursInWorkday: settings?.employment.partTimeHoursInWorkday.map(h => h.toString()),
+        fullTimeHoursInWorkday: settings?.employment?.fullTimeHoursInWorkday.toString(),
+        partTimeHoursInWorkday: settings?.employment?.partTimeHoursInWorkday.map(h => h.toString()),
     }
 
     return (
@@ -41,6 +52,7 @@ export const SettingsEmploymentUpdate: FC = () => {
             onFinish={onFinish}
             labelCol={formStyles}
             initialValues={initialValues}
+            onReset={() => form.resetFields()}
         >
             <Row gutter={16}>
                 <Col span={12}>
@@ -72,9 +84,13 @@ export const SettingsEmploymentUpdate: FC = () => {
                     </Form.Item>
                 </Col>
             </Row>
-            <ButtonSubmit loading={loading}>
-                Save
-            </ButtonSubmit>
+            {createPortal(
+                <Space>
+                    <ButtonDiscardChanges onClick={() => form.resetFields()}/>
+                    <ButtonSaveChanges loading={loading} onClick={() => form.submit()}/>
+                </Space>,
+                headerExtraButtonsElement.current)
+            }
         </Form>
     );
 };

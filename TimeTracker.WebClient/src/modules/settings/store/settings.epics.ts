@@ -76,13 +76,10 @@ export const settingsEmploymentUpdateEpic: Epic<ReturnType<typeof settingsAction
                 mutation: SETTINGS_EMPLOYMENT_UPDATE_MUTATION,
                 variables: {settingsEmploymentUpdateInputType: action.payload},
             })).pipe(
-                mergeMap(response =>
-                    response.data
-                        ? [
-                            settingsActions.setSettings(response.data.settings.updateEmployment),
-                            notificationsActions.addSuccess('Settings common successfully updated')
-                        ]
-                        : [notificationsActions.addError('Response is empty')]
+                mergeMap(response => [
+                        settingsActions.setSettings(response.data?.settings.updateEmployment),
+                        notificationsActions.addSuccess('Settings employment successfully saved')
+                    ]
                 ),
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(settingsActions.setLoadingUpdate(true)),
@@ -99,13 +96,10 @@ export const settingsApplicationUpdateEpic: Epic<ReturnType<typeof settingsActio
                 mutation: SETTINGS_APPLICATION_UPDATE_MUTATION,
                 variables: {settingsApplicationUpdateInputType: action.payload},
             })).pipe(
-                mergeMap(response =>
-                    response.data
-                        ? [
-                            settingsActions.setSettings(response.data.settings.updateApplication),
-                            notificationsActions.addSuccess('Settings application successfully updated')
-                        ]
-                        : [notificationsActions.addError('Response is empty')]
+                mergeMap(response => [
+                        settingsActions.setSettings(response.data?.settings.updateApplication),
+                        notificationsActions.addSuccess('Settings application successfully saved')
+                    ]
                 ),
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(settingsActions.setLoadingUpdate(true)),
@@ -126,7 +120,7 @@ export const settingsTasksUpdateEpic: Epic<ReturnType<typeof settingsActions.upd
                     response.data
                         ? [
                             settingsActions.setSettings(response.data.settings.updateTasks),
-                            notificationsActions.addSuccess('Settings application successfully updated')
+                            notificationsActions.addSuccess('Settings tasks successfully saved')
                         ]
                         : [notificationsActions.addError('Response is empty')]
                 ),

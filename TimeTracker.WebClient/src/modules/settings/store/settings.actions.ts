@@ -9,7 +9,7 @@ import {
 export const prefix = 'SETTINGS_';
 
 export const settingsActions = {
-    setSettings: (settings: Settings) => ({
+    setSettings: (settings?: Settings) => ({
         type: `${prefix}SET_SETTINGS`,
         payload: settings,
     } as const),

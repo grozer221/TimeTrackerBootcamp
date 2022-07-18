@@ -41,7 +41,7 @@ export const SETTINGS_APPLICATION_UPDATE_MUTATION = gql`
 export type SettingsTasksUpdateData = { settings: { updateTasks: Settings } }
 export type SettingsTasksUpdateVars = { settingsTasksUpdateInputType: SettingsTasksUpdateInputType }
 export type SettingsTasksUpdateInputType = {
-    calculateSalaryForFullTimer: string,
+    autoSetWorkingHoursForFullTimers: string,
 }
 export const SETTINGS_TASKS_UPDATE_MUTATION = gql`
     ${SETTINGS_FRAGMENT}
