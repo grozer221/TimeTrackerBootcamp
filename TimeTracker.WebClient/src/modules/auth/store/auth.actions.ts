@@ -9,15 +9,18 @@ export const authActions = {
     } as const),
     meAsync: () => ({
         type: 'ME_ASYNC',
-        payload: {},
+    } as const),
+    setLoadingMe: (loading: boolean) => ({
+        type: 'SET_LOADING_ME',
+        payload: loading,
     } as const),
     setAuthedUser: (user?: User | null, token?: string | null) => ({
         type: 'SET_AUTHED_USER',
         payload: {user, token},
     } as const),
-    logOutAsync: () => ({
+    logoutAsync: () => ({
         type: 'LOG_OUT_ASYNC'
-    } as const)
+    } as const),
 };
 
 export type UsersActionCreatorTypes = ValueOf<typeof authActions>;

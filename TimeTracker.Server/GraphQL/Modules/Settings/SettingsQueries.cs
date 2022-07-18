@@ -9,12 +9,11 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
 {
     public class SettingsQueries : ObjectGraphType
     {
-        public SettingsQueries(ISettingsRepository settingsRepository,ISettingsManager settingsManager)
+        public SettingsQueries(ISettingsManager settingsManager)
         {
             Field<NonNullGraphType<SettingsType>, SettingsModel>()
                .Name("Get")
-               .ResolveAsync(async context => await settingsManager.GetAsync())
-               .AuthorizeWith(AuthPolicies.Authenticated);
+               .ResolveAsync(async context => await settingsManager.GetAsync());
         }
     }
 }

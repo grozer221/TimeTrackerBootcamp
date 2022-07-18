@@ -1,22 +1,46 @@
-import {Col, Form, Input, Row} from 'antd';
-import React, {FC} from 'react';
+import {Col, Form, Row, Space, TimePicker} from 'antd';
+import React, {FC, useEffect, useRef} from 'react';
 import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
-import {ButtonSubmit} from "../../../../components/ButtonSubmit/ButtonSubmit";
+import {ButtonSaveChanges} from "../../../../components/ButtonSaveChanges/ButtonSaveChanges";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../../store/store";
-import {notificationsActions} from "../../../notifications/store/notifications.actions";
+import {nameof} from "../../../../utils/stringUtils";
+import {SettingsTasksUpdateInputType} from "../../graphQL/settings.mutations";
+import moment, {Moment} from "moment";
+import {settingsActions} from "../../store/settings.actions";
+import {getHeaderExtraButtonsElement} from "../../../../components/AppLayout/AppLayout";
+import {createPortal} from "react-dom";
+import {ButtonDiscardChanges} from "../../../../components/ButtonDiscardChanges/ButtonDiscardChanges";
 
-type Props = {};
-export const SettingsTasksUpdate: FC<Props> = ({}) => {
+type FormValues = {
+    autoSetWorkingHoursForFullTimers: Moment,
+}
+
+export const SettingsTasksUpdate: FC = () => {
     const [form] = useForm();
     const dispatch = useDispatch();
     const loading = useSelector((s: RootState) => s.settings.loadingUpdate)
     const settings = useSelector((s: RootState) => s.settings.settings)
+    const headerExtraButtonsElement = useRef(document.createElement('div'))
 
-    const onFinish = () => {
-        dispatch(notificationsActions.addInfo('No actions'))
+    useEffect(() => {
+        getHeaderExtraButtonsElement().appendChild(headerExtraButtonsElement.current);
+        return () => {
+            getHeaderExtraButtonsElement().removeChild(headerExtraButtonsElement.current);
+        }
+    }, [])
+
+    const onFinish = (values: FormValues) => {
+        const settingsTasksUpdateInputType: SettingsTasksUpdateInputType = {
+            autoSetWorkingHoursForFullTimers: values.autoSetWorkingHoursForFullTimers?.format('HH:mm:ss'),
+        }
+        dispatch(settingsActions.updateTasksAsync(settingsTasksUpdateInputType));
     };
+
+    const initialValues: FormValues = {
+        autoSetWorkingHoursForFullTimers: moment(settings?.tasks?.autoSetWorkingHoursForFullTimers, 'HH:mm:ss'),
+    }
 
     return (
         <Form
@@ -24,72 +48,26 @@ export const SettingsTasksUpdate: FC<Props> = ({}) => {
             name="SettingsTasksUpdateForm"
             onFinish={onFinish}
             labelCol={formStyles}
-            initialValues={{}}
+            initialValues={initialValues}
+            onReset={() => form.resetFields()}
         >
             <Row gutter={16}>
-                <Col span={6}>
+                <Col span={12}>
                     <Form.Item
-                        label="Input"
-                        name="Input"
+                        label="Auto set working hours for full timers"
+                        name={nameof<FormValues>('autoSetWorkingHoursForFullTimers')}
                     >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input1"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input2"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input3"
-                    >
-                        <Input placeholder="Input"/>
+                        <TimePicker placeholder={'Auto set working hours for full timers'}/>
                     </Form.Item>
                 </Col>
             </Row>
-            <Row gutter={16}>
-                <Col span={6}>
-
-                    <Form.Item
-                        label="Input"
-                        name="Input4"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input5"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input6"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-            </Row>
-            <ButtonSubmit loading={loading}>
-                Save
-            </ButtonSubmit>
+            {createPortal(
+                <Space>
+                    <ButtonDiscardChanges onClick={() => form.resetFields()}/>
+                    <ButtonSaveChanges loading={loading} onClick={() => form.submit()}/>
+                </Space>,
+                headerExtraButtonsElement.current)
+            }
         </Form>
     );
 };

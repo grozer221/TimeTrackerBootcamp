@@ -8,7 +8,7 @@ namespace TimeTracker.Caching
         {
             get => new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(1));
         }
-        public static MemoryCacheEntryOptions MemoryCacheEntryOptionsHours24
+        public static MemoryCacheEntryOptions MemoryCacheEntryOptionsDays1
         {
             get => new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromHours(24));
         }

@@ -2,6 +2,7 @@
 using GraphQL;
 using GraphQL.Types;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.Extensions;
@@ -12,7 +13,8 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
 {
     public class CalendarDaysMutations : ObjectGraphType
     {
-        public CalendarDaysMutations(ICalendarDayRepository calendarDayRepository, 
+        public CalendarDaysMutations(
+            ICalendarDayManager calendarDayManager, 
             IHttpContextAccessor httpContextAccessor, 
             IValidator<CalendarDaysCreateInput> calendarDaysCreateInputValidator,
             IValidator<CalendarDaysCreateRangeInput> calendarDaysCreateRangeInputValidator,
@@ -29,7 +31,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                    var calendarDaysCreateInput = context.GetArgument<CalendarDaysCreateInput>("CalendarDaysCreateInputType");
                    await calendarDaysCreateInputValidator.ValidateAndThrowAsync(calendarDaysCreateInput);
                    var calendarDay = calendarDaysCreateInput.ToModel();
-                   return await calendarDayRepository.CreateAsync(calendarDay);
+                   return await calendarDayManager.CreateAsync(calendarDay);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
 
@@ -42,11 +44,11 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                        throw new ExecutionError("You do not have permissions for create calendar day");
                    var calendarDaysCreateRangeInput = context.GetArgument<CalendarDaysCreateRangeInput>("CalendarDaysCreateRangeInputType");
                    calendarDaysCreateRangeInputValidator.ValidateAndThrow(calendarDaysCreateRangeInput);
-                   var calendarDays = await calendarDaysCreateRangeInput.ToListAsync(calendarDayRepository);
+                   var calendarDays = await calendarDaysCreateRangeInput.ToListAsync(calendarDayManager);
                    var createdCalendarDays = new List<CalendarDayModel>();
                    foreach (var calendarDay in calendarDays)
                    {
-                       var createdCalendarDay = await calendarDayRepository.CreateAsync(calendarDay);
+                       var createdCalendarDay = await calendarDayManager.CreateAsync(calendarDay);
                        createdCalendarDays.Add(createdCalendarDay);
                    }
                    return createdCalendarDays;
@@ -63,7 +65,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                    var calendarDaysUpdateInput = context.GetArgument<CalendarDaysUpdateInput>("CalendarDaysUpdateInputType");
                    calendarDaysUpdateInputValidator.ValidateAndThrow(calendarDaysUpdateInput);
                    var calendarDay = calendarDaysUpdateInput.ToModel();
-                   return await calendarDayRepository.UpdateAsync(calendarDay);
+                   return await calendarDayManager.UpdateAsync(calendarDay);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
 
@@ -75,7 +77,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                    if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.UpdateCalendar))
                        throw new ExecutionError("You do not have permissions for remove calendar day");
                    var date = context.GetArgument<DateTime>("Date");
-                   return await calendarDayRepository.RemoveAsync(date);
+                   return await calendarDayManager.RemoveAsync(date);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
             
@@ -88,11 +90,11 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                        throw new ExecutionError("You do not have permissions for remove calendar day");
                    var calendarDaysRemoveRangeInput = context.GetArgument<CalendarDaysRemoveRangeInput>("CalendarDaysRemoveRangeInputType");
                    calendarDaysRemoveRangeInputValidator.ValidateAndThrow(calendarDaysRemoveRangeInput);
-                   var dates = await calendarDaysRemoveRangeInput.ToDatesListAsync(calendarDayRepository);
+                   var dates = await calendarDaysRemoveRangeInput.ToDatesListAsync(calendarDayManager);
                    var removedCalendarDays = new List<CalendarDayModel>();
                    foreach (var date in dates)
                    {
-                       var removedCalendarDay = await calendarDayRepository.RemoveAsync(date);
+                       var removedCalendarDay = await calendarDayManager.RemoveAsync(date);
                        removedCalendarDays.Add(removedCalendarDay);
                    }
                    return removedCalendarDays;

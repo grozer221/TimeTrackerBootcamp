@@ -1,16 +1,24 @@
-.ant-col.ant-col-24.ant-form-item-label{
+.ant-col.ant-col-24.ant-form-item-label {
     padding: 0 !important;
     margin-bottom: -5px;
 }
 
-.ant-row.ant-form-item{
+.ant-row.ant-form-item {
     margin-bottom: 12px;
 }
 
-.ant-modal-header{
+.ant-modal-header {
     padding-bottom: 0 !important;
 }
 
-.ant-modal-body{
+.ant-modal-body {
     padding-top: 0 !important;
+}
+
+.ant-picker {
+    width: 100% !important;
+}
+
+.ant-message {
+    margin-top: 40px !important;
 }

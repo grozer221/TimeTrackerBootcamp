@@ -4,4 +4,7 @@ export enum Permission {
     UpdateOthersTimeTracker = 'UPDATE_OTHERS_TIME_TRACKER',
     NoteTheAbsenceAndVocation = 'NOTE_THE_ABSENCE_AND_VOCATION',
     UpdateCalendar = 'UPDATE_CALENDAR',
+    Impersonate = 'IMPERSONATE',
+    UpdateSettings = 'UPDATE_SETTINGS',
+    ClearCache = 'CLEAR_CACHE',
 }

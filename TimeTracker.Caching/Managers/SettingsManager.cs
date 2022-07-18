@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
-using TimeTracker.Business.Models.Settings;
+using TimeTracker.Business.Models.SettingsCategories;
 using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.Caching.Managers
@@ -29,10 +29,27 @@ namespace TimeTracker.Caching.Managers
             return settings;
         }
 
-        public async Task<SettingsModel> UpdateCommonAsync(SettingsCommon settingsCommon)
+        public async Task<SettingsModel> UpdateApplicationAsync(SettingsApplication settingsApplication)
+        {
+            ResetCache();
+            return await settingsRepository.UpdateApplicationAsync(settingsApplication);
+        }
+
+        public async Task<SettingsModel> UpdateEmploymentAsync(SettingsEmployment settingsEmployment)
+        {
+            ResetCache();
+            return await settingsRepository.UpdateEmploymentAsync(settingsEmployment);
+        }
+
+        public async Task<SettingsModel> UpdateTasksAsync(SettingsTasks settingsTasks)
+        {
+            ResetCache();
+            return await settingsRepository.UpdateTasksAsync(settingsTasks);
+        }
+
+        public void ResetCache()
         {
             memoryCache.Remove(GetAsyncKey);
-            return await settingsRepository.UpdateCommonAsync(settingsCommon);
         }
     }
 }
