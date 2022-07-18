@@ -13,7 +13,8 @@ import {
     DownOutlined,
     FieldTimeOutlined,
     LogoutOutlined,
-    ProfileOutlined, SettingOutlined,
+    ProfileOutlined,
+    SettingOutlined,
     UsergroupAddOutlined
 } from "@ant-design/icons";
 import {RootState} from "../../store/store";
@@ -30,6 +31,7 @@ export const AppLayout: FC<Props> = ({children}) => {
     const [collapsed, setCollapsed] = useState(false);
     const dispatch = useDispatch()
     const authedUser = useSelector((s: RootState) => s.auth.authedUser);
+    const settings = useSelector((s: RootState) => s.settings.settings);
 
     const headerMenu = (
         <Menu
@@ -88,7 +90,7 @@ export const AppLayout: FC<Props> = ({children}) => {
         {
             key: '/settings',
             icon: <SettingOutlined/>,
-            label: <Link to={'settings/common'}>Settings</Link>,
+            label: <Link to={'settings/application'}>Settings</Link>,
         },
     ]
 
@@ -104,7 +106,7 @@ export const AppLayout: FC<Props> = ({children}) => {
                         />
                         <Link to={'/time-tracker'}>
                             <img className={s.logo}
-                                 src={Logo}
+                                 src={settings?.application.logoUrl || Logo}
                             />
                         </Link>
                     </Row>

@@ -2,19 +2,54 @@ import {gql} from '@apollo/client';
 import {SETTINGS_FRAGMENT} from "./settings.fragments";
 import {Settings} from "./settings.types";
 
-export type SettingsCommonUpdateData = { settings: { updateCommon: Settings } }
-export type SettingsCommonUpdateVars = { settingsCommonUpdateInputType: SettingsCommonUpdateInputType }
-export type SettingsCommonUpdateInputType = {
+export type SettingsEmploymentUpdateData = { settings: { updateEmployment: Settings } }
+export type SettingsEmploymentUpdateVars = { settingsEmploymentUpdateInputType: SettingsEmploymentUpdateInputType }
+export type SettingsEmploymentUpdateInputType = {
     fullTimeHoursInWorkday: number,
+    partTimeHoursInWorkday: number[]
 }
-export const SETTINGS_COMMON_UPDATE_MUTATION = gql`
+export const SETTINGS_EMPLOYMENT_UPDATE_MUTATION = gql`
     ${SETTINGS_FRAGMENT}
-    mutation SettingsUpdateCommon($settingsCommonUpdateInputType: SettingsCommonUpdateInputType!){
+    mutation SettingsUpdateEmployment($settingsEmploymentUpdateInputType: SettingsEmploymentUpdateInputType!){
         settings {
-            updateCommon(settingsCommonUpdateInputType: $settingsCommonUpdateInputType) {
+            updateEmployment(settingsEmploymentUpdateInputType: $settingsEmploymentUpdateInputType) {
                 ...SettingsFragment
             }
         }
     }
+`;
 
+
+export type SettingsApplicationUpdateData = { settings: { updateApplication: Settings } }
+export type SettingsApplicationUpdateVars = { settingsApplicationUpdateInputType: SettingsApplicationUpdateInputType }
+export type SettingsApplicationUpdateInputType = {
+    title?: string,
+    faviconUrl?: string,
+    logoUrl?: string,
+}
+export const SETTINGS_APPLICATION_UPDATE_MUTATION = gql`
+    ${SETTINGS_FRAGMENT}
+    mutation SettingsUpdateApplication($settingsApplicationUpdateInputType: SettingsApplicationUpdateInputType!){
+        settings {
+            updateApplication(settingsApplicationUpdateInputType: $settingsApplicationUpdateInputType) {
+                ...SettingsFragment
+            }
+        }
+    }
+`;
+
+export type SettingsTasksUpdateData = { settings: { updateTasks: Settings } }
+export type SettingsTasksUpdateVars = { settingsTasksUpdateInputType: SettingsTasksUpdateInputType }
+export type SettingsTasksUpdateInputType = {
+    calculateSalaryForFullTimer: string,
+}
+export const SETTINGS_TASKS_UPDATE_MUTATION = gql`
+    ${SETTINGS_FRAGMENT}
+    mutation SettingsUpdateTasks($settingsTasksUpdateInputType: SettingsTasksUpdateInputType!){
+        settings {
+            updateTasks(settingsTasksUpdateInputType: $settingsTasksUpdateInputType) {
+                ...SettingsFragment
+            }
+        }
+    }
 `;

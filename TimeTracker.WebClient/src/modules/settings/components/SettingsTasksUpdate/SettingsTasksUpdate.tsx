@@ -1,22 +1,35 @@
-import {Col, Form, Input, Row} from 'antd';
+import {Col, Form, Row, TimePicker} from 'antd';
 import React, {FC} from 'react';
 import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
 import {ButtonSubmit} from "../../../../components/ButtonSubmit/ButtonSubmit";
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../../store/store";
-import {notificationsActions} from "../../../notifications/store/notifications.actions";
+import {nameof} from "../../../../utils/stringUtils";
+import {SettingsTasksUpdateInputType} from "../../graphQL/settings.mutations";
+import moment, {Moment} from "moment";
+import {settingsActions} from "../../store/settings.actions";
 
-type Props = {};
-export const SettingsTasksUpdate: FC<Props> = ({}) => {
+type FormValues = {
+    calculateSalaryForFullTimer: Moment,
+}
+
+export const SettingsTasksUpdate: FC = () => {
     const [form] = useForm();
     const dispatch = useDispatch();
     const loading = useSelector((s: RootState) => s.settings.loadingUpdate)
     const settings = useSelector((s: RootState) => s.settings.settings)
 
-    const onFinish = () => {
-        dispatch(notificationsActions.addInfo('No actions'))
+    const onFinish = (values: FormValues) => {
+        const settingsTasksUpdateInputType: SettingsTasksUpdateInputType = {
+            calculateSalaryForFullTimer: values.calculateSalaryForFullTimer.format('HH:mm:ss'),
+        }
+        dispatch(settingsActions.updateTasksAsync(settingsTasksUpdateInputType));
     };
+
+    const initialValues: FormValues = {
+        calculateSalaryForFullTimer: moment(settings?.tasks.calculateSalaryForFullTimer, 'HH:mm:ss'),
+    }
 
     return (
         <Form
@@ -24,66 +37,15 @@ export const SettingsTasksUpdate: FC<Props> = ({}) => {
             name="SettingsTasksUpdateForm"
             onFinish={onFinish}
             labelCol={formStyles}
-            initialValues={{}}
+            initialValues={initialValues}
         >
             <Row gutter={16}>
-                <Col span={6}>
+                <Col span={12}>
                     <Form.Item
-                        label="Input"
-                        name="Input"
+                        label="Calculate salary for full timer"
+                        name={nameof<FormValues>('calculateSalaryForFullTimer')}
                     >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input1"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input2"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input3"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-            </Row>
-            <Row gutter={16}>
-                <Col span={6}>
-
-                    <Form.Item
-                        label="Input"
-                        name="Input4"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input5"
-                    >
-                        <Input placeholder="Input"/>
-                    </Form.Item>
-                </Col>
-                <Col span={6}>
-                    <Form.Item
-                        label="Input"
-                        name="Input6"
-                    >
-                        <Input placeholder="Input"/>
+                        <TimePicker placeholder={'Calculate salary for full timer'}/>
                     </Form.Item>
                 </Col>
             </Row>

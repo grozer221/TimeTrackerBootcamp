@@ -9,7 +9,7 @@ namespace TimeTracker.MsSql.Migrations
         {
             Create.Table("Settings")
                  .WithColumn("Id").AsGuid().NotNullable().PrimaryKey()
-                 .WithColumn("CommonString").AsString().NotNullable().WithDefaultValue("")
+                 .WithColumn("CommonString").AsString().NotNullable().WithDefaultValue("{}")
                  .WithColumn("CreatedAt").AsDateTime()
                  .WithColumn("UpdatedAt").AsDateTime();
         }

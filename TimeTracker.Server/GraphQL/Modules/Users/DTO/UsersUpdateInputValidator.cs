@@ -33,7 +33,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
                 .NotEmpty()
                 .NotNull();
 
-            RuleFor(l => l.Permissions);
+            RuleFor(l => l.Permissions)
+                .NotNull()
+                .Must(permissions =>
+                {
+                    return permissions.Count() == permissions.Distinct().Count();
+                })
+                .WithMessage("Permissions can not duplicate");
         }
     }
 }

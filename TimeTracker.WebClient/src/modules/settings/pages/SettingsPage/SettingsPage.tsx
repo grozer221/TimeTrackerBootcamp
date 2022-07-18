@@ -1,9 +1,10 @@
 import React, {FC} from 'react';
 import {Row, Tabs} from "antd";
-import {MinusOutlined, SlidersOutlined} from "@ant-design/icons";
-import {SettingsCommonUpdate} from "../../components/SettingsCommonUpdate/SettingsCommonUpdate";
+import {AppstoreOutlined, MinusOutlined, UserOutlined} from "@ant-design/icons";
+import {SettingsEmploymentUpdate} from "../../components/SettingsEmploymentUpdate/SettingsEmploymentUpdate";
 import {useNavigate, useParams} from "react-router-dom";
 import {SettingsTasksUpdate} from "../../components/SettingsTasksUpdate/SettingsTasksUpdate";
+import {SettingsApplicationUpdate} from "../../components/SettingsApplicationUpdate/SettingsApplicationUpdate";
 
 const {TabPane} = Tabs;
 
@@ -20,10 +21,16 @@ export const SettingsPage: FC<Props> = ({}) => {
                 style={{width: '100%'}}
             >
                 <TabPane
-                    tab={<span><SlidersOutlined/>Common</span>}
-                    key="common"
+                    tab={<span><AppstoreOutlined/>Application</span>}
+                    key="application"
                 >
-                    <SettingsCommonUpdate/>
+                    <SettingsApplicationUpdate/>
+                </TabPane>
+                <TabPane
+                    tab={<span><UserOutlined/>Employment</span>}
+                    key="employment"
+                >
+                    <SettingsEmploymentUpdate/>
                 </TabPane>
                 <TabPane
                     tab={<span><MinusOutlined/>Tasks</span>}

@@ -14,11 +14,13 @@ import {CalendarDaysRemovePage} from "./modules/calendarDays/pages/CalendarDaysR
 import {AppLayout} from "./components/AppLayout/AppLayout";
 import {CalendarDaysViewPage} from "./modules/calendarDays/pages/CalendarDaysViewPage/CalendarDaysViewPage";
 import {AuthLoginPage} from './modules/auth/pages/AuthLoginPage/AuthLoginPage';
+import {SettingsPage} from "./modules/settings/pages/SettingsPage/SettingsPage";
+import {Settings} from "./modules/settings/components/Settings/Settings";
 import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
-import {SettingsPage} from "./modules/settings/pages/SettingsPage/SettingsPage";
+
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -32,11 +34,13 @@ export const App = () => {
         dispatch(authActions.meAsync())
     }, [])
 
+
     if (!initialised)
         return <Loading/>
 
     return (
         <>
+            <Settings/>
             <Notifications/>
             <NavigateTo/>
             {isAuth

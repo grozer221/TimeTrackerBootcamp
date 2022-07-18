@@ -28,3 +28,7 @@ export const getMinMax = <T>(arr: T[]): T[] => {
     })
     return [minEl, maxEl];
 }
+
+export const range = (size: number, startAt: number = 0): ReadonlyArray<number> => {
+    return Array.from(Array(24).keys()).map(i => i + startAt);
+}
