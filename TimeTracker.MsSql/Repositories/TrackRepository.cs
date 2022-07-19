@@ -51,8 +51,11 @@ namespace TimeTracker.MsSql.Repositories
         public async Task<TrackModel> CreateAsync(TrackModel model)
         {
             model.CreatedAt = model.UpdatedAt = DateTime.Now;
-            model.StartTime = DateTime.Now;
-
+            if (model.StartTime == null)
+            {
+                model.StartTime = DateTime.Now;
+            }
+           
             using (IDbConnection db = dapperContext.CreateConnection())
             {
                 string query = @"INSERT INTO Tracks 
@@ -65,18 +68,6 @@ namespace TimeTracker.MsSql.Repositories
             return model;
         }
 
-        public async Task<TrackModel> StopAsync(Guid id)
-        {
-            var endtime = DateTime.Now;
-
-            using (IDbConnection db = dapperContext.CreateConnection())
-            {
-                await db.QueryAsync<TrackModel>("UPDATE Tracks SET EndTime = @EndTime WHERE id = @id", new { endtime, id });
-                return await this.GetByIdAsync(id);
-            }
-        }
-
-        
         public async Task<TrackModel> RemoveAsync(Guid id)
         {
             using (IDbConnection db = dapperContext.CreateConnection())
