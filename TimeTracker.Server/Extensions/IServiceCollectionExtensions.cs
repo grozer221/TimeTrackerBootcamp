@@ -5,6 +5,7 @@ using GraphQL.SystemTextJson;
 using System.Reflection;
 using System.Security.Claims;
 using TimeTracker.Business.Enums;
+using TimeTracker.Server.Abstractions;
 using TimeTracker.Server.GraphQL;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.Middlewares;
@@ -54,7 +55,8 @@ namespace TimeTracker.Server.Extensions
 
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            services.AddSingleton<AuthService>();
+            services.AddSingleton<IAuthService, AuthService>();
+            services.AddSingleton<IFileUploadService, FileUploadService>();
             return services;
         }
     }

@@ -11,14 +11,25 @@ import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {dateRender} from "../../../../convertors/dateRender";
 import Title from 'antd/lib/typography/Title';
 import {formStyles} from "../../../../assets/form";
-import {CalendarDaysUpdateInputType} from "../../graphQL/calendarDays.mutations";
+import {DayOfWeek} from "../../../../graphQL/enums/DayOfWeek";
+
+type FromValues = {
+    id?: string,
+    date?: Moment,
+    fromAndTo?: Moment[],
+    daysOfWeek?: DayOfWeek[],
+    title?: string | null,
+    kind?: DayKind,
+    percentageWorkHours?: number,
+    override?: boolean,
+}
 
 export const CalendarDaysUpdatePage = () => {
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
     const loading = useSelector((s: RootState) => s.calendarDays.loadingUpdate);
     const params = useParams();
     const navigate = useNavigate();
-    const [form] = useForm();
+    const [form] = useForm<FromValues>();
     const dispatch = useDispatch();
     const date = params.date
     const dayInUpdate = calendarDays.find(day => day.date === date);
@@ -27,15 +38,23 @@ export const CalendarDaysUpdatePage = () => {
         try {
             await form.validateFields();
             dispatch(calendarDaysActions.updateAsync({
-                id: form.getFieldValue(nameof<CalendarDaysUpdateInputType>('id')),
-                date: (form.getFieldValue(nameof<CalendarDaysUpdateInputType>('date')) as Moment).format('YYYY-MM-DD'),
-                title: form.getFieldValue(nameof<CalendarDaysUpdateInputType>('title')),
-                kind: form.getFieldValue(nameof<CalendarDaysUpdateInputType>('kind')),
-                percentageWorkHours: form.getFieldValue(nameof<CalendarDaysUpdateInputType>('percentageWorkHours')),
+                id: form.getFieldValue(nameof<FromValues>('id')),
+                date: (form.getFieldValue(nameof<FromValues>('date')) as Moment).format('YYYY-MM-DD'),
+                title: form.getFieldValue(nameof<FromValues>('title')),
+                kind: form.getFieldValue(nameof<FromValues>('kind')),
+                percentageWorkHours: form.getFieldValue(nameof<FromValues>('percentageWorkHours')),
             }))
         } catch (e) {
             console.log(e);
         }
+    }
+
+    const initialValues: FromValues = {
+        id: dayInUpdate?.id,
+        date: moment(dayInUpdate?.date),
+        title: dayInUpdate?.title,
+        kind: dayInUpdate?.kind,
+        percentageWorkHours: dayInUpdate?.percentageWorkHours,
     }
 
     if (!dayInUpdate) {
@@ -55,22 +74,17 @@ export const CalendarDaysUpdatePage = () => {
                 name="CalendarDaysUpdateForm"
                 form={form}
                 onFinish={onFinish}
-                initialValues={{
-                    id: dayInUpdate?.id,
-                    date: moment(dayInUpdate?.date),
-                    kind: dayInUpdate?.kind,
-                    percentageWorkHours: dayInUpdate?.percentageWorkHours,
-                }}
+                initialValues={initialValues}
                 labelCol={formStyles}
             >
                 <Form.Item
-                    name={nameof<CalendarDaysUpdateInputType>('id')}
+                    name={nameof<FromValues>('id')}
                     className={'invisible'}
                 >
                     <Input type={'hidden'}/>
                 </Form.Item>
                 <Form.Item
-                    name={nameof<CalendarDaysUpdateInputType>('date')}
+                    name={nameof<FromValues>('date')}
                     label={'Date'}
                 >
                     <DatePicker
@@ -80,13 +94,13 @@ export const CalendarDaysUpdatePage = () => {
                     />
                 </Form.Item>
                 <Form.Item
-                    name={nameof<CalendarDaysUpdateInputType>('title')}
+                    name={nameof<FromValues>('title')}
                     label={'Title'}
                 >
                     <Input placeholder={'Title'}/>
                 </Form.Item>
                 <Form.Item
-                    name={nameof<CalendarDaysUpdateInputType>('kind')}
+                    name={nameof<FromValues>('kind')}
                     label="Kind"
                     rules={[{required: true, message: 'Kind is required'}]}
                 >
@@ -99,7 +113,7 @@ export const CalendarDaysUpdatePage = () => {
                     </Select>
                 </Form.Item>
                 <Form.Item
-                    name={nameof<CalendarDaysUpdateInputType>('percentageWorkHours')}
+                    name={nameof<FromValues>('percentageWorkHours')}
                     label="% work hours"
                     rules={[{required: true, message: '% work hours is required'}]}
                 >

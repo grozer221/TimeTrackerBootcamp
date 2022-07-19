@@ -34,6 +34,7 @@ namespace TimeTracker.Caching.Managers
             }
             return await memoryCache.GetOrCreateAsync(key, async cacheEntry =>
             {
+                cacheEntry.SetOptions(CachingContext.MemoryCacheEntryOptionsWeek1);
                 return await calendarDayRepository.GetByDateAsync(date);
             });
         }

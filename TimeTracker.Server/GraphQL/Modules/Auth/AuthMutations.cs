@@ -8,6 +8,7 @@ using TimeTracker.Server.Services;
 using TimeTracker.Server.Extensions;
 using Microsoft.Net.Http.Headers;
 using FluentValidation;
+using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
@@ -15,7 +16,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
     {
         public AuthMutations(
             IUserRepository userRepository, 
-            AuthService authService, 
+            IAuthService authService, 
             ITokenRepository tokenRepository, 
             IHttpContextAccessor httpContextAccessor,
             IValidator<AuthLoginInput> authLoginInputValidator,

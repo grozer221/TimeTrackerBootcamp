@@ -5,12 +5,13 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TimeTracker.Business.Enums;
+using TimeTracker.Server.Abstractions;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 
 namespace TimeTracker.Server.Services
 {
-    public class AuthService
+    public class AuthService : IAuthService
     {
         public string GenerateAccessToken(Guid userId, string email, Role role, IEnumerable<Permission>? permissions)
         {
