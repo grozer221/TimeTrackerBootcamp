@@ -8,7 +8,6 @@ using TimeTracker.Server.Services;
 using TimeTracker.Server.Extensions;
 using Microsoft.Net.Http.Headers;
 using FluentValidation;
-using TimeTracker.Server.GraphQL.Modules.Users;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
