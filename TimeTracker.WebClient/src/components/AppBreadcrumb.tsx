@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import {Breadcrumb} from 'antd';
 import {Link, useLocation} from 'react-router-dom';
-import {capitalize} from "../../utils/stringUtils";
+import {capitalize} from "../utils/stringUtils";
 
 export const AppBreadcrumb: FC = () => {
     const location = useLocation();

@@ -29,6 +29,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                    var usersCreateInput = context.GetArgument<UsersCreateInput>("UsersCreateInputType");
                    await usersCreateInputValidator.ValidateAndThrowAsync(usersCreateInput);
                    var user = usersCreateInput.ToModel();
+                   user.Password = user.Password.CreateMD5WithSalt(out var salt);
+                   user.Salt = salt;
                    return await userRepository.CreateAsync(user);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);

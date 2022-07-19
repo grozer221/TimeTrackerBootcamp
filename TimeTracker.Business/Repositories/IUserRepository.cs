@@ -11,7 +11,7 @@ namespace TimeTracker.Business.Repositories
         Task<GetEntitiesResponse<UserModel>> GetAsync(string like, int take, int skip);
         Task<UserModel> CreateAsync(UserModel model);
         Task<UserModel> UpdateAsync(UserModel model);
-        Task UpdatePasswordAsync(Guid id, string password);
+        Task UpdatePasswordAsync(Guid userId, string password, string salt);
         Task<UserModel> RemoveAsync(string email);
     }
 }

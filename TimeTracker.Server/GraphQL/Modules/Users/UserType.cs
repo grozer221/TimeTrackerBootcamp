@@ -37,10 +37,6 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
             Field<EmploymentType, Employment>()
                .Name("Employment")
                .Resolve(context => context.Source.Employment);
-            
-            Field<NonNullGraphType<IntGraphType>, int>()
-               .Name("AmountHoursPerMonth")
-               .Resolve(context => context.Source.AmountHoursPerMonth);
         }
     }
   

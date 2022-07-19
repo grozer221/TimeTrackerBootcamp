@@ -9,7 +9,6 @@ export const USER_FRAGMENT = gql`
         email
         role
         permissions
-        amountHoursPerMonth
         createdAt
         updatedAt
     }

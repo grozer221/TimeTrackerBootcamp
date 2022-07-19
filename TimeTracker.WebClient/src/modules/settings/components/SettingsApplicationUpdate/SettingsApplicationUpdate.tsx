@@ -1,17 +1,14 @@
-import {Col, Form, Image, Input, Row, Space, Typography} from 'antd';
-import React, {FC, useEffect, useRef, useState} from 'react';
+import {Col, Form, Image, Input, Row, Typography} from 'antd';
+import React, {FC, useState} from 'react';
 import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
-import {ButtonSaveChanges} from "../../../../components/ButtonSaveChanges/ButtonSaveChanges";
 import {SettingsApplicationUpdateInputType} from "../../graphQL/settings.mutations";
 import {useDispatch, useSelector} from "react-redux";
 import {settingsActions} from "../../store/settings.actions";
 import {RootState} from "../../../../store/store";
 import {nameof} from "../../../../utils/stringUtils";
-import {createPortal} from "react-dom";
-import {getHeaderExtraButtonsElement} from "../../../../components/AppLayout/AppLayout";
-import {ButtonDiscardChanges} from "../../../../components/ButtonDiscardChanges/ButtonDiscardChanges";
 import {linkRegexPattern} from "../../../../utils/regexUtils";
+import {ExtraHeaderButtons} from "../../../../components/ExtraHeaderButtons";
 
 const {Text} = Typography;
 
@@ -28,14 +25,7 @@ export const SettingsApplicationUpdate: FC = ({}) => {
     const settings = useSelector((s: RootState) => s.settings.settings)
     const [faviconUrlPreview, setFaviconUrlPreview] = useState<string | undefined>(settings?.application?.faviconUrl);
     const [logoUrlPreview, setLogoUrlPreview] = useState<string | undefined>(settings?.application?.logoUrl);
-    const headerExtraButtonsElement = useRef(document.createElement('div'))
 
-    useEffect(() => {
-        getHeaderExtraButtonsElement().appendChild(headerExtraButtonsElement.current);
-        return () => {
-            getHeaderExtraButtonsElement().removeChild(headerExtraButtonsElement.current);
-        }
-    }, [])
 
     const onFinish = (values: FormValues) => {
         const settingsApplicationUpdateInputType: SettingsApplicationUpdateInputType = {
@@ -52,6 +42,12 @@ export const SettingsApplicationUpdate: FC = ({}) => {
         values.hasOwnProperty(nameof<FormValues>('logoUrl')) && setLogoUrlPreview(values.logoUrl);
     }
 
+    const onDiscardChanges = () => {
+        form.resetFields()
+        setFaviconUrlPreview(settings?.application?.faviconUrl)
+        setLogoUrlPreview(settings?.application?.logoUrl)
+    }
+
     const initialValues: FormValues = {
         title: settings?.application?.title,
         faviconUrl: settings?.application?.faviconUrl,
@@ -66,7 +62,6 @@ export const SettingsApplicationUpdate: FC = ({}) => {
             labelCol={formStyles}
             initialValues={initialValues}
             onValuesChange={onValuesChange}
-            onReset={() => form.resetFields()}
         >
             <Row gutter={16}>
                 <Col span={12}>
@@ -92,8 +87,13 @@ export const SettingsApplicationUpdate: FC = ({}) => {
                     >
                         <Input placeholder={'Favicon url'}/>
                     </Form.Item>
+                    <div className={'mt--10'}>
+                        <Text type={'secondary'}>Recommended size 16 x 16 px</Text>
+                    </div>
                     {faviconUrlPreview && !form.getFieldError(nameof<FormValues>('faviconUrl')).length &&
-                        <Image width={'25%'} src={faviconUrlPreview}/>
+                        <div className={'imagePreview'}>
+                            <Image src={faviconUrlPreview}/>
+                        </div>
                     }
                 </Col>
                 <Col span={12}>
@@ -110,20 +110,20 @@ export const SettingsApplicationUpdate: FC = ({}) => {
                         <Input placeholder={'Logo url'}/>
                     </Form.Item>
                     <div className={'mt--10'}>
-                        <Text type={'secondary'}>Recommended size 120x30px</Text>
+                        <Text type={'secondary'}>Recommended size 120 x 30 px</Text>
                     </div>
                     {logoUrlPreview && !form.getFieldError(nameof<FormValues>('logoUrl')).length &&
-                        <Image width={'25%'} src={logoUrlPreview}/>
+                        <div className={'imagePreview'}>
+                            <Image src={logoUrlPreview}/>
+                        </div>
                     }
                 </Col>
             </Row>
-            {createPortal(
-                <Space>
-                    <ButtonDiscardChanges onClick={() => form.resetFields()}/>
-                    <ButtonSaveChanges loading={loading} onClick={() => form.submit()}/>
-                </Space>,
-                headerExtraButtonsElement.current)
-            }
+            <ExtraHeaderButtons
+                onDiscardChanges={onDiscardChanges}
+                onSaveChanges={form.submit}
+                loading={loading}
+            />
         </Form>
     );
 };

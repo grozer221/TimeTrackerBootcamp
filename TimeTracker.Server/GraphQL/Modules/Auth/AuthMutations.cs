@@ -8,6 +8,7 @@ using TimeTracker.Server.Services;
 using TimeTracker.Server.Extensions;
 using Microsoft.Net.Http.Headers;
 using FluentValidation;
+using TimeTracker.Server.GraphQL.Modules.Users;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
@@ -30,7 +31,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     AuthLoginInput authLoginInput = context.GetArgument<AuthLoginInput>("AuthLoginInputType");
                     authLoginInputValidator.ValidateAndThrow(authLoginInput);
                     var user = await userRepository.GetByEmailAsync(authLoginInput.Email);
-                    if (user != null && user.Password != authLoginInput.Password)
+                    if (user == null || !authService.ComparePasswords(authLoginInput.Password, user.Password, user.Salt))
                         throw new Exception("Bad credentials");
                     TokenModel token = new TokenModel
                     {
@@ -68,6 +69,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     AuthRegisterInput authRegisterInput = context.GetArgument<AuthRegisterInput>("AuthRegisterInputType");
                     await authRegisterInputValidator.ValidateAndThrowAsync(authRegisterInput);
                     var user = authRegisterInput.ToModel();
+                    user.Password = user.Password.CreateMD5WithSalt(out var salt);
+                    user.Salt = salt;
                     user.Role = Role.Administrator;
                     user.Permissions = new List<Permission>();
                     user = await userRepository.CreateAsync(user);
@@ -84,7 +87,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     };
                 });
 
-            Field<BooleanGraphType, bool>()
+            Field<NonNullGraphType<BooleanGraphType>, bool>()
                 .Name("ChangePassword")
                 .Argument<NonNullGraphType<AuthChangePasswordInputType>, AuthChangePasswordInput>("AuthChangePasswordInputType", "Argument for change User password")
                 .ResolveAsync(async context =>
@@ -93,10 +96,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     authChangePasswordInputValidation.ValidateAndThrow(authChangePasswordInput);
                     var userId = httpContextAccessor.HttpContext.GetUserId();
                     var user = await userRepository.GetByIdAsync(userId);
-                    if (user.Password != authChangePasswordInput.OldPassword)
+                    if (user == null || !authService.ComparePasswords(authChangePasswordInput.OldPassword, user.Password, user.Salt))
                         throw new Exception("Bad old password");
-                    await userRepository.UpdatePasswordAsync(user.Id, authChangePasswordInput.NewPassword);
-                    await tokenRepository.RemoveAllForUserAsync(userId);
+                    user.Password = authChangePasswordInput.NewPassword.CreateMD5WithSalt(out var salt);
+                    user.Salt = salt;
+                    await userRepository.UpdatePasswordAsync(user.Id, user.Password, user.Salt);
+                    string token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
+                    await tokenRepository.RemoveAllForUserExceptTokenAsync(user.Id, token);
                     return true;
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);

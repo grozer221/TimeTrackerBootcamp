@@ -5,6 +5,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using TimeTracker.Business.Enums;
+using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 
 namespace TimeTracker.Server.Services
@@ -27,6 +28,11 @@ namespace TimeTracker.Server.Services
                 expires: DateTime.Now.AddDays(30),
                 signingCredentials: signingCredentials);
             return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public bool ComparePasswords(string inputPassword, string hashedPassword, string salt)
+        {
+            return (inputPassword + salt).CreateMD5() == hashedPassword;
         }
     }
 }
