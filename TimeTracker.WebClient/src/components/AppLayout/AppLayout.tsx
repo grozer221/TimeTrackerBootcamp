@@ -4,7 +4,7 @@ import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {authActions} from "../../modules/auth/store/auth.actions";
 import s from './AppLayout.module.css';
-import {AppBreadcrumb} from "../AppBreadcrumb/AppBreadcrumb";
+import {AppBreadcrumb} from "../AppBreadcrumb";
 import {
     AppstoreOutlined,
     AuditOutlined,

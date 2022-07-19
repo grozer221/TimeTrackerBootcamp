@@ -6,15 +6,15 @@ import {useDispatch, useSelector} from "react-redux";
 import {calendarDaysActions} from "../../../calendarDays/store/calendarDays.actions";
 import {RootState} from "../../../../store/store";
 import s from './CalendarPage.module.css';
-import {ButtonCreate} from "../../../../components/ButtonCreate/ButtonCreate";
+import {ButtonCreate} from "../../../../components/ButtonCreate";
 import {DayKind} from "../../../../graphQL/enums/DayKind";
-import {ButtonRemove} from "../../../../components/ButtonRemove/ButtonRemove";
+import {ButtonRemove} from "../../../../components/ButtonRemove";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
 import {Loading} from "../../../../components/Loading/Loading";
 import {getDate} from "../../../../utils/dateUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
-import {ButtonUpdate} from "../../../../components/ButtonUpdate/ButtonUpdate";
+import {ButtonUpdate} from "../../../../components/ButtonUpdate";
 
 const {Text} = Typography;
 

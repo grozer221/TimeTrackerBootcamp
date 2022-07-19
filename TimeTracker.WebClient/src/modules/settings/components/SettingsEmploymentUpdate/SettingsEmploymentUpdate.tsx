@@ -1,38 +1,27 @@
-import {Col, Form, Row, Select, Space} from 'antd';
-import React, {FC, useEffect, useRef} from 'react';
+import {Col, Form, Row, Select} from 'antd';
+import React, {FC} from 'react';
 import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
-import {ButtonSaveChanges} from "../../../../components/ButtonSaveChanges/ButtonSaveChanges";
 import {SettingsEmploymentUpdateInputType} from "../../graphQL/settings.mutations";
 import {useDispatch, useSelector} from "react-redux";
 import {settingsActions} from "../../store/settings.actions";
 import {RootState} from "../../../../store/store";
 import {nameof} from "../../../../utils/stringUtils";
 import {range} from "../../../../utils/arrayUtils";
-import {getHeaderExtraButtonsElement} from "../../../../components/AppLayout/AppLayout";
-import {createPortal} from "react-dom";
-import {ButtonDiscardChanges} from "../../../../components/ButtonDiscardChanges/ButtonDiscardChanges";
+import {ExtraHeaderButtons} from "../../../../components/ExtraHeaderButtons";
 
-type FromValues = {
+type FormValues = {
     fullTimeHoursInWorkday?: string,
     partTimeHoursInWorkday?: string[],
 };
 
 export const SettingsEmploymentUpdate: FC = () => {
-    const [form] = useForm();
+    const [form] = useForm<FormValues>();
     const dispatch = useDispatch();
     const loading = useSelector((s: RootState) => s.settings.loadingUpdate)
     const settings = useSelector((s: RootState) => s.settings.settings)
-    const headerExtraButtonsElement = useRef(document.createElement('div'))
 
-    useEffect(() => {
-        getHeaderExtraButtonsElement().appendChild(headerExtraButtonsElement.current);
-        return () => {
-            getHeaderExtraButtonsElement().removeChild(headerExtraButtonsElement.current);
-        }
-    }, [])
-
-    const onFinish = (values: FromValues) => {
+    const onFinish = (values: FormValues) => {
         const settingsEmploymentUpdateInputType: SettingsEmploymentUpdateInputType = {
             fullTimeHoursInWorkday: values.fullTimeHoursInWorkday ? parseInt(values.fullTimeHoursInWorkday) : 0,
             partTimeHoursInWorkday: values.partTimeHoursInWorkday ? values.partTimeHoursInWorkday.map(hour => parseInt(hour)) : [],
@@ -40,7 +29,14 @@ export const SettingsEmploymentUpdate: FC = () => {
         dispatch(settingsActions.updateEmploymentAsync(settingsEmploymentUpdateInputType));
     };
 
-    const initialValues: FromValues = {
+    const onDiscardChanges = () => {
+        form.resetFields()
+        form.setFieldsValue({
+            partTimeHoursInWorkday: settings?.employment?.partTimeHoursInWorkday.map(h => h.toString())
+        })
+    }
+
+    const initialValues: FormValues = {
         fullTimeHoursInWorkday: settings?.employment?.fullTimeHoursInWorkday.toString(),
         partTimeHoursInWorkday: settings?.employment?.partTimeHoursInWorkday.map(h => h.toString()),
     }
@@ -52,13 +48,12 @@ export const SettingsEmploymentUpdate: FC = () => {
             onFinish={onFinish}
             labelCol={formStyles}
             initialValues={initialValues}
-            onReset={() => form.resetFields()}
         >
             <Row gutter={16}>
                 <Col span={12}>
                     <Form.Item
                         label="Full time hours in workday"
-                        name={nameof<FromValues>('fullTimeHoursInWorkday')}
+                        name={nameof<FormValues>('fullTimeHoursInWorkday')}
                         rules={[{required: true, message: 'Full time hours in workday is required'}]}
                     >
                         <Select
@@ -72,7 +67,7 @@ export const SettingsEmploymentUpdate: FC = () => {
                 <Col span={12}>
                     <Form.Item
                         label="Part time hours in workday"
-                        name={nameof<FromValues>('partTimeHoursInWorkday')}
+                        name={nameof<FormValues>('partTimeHoursInWorkday')}
                     >
                         <Select
                             mode="multiple"
@@ -84,13 +79,11 @@ export const SettingsEmploymentUpdate: FC = () => {
                     </Form.Item>
                 </Col>
             </Row>
-            {createPortal(
-                <Space>
-                    <ButtonDiscardChanges onClick={() => form.resetFields()}/>
-                    <ButtonSaveChanges loading={loading} onClick={() => form.submit()}/>
-                </Space>,
-                headerExtraButtonsElement.current)
-            }
+            <ExtraHeaderButtons
+                onDiscardChanges={onDiscardChanges}
+                onSaveChanges={form.submit}
+                loading={loading}
+            />
         </Form>
     );
 };

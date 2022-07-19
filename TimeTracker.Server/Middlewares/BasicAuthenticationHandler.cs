@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -34,7 +35,7 @@ namespace TimeTracker.Server.Middlewares
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            string token = Request.Headers["Authorization"];
+            string token = Request.Headers[HeaderNames.Authorization];
             var handler = new JwtSecurityTokenHandler();
             var validations = new TokenValidationParameters
             {
