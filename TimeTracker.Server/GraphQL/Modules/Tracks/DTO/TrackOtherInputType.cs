@@ -4,19 +4,19 @@ using TimeTracker.Server.GraphQL.Abstractions;
 
 namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
 {
-    public class TrackUpdateInput
+    public class TrackOtherInput
     {
-        public Guid Id { get; set; }
+        public Guid UserId { get; set; }
         public string Title { get; set; }
         public string? Description { get; set; }
-        public DateTime? StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
 
         public TrackModel ToModel()
         {
             return new TrackModel
             {
-                Id = this.Id,
+                UserId = this.UserId,
                 Title = this.Title,
                 Description = this.Description,
                 StartTime = this.StartTime,
@@ -25,13 +25,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
         }
     }
 
-    public class TrackUpdateInputType : InputObjectGraphType<TrackUpdateInput>
+    public class TrackOtherInputType : InputObjectGraphType<TrackOtherInput>
     {
-        public TrackUpdateInputType()
+        public TrackOtherInputType()
         {
             Field<NonNullGraphType<GuidGraphType>, Guid>()
-               .Name("Id")
-               .Resolve(context => context.Source.Id);
+               .Name("UserId")
+               .Resolve(context => context.Source.UserId);
 
             Field<NonNullGraphType<StringGraphType>, string>()
                  .Name("Title")
@@ -41,11 +41,11 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
                  .Name("Description")
                  .Resolve(context => context.Source.Description);
 
-            Field<DateTimeGraphType, DateTime?>()
+            Field<NonNullGraphType<DateTimeGraphType>, DateTime ?>()
                 .Name("StartTime")
                 .Resolve(context => context.Source.StartTime);
 
-            Field<DateTimeGraphType, DateTime?>()
+            Field<NonNullGraphType<DateTimeGraphType>, DateTime?>()
                 .Name("EndTime")
                 .Resolve(context => context.Source.EndTime);
         }
