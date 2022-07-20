@@ -21,7 +21,7 @@ namespace TimeTracker.Server.Extensions
             return (input + salt).CreateMD5();
         }
 
-        private static string CreateSalt(int size)
+        public static string CreateSalt(int size)
         {
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
             byte[] buff = new byte[size];

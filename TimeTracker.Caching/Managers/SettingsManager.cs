@@ -2,6 +2,7 @@
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Models.SettingsCategories;
+using TimeTracker.Business.Models.SettingsCategories.SettingsTasksCategories;
 using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.Caching.Managers
@@ -20,13 +21,11 @@ namespace TimeTracker.Caching.Managers
 
         public async Task<SettingsModel> GetAsync()
         {
-            SettingsModel settings;
-            if (!memoryCache.TryGetValue(GetAsyncKey, out settings))
+            return await memoryCache.GetOrCreateAsync(GetAsyncKey, async cacheEntry =>
             {
-                settings = await settingsRepository.GetAsync();
-                memoryCache.Set(GetAsyncKey, settings, CachingContext.MemoryCacheEntryOptionsWeek1);
-            }
-            return settings;
+                cacheEntry.SetOptions(CachingContext.MemoryCacheEntryOptionsWeek1);
+                return await settingsRepository.GetAsync();
+            });
         }
 
         public async Task<SettingsModel> UpdateApplicationAsync(SettingsApplication settingsApplication)

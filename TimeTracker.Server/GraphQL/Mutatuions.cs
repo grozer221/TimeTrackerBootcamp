@@ -2,6 +2,7 @@
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.Cache;
 using TimeTracker.Server.GraphQL.Modules.CalendarDays;
+using TimeTracker.Server.GraphQL.Modules.Files;
 using TimeTracker.Server.GraphQL.Modules.Settings;
 using TimeTracker.Server.GraphQL.Modules.Tracks;
 using TimeTracker.Server.GraphQL.Modules.Users;
@@ -34,6 +35,10 @@ namespace TimeTracker.Server.GraphQL
             
             Field<NonNullGraphType<CacheMutations>>()
                 .Name("Cache")
+                .Resolve(_ => new { });
+            
+            Field<NonNullGraphType<FilesMutations>>()
+                .Name("Files")
                 .Resolve(_ => new { });
         }
     }

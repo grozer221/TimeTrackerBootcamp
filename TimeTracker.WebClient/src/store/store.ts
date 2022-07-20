@@ -12,6 +12,8 @@ import {settingsReducer} from "../modules/settings/store/settings.reducer";
 import {settingsEpics} from "../modules/settings/store/settings.epics";
 import {cacheReducer} from "../modules/cache/store/cache.reducer";
 import {cacheEpics} from "../modules/cache/store/cache.epics";
+import {filesReducer} from "../modules/files/store/files.reducer";
+import {filesEpics} from "../modules/files/store/files.epics";
 
 const epicMiddleware = createEpicMiddleware();
 
@@ -23,6 +25,7 @@ export const store = createStore(combineReducers({
     navigate: navigateReducer,
     settings: settingsReducer,
     cache: cacheReducer,
+    files: filesReducer,
 }), composeWithDevTools(applyMiddleware(epicMiddleware)));
 
 const rootEpic = combineEpics(
@@ -31,6 +34,7 @@ const rootEpic = combineEpics(
     calendarDaysEpics,
     settingsEpics,
     cacheEpics,
+    filesEpics,
 );
 // @ts-ignore
 epicMiddleware.run(rootEpic);

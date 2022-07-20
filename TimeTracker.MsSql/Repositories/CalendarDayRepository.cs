@@ -1,5 +1,4 @@
 ﻿using Dapper;
-using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 

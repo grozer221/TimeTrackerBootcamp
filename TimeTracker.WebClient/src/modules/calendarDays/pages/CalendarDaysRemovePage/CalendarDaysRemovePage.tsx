@@ -12,19 +12,24 @@ import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {dateRender} from "../../../../convertors/dateRender";
 import Title from "antd/lib/typography/Title";
 import {formStyles} from "../../../../assets/form";
-import {CalendarDaysRemoveRangeInputType, CalendarDaysRemoveVars} from "../../graphQL/calendarDays.mutations";
 
 const {TabPane} = Tabs;
 const {RangePicker} = DatePicker;
 
 type Tab = 'One' | 'Range';
 
+type FromValues = {
+    date?: Moment | '',
+    fromAndTo?: Moment[]
+    daysOfWeek?: DayOfWeek[],
+}
+
 export const CalendarDaysRemovePage = () => {
     const [tab, setTab] = useState<Tab>('One')
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
     const loading = useSelector((s: RootState) => s.calendarDays.loadingRemove);
     const navigate = useNavigate();
-    const [form] = useForm();
+    const [form] = useForm<FromValues>();
     const dispatch = useDispatch();
     const params = useParams();
     const date = params.date && moment(params.date);
@@ -34,7 +39,7 @@ export const CalendarDaysRemovePage = () => {
             await form.validateFields();
             switch (tab) {
                 case 'One':
-                    const dateInputName = nameof<CalendarDaysRemoveVars>('date');
+                    const dateInputName = nameof<FromValues>('date');
                     if (!form.getFieldValue(dateInputName)) {
                         form.setFields([{name: dateInputName, errors: ['Date is required']}])
                         break
@@ -42,16 +47,17 @@ export const CalendarDaysRemovePage = () => {
                     dispatch(calendarDaysActions.removeAsync((form.getFieldValue(dateInputName) as Moment).format('YYYY-MM-DD')));
                     break;
                 case 'Range':
-                    if (!form.getFieldValue('fromAndTo')) {
-                        form.setFields([{name: 'fromAndTo', errors: ['From and to is required']}])
+                    const fromAndToFieldName = nameof<FromValues>('fromAndTo');
+                    if (!form.getFieldValue(fromAndToFieldName)) {
+                        form.setFields([{name: fromAndToFieldName, errors: ['From and to is required']}])
                         break
                     }
-                    const daysOfWeekFieldName = nameof<CalendarDaysRemoveRangeInputType>('daysOfWeek');
+                    const daysOfWeekFieldName = nameof<FromValues>('daysOfWeek');
                     if (!form.getFieldValue(daysOfWeekFieldName)) {
                         form.setFields([{name: daysOfWeekFieldName, errors: ['Day of weeks is required']}])
                         break
                     }
-                    const fromAndTo = form.getFieldValue('fromAndTo') as Moment[];
+                    const fromAndTo = form.getFieldValue(fromAndToFieldName) as Moment[];
                     const daysOfWeek = form.getFieldValue(daysOfWeekFieldName) as DayOfWeek[];
                     dispatch(calendarDaysActions.removeRangeAsync(fromAndTo[0].format('YYYY-MM-DD'), fromAndTo[1].format('YYYY-MM-DD'), daysOfWeek));
                     break;
@@ -61,12 +67,18 @@ export const CalendarDaysRemovePage = () => {
         }
     }
 
+    const initialValues: FromValues = {
+        date: date,
+        fromAndTo: [],
+        daysOfWeek: Object.values(DayOfWeek),
+    }
+
     return (
         <Modal
             title={<Title level={4}>Remove calendar day</Title>}
             confirmLoading={loading}
             visible={true}
-            onOk={onFinish}
+            onOk={() => form.submit()}
             cancelButtonProps={{type: 'primary'}}
             okButtonProps={{danger: true}}
             okText={'Remove'}
@@ -76,10 +88,7 @@ export const CalendarDaysRemovePage = () => {
                 name="CalendarDaysRemoveForm"
                 form={form}
                 onFinish={onFinish}
-                initialValues={{
-                    date: date,
-                    daysOfWeek: Object.values(DayOfWeek),
-                }}
+                initialValues={initialValues}
                 labelCol={formStyles}
             >
                 <Tabs defaultActiveKey={tab} onChange={tab => setTab(tab as Tab)}>
@@ -88,7 +97,7 @@ export const CalendarDaysRemovePage = () => {
                         key="One"
                     >
                         <Form.Item
-                            name={nameof<CalendarDaysRemoveVars>('date')}
+                            name={nameof<FromValues>('date')}
                             label={'Date'}
                         >
                             <DatePicker
@@ -102,7 +111,7 @@ export const CalendarDaysRemovePage = () => {
                         key="Range"
                     >
                         <Form.Item
-                            name="fromAndTo"
+                            name={nameof<FromValues>('fromAndTo')}
                             label={'From and to'}
                         >
                             <RangePicker
@@ -111,7 +120,7 @@ export const CalendarDaysRemovePage = () => {
                             />
                         </Form.Item>
                         <Form.Item
-                            name={nameof<CalendarDaysRemoveRangeInputType>('daysOfWeek')}
+                            name={nameof<FromValues>('daysOfWeek')}
                             label={'Days of week'}
                         >
                             <Select
