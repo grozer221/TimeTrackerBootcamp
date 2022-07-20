@@ -42,7 +42,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Folder Include="Tasks\" />
 		<Folder Include="wwwroot\" />
 	</ItemGroup>
 

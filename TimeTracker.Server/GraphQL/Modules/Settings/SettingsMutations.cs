@@ -21,7 +21,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
             IValidator<SettingsEmploymentUpdateInput> settingsCommonUpdateInputValidator,
             IValidator<SettingsApplicationUpdateInput> settingsApplicationUpdateInputValidator, 
             ISchedulerFactory schedulerFactory,
-            DemoTask demoTask)
+            AutoCreateDaysOffTask autoCreateDaysOffTask)
         {
             Field<NonNullGraphType<SettingsType>, SettingsModel>()
                .Name("UpdateEmployment")
@@ -63,17 +63,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                    var newSettings = await settingsManager.UpdateTasksAsync(settingsCommon);
 
                    var scheduler = await schedulerFactory.GetScheduler();
-                   await scheduler.RescheduleJob(DemoTask.TriggerKey, await demoTask.CreateTriggerAsync());
+                   await scheduler.RescheduleJob(AutoCreateDaysOffTask.TriggerKey, await autoCreateDaysOffTask.CreateTriggerAsync());
                    if(newSettings.Tasks.AutoCreateDaysOff != null)
                    {
                        if (newSettings.Tasks.AutoCreateDaysOff.IsEnabled)
-                       {
-                           await scheduler.ResumeJob(DemoTask.JobKey);
-                       }
+                           await scheduler.ResumeJob(AutoCreateDaysOffTask.JobKey);
                        else
-                       {
-                           await scheduler.PauseJob(DemoTask.JobKey);
-                       }
+                           await scheduler.PauseJob(AutoCreateDaysOffTask.JobKey);
                    }
                    return newSettings;
                })

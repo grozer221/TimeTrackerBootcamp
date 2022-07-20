@@ -1,23 +1,24 @@
 ﻿using Quartz;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
-using TimeTracker.Server.Abstractions;
+using TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO;
 
 namespace TimeTracker.Server.Tasks
 {
-    public class DemoTask : IJob
+    public class AutoCreateDaysOffTask : IJob
     {
-        public static string JobName => "DemoTask";
+        public static string JobName => "AutoCreateDaysOffTask";
         public static JobKey JobKey => new JobKey(JobName);
         public static string TriggerName => JobName + "-Trigger";
         public static TriggerKey TriggerKey => new TriggerKey(TriggerName);
 
         private readonly ISettingsManager settingsManager;
+        private readonly ICalendarDayManager calendarDayManager;
 
-
-        public DemoTask(ISettingsManager settingsManager)
+        public AutoCreateDaysOffTask(ISettingsManager settingsManager, ICalendarDayManager calendarDayManager)
         {
             this.settingsManager = settingsManager;
+            this.calendarDayManager = calendarDayManager;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -26,14 +27,24 @@ namespace TimeTracker.Server.Tasks
             if(settings.Tasks?.AutoCreateDaysOff != null)
             {
                 var dateTimeNow = DateTime.Now;
-
-                foreach(var day in settings.Tasks.AutoCreateDaysOff.DaysOfWeek)
+                foreach (var day in settings.Tasks.AutoCreateDaysOff.DaysOfWeek)
                 {
-                    int difference = (int)dateTimeNow.DayOfWeek - (int)day;
+                    int difference = (int)day - (int)dateTimeNow.DayOfWeek;
+                    var now = DateTime.Now;
+                    var nowAdded = now.AddDays(difference);
+                    var calendarDay = await calendarDayManager.GetByDateAsync(nowAdded);
+                    if(calendarDay == null)
+                    {
+                        await calendarDayManager.CreateAsync(new CalendarDayModel
+                        {
+                            Date = nowAdded,
+                            Kind = Business.Enums.DayKind.DayOff,
+                        });
+                    }
                 }
 
             }
-            Console.WriteLine($"GG WP {DateTime.Now}");
+            Console.WriteLine($"[{DateTime.Now}] -- AutoCreateDaysOffTask");
         }
 
         public async Task<ITrigger> CreateTriggerAsync()

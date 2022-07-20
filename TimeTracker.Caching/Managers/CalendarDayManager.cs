@@ -22,8 +22,9 @@ namespace TimeTracker.Caching.Managers
             this.calendarDayRepository = calendarDayRepository;
         }
 
-        public async Task<CalendarDayModel> GetByDateAsync(DateTime date)
+        public async Task<CalendarDayModel> GetByDateAsync(DateTime date1)
         {
+            var date = new DateTime(date1.Year, date1.Month, date1.Day);
             string key = string.Format(GetByDateAsyncKey, date);
             string getByDateAsyncRangeKey = GetByDateAsyncRangeKey;
             var dates = memoryCache.GetOrCreate(getByDateAsyncRangeKey, cacheEntry => new List<DateTime>());

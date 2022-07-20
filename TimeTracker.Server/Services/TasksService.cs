@@ -28,7 +28,7 @@ namespace TimeTracker.Server.Services
                 {
                     if (!settings.Tasks.AutoCreateDaysOff.IsEnabled)
                     {
-                        await scheduler.PauseJob(DemoTask.JobKey);
+                        await scheduler.PauseJob(AutoCreateDaysOffTask.JobKey);
                     }
                 }
             }
