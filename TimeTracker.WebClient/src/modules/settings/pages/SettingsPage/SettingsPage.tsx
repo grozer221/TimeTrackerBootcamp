@@ -1,6 +1,6 @@
 import React, {FC, useState} from 'react';
 import {Row, Tabs} from "antd";
-import {AppstoreOutlined, MinusOutlined, UserOutlined} from "@ant-design/icons";
+import {AppstoreOutlined, ClockCircleOutlined, UserOutlined} from "@ant-design/icons";
 import {SettingsEmploymentUpdate} from "../../components/SettingsEmploymentUpdate/SettingsEmploymentUpdate";
 import {useNavigate, useParams} from "react-router-dom";
 import {SettingsTasksUpdate} from "../../components/SettingsTasksUpdate/SettingsTasksUpdate";
@@ -49,7 +49,7 @@ export const SettingsPage: FC = () => {
                     {selectedTab === 'employment' && <SettingsEmploymentUpdate/>}
                 </TabPane>
                 <TabPane
-                    tab={<span><MinusOutlined/>Tasks</span>}
+                    tab={<span><ClockCircleOutlined/>Tasks</span>}
                     key="tasks"
                 >
                     {selectedTab === 'tasks' && <SettingsTasksUpdate/>}

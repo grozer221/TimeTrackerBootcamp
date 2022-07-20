@@ -1,12 +1,15 @@
 ﻿using FluentValidation;
 using GraphQL;
 using GraphQL.Types;
+using Quartz;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.Settings.DTO;
+using TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsTasksUpdate;
+using TimeTracker.Server.Tasks;
 
 namespace TimeTracker.Server.GraphQL.Modules.Settings
 {
@@ -16,7 +19,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
             ISettingsManager settingsManager,
             IHttpContextAccessor httpContextAccessor,
             IValidator<SettingsEmploymentUpdateInput> settingsCommonUpdateInputValidator,
-            IValidator<SettingsApplicationUpdateInput> settingsApplicationUpdateInputValidator)
+            IValidator<SettingsApplicationUpdateInput> settingsApplicationUpdateInputValidator, 
+            ISchedulerFactory schedulerFactory,
+            DemoTask demoTask)
         {
             Field<NonNullGraphType<SettingsType>, SettingsModel>()
                .Name("UpdateEmployment")
@@ -55,7 +60,22 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                        throw new ExecutionError("You do not have permissions for update tasks settings");
                    var settingsTasksUpdateInput = context.GetArgument<SettingsTasksUpdateInput>("SettingsTasksUpdateInputType");
                    var settingsCommon = settingsTasksUpdateInput.ToModel();
-                   return await settingsManager.UpdateTasksAsync(settingsCommon);
+                   var newSettings = await settingsManager.UpdateTasksAsync(settingsCommon);
+
+                   var scheduler = await schedulerFactory.GetScheduler();
+                   await scheduler.RescheduleJob(DemoTask.TriggerKey, await demoTask.CreateTriggerAsync());
+                   if(newSettings.Tasks.AutoCreateDaysOff != null)
+                   {
+                       if (newSettings.Tasks.AutoCreateDaysOff.IsEnabled)
+                       {
+                           await scheduler.ResumeJob(DemoTask.JobKey);
+                       }
+                       else
+                       {
+                           await scheduler.PauseJob(DemoTask.JobKey);
+                       }
+                   }
+                   return newSettings;
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
         }

@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models.SettingsCategories;
+using TimeTracker.Business.Models.SettingsCategories.SettingsTasksCategories;
 
 namespace TimeTracker.Business.Models
 {

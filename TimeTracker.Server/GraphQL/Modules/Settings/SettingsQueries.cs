@@ -1,9 +1,8 @@
 ﻿using GraphQL;
 using GraphQL.Types;
+using Quartz;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
-using TimeTracker.Business.Repositories;
-using TimeTracker.Server.GraphQL.Modules.Auth;
 
 namespace TimeTracker.Server.GraphQL.Modules.Settings
 {

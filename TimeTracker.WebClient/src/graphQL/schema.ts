@@ -204,12 +204,30 @@ export const schema = gql`
 
     type SettingsTasksType {
         autoSetWorkingHoursForFullTimers: TimeOnly
+        autoCreateDaysOff: SettingsTasksAutoCreateDaysOffType
     }
 
     """
     The \`Time\` scalar type represents a time in accordance with the [ISO-8601](https://en.wikipedia.org/wiki/ISO_8601) standard. Format is \`HH:mm:ss.FFFFFFF\`.
     """
     scalar TimeOnly
+
+    type SettingsTasksAutoCreateDaysOffType {
+        isEnabled: Boolean
+        dayOfWeekWhenCreate: DayOfWeek
+        timeWhenCreate: TimeOnly
+        daysOfWeek: [DayOfWeek]
+    }
+
+    enum DayOfWeek {
+        SUNDAY
+        MONDAY
+        TUESDAY
+        WEDNESDAY
+        THURSDAY
+        FRIDAY
+        SATURDAY
+    }
 
     type Mutations {
         auth: AuthMutations!
@@ -401,16 +419,6 @@ export const schema = gql`
         override: Boolean!
     }
 
-    enum DayOfWeek {
-        SUNDAY
-        MONDAY
-        TUESDAY
-        WEDNESDAY
-        THURSDAY
-        FRIDAY
-        SATURDAY
-    }
-
     input CalendarDaysUpdateInputType {
         id: Guid!
         title: String
@@ -436,7 +444,7 @@ export const schema = gql`
             """
             Argument for update application settings
             """
-            settingsApplicationUpdateInputType: FilesUploadInputType!
+            settingsApplicationUpdateInputType: SettingsApplicationUpdateInputType!
         ): SettingsType!
         updateTasks(
             """
@@ -451,17 +459,22 @@ export const schema = gql`
         partTimeHoursInWorkday: [Int]!
     }
 
-    input FilesUploadInputType {
-        files: [Upload]
+    input SettingsApplicationUpdateInputType {
+        title: String
+        faviconUrl: String
+        logoUrl: String
     }
-
-    """
-    A meta type that represents a file upload.
-    """
-    scalar Upload
 
     input SettingsTasksUpdateInputType {
         autoSetWorkingHoursForFullTimers: TimeOnly
+        autoCreateDaysOff: SettingsTasksAutoCreateDaysOffInputType
+    }
+
+    input SettingsTasksAutoCreateDaysOffInputType {
+        isEnabled: Boolean
+        dayOfWeekWhenCreate: DayOfWeek
+        timeWhenCreate: TimeOnly
+        daysOfWeek: [DayOfWeek]
     }
 
     type CacheMutations {
@@ -474,6 +487,15 @@ export const schema = gql`
             Argument for update employment settings
             """
             filesUploadInputType: FilesUploadInputType!
-        ): String!
+        ): [String]!
     }
+
+    input FilesUploadInputType {
+        files: [Upload]!
+    }
+
+    """
+    A meta type that represents a file upload.
+    """
+    scalar Upload
 `

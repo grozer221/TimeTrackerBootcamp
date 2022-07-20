@@ -1,3 +1,5 @@
+import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
+
 export type Settings = {
     id: string,
     employment?: SettingsEmployment,
@@ -20,4 +22,12 @@ export type SettingsApplication = {
 
 export type SettingsTasks = {
     autoSetWorkingHoursForFullTimers: string,
+    autoCreateDaysOff: SettingsTasks_AutoCreateDaysOff,
+}
+
+export type SettingsTasks_AutoCreateDaysOff = {
+    isEnabled: boolean,
+    dayOfWeekWhenCreate: DayOfWeek,
+    timeWhenCreate: string,
+    daysOfWeek: DayOfWeek[],
 }

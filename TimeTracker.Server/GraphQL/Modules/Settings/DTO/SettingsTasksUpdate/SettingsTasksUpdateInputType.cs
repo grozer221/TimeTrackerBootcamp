@@ -1,12 +1,13 @@
 ﻿using GraphQL.Types;
-using TimeTracker.Business.Models.SettingsCategories;
+using TimeTracker.Business.Models.SettingsCategories.SettingsTasksCategories;
 using TimeTracker.Server.GraphQL.Abstractions;
 
-namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
+namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsTasksUpdate
 {
     public class SettingsTasksUpdateInput : IModelable<SettingsTasks>
     {
         public TimeOnly AutoSetWorkingHoursForFullTimers { get; set; }
+        public SettingsTasksAutoCreateDaysOffInput AutoCreateDaysOff { get; set; }
 
         public SettingsTasks ToModel()
         {
@@ -15,6 +16,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
             return new SettingsTasks
             {
                 AutoSetWorkingHoursForFullTimers = autoSetWorkingHoursForFullTimersDateTime,
+                AutoCreateDaysOff = this.AutoCreateDaysOff.ToModel(),
             };
         }
     }
@@ -26,6 +28,10 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
             Field<TimeOnlyGraphType, TimeOnly>()
                  .Name("AutoSetWorkingHoursForFullTimers")
                  .Resolve(context => context.Source.AutoSetWorkingHoursForFullTimers);
+            
+            Field<SettingsTasksAutoCreateDaysOffInputType, SettingsTasksAutoCreateDaysOffInput>()
+                 .Name("AutoCreateDaysOff")
+                 .Resolve(context => context.Source.AutoCreateDaysOff);
         }
     }
 }

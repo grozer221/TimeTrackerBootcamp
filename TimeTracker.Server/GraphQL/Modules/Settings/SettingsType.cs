@@ -2,10 +2,12 @@
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Models.SettingsCategories;
+using TimeTracker.Business.Models.SettingsCategories.SettingsTasksCategories;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Abstractions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes;
+using TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes.SettingsTasksTypes;
 
 namespace TimeTracker.Server.GraphQL.Modules.Settings
 {

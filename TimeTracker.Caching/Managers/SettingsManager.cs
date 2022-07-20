@@ -2,6 +2,7 @@
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Models.SettingsCategories;
+using TimeTracker.Business.Models.SettingsCategories.SettingsTasksCategories;
 using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.Caching.Managers

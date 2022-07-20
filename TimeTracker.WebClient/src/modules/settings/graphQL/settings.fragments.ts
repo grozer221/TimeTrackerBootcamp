@@ -18,6 +18,12 @@ export const SETTINGS_APPLICATION_FRAGMENT = gql`
 export const SETTINGS_TASKS_FRAGMENT = gql`
     fragment SettingsTasksFragment on SettingsTasksType {
         autoSetWorkingHoursForFullTimers
+        autoCreateDaysOff {
+            isEnabled
+            dayOfWeekWhenCreate
+            timeWhenCreate
+            daysOfWeek
+        }
     }
 `
 
