@@ -13,7 +13,8 @@ import {SettingsTasksUpdateInputType} from "../../graphQL/settings.mutations";
 import {settingsActions} from "../../store/settings.actions";
 
 type FormValues = {
-    autoSetWorkingHoursForFullTimers: Moment,
+    autoSetWorkingHoursForFullTimers_IsEnabled: boolean,
+    autoSetWorkingHoursForFullTimers_TimeWhenCreate?: Moment,
     autoCreateDaysOff_IsEnabled: boolean,
     autoCreateDaysOff_DayOfWeekWhenCreate?: DayOfWeek,
     autoCreateDaysOff_TimeWhenCreate?: Moment,
@@ -25,11 +26,15 @@ export const SettingsTasksUpdate: FC = () => {
     const dispatch = useDispatch();
     const loading = useSelector((s: RootState) => s.settings.loadingUpdate)
     const settings = useSelector((s: RootState) => s.settings.settings)
-    const isEnabled = Form.useWatch(nameof<FormValues>('autoCreateDaysOff_IsEnabled'), form);
+    const autoCreateDaysOff_IsEnabled = Form.useWatch(nameof<FormValues>('autoCreateDaysOff_IsEnabled'), form);
+    const autoSetWorkingHoursForFullTimers_IsEnabled = Form.useWatch(nameof<FormValues>('autoSetWorkingHoursForFullTimers_IsEnabled'), form);
 
     const onFinish = (values: FormValues) => {
         const settingsTasksUpdateInputType: SettingsTasksUpdateInputType = {
-            autoSetWorkingHoursForFullTimers: values.autoSetWorkingHoursForFullTimers?.format('HH:mm:ss'),
+            autoSetWorkingHoursForFullTimers: {
+                isEnabled: values.autoSetWorkingHoursForFullTimers_IsEnabled,
+                timeWhenCreate: values.autoSetWorkingHoursForFullTimers_TimeWhenCreate?.format('HH:mm:ss'),
+            },
             autoCreateDaysOff: {
                 isEnabled: values.autoCreateDaysOff_IsEnabled,
                 dayOfWeekWhenCreate: values.autoCreateDaysOff_DayOfWeekWhenCreate,
@@ -46,7 +51,8 @@ export const SettingsTasksUpdate: FC = () => {
     }
 
     const initialValues: FormValues = {
-        autoSetWorkingHoursForFullTimers: moment(settings?.tasks?.autoSetWorkingHoursForFullTimers, 'HH:mm:ss'),
+        autoSetWorkingHoursForFullTimers_IsEnabled: settings?.tasks?.autoSetWorkingHoursForFullTimers?.isEnabled || false,
+        autoSetWorkingHoursForFullTimers_TimeWhenCreate: moment(settings?.tasks?.autoSetWorkingHoursForFullTimers?.timeWhenCreate, 'HH:mm:ss'),
         autoCreateDaysOff_IsEnabled: settings?.tasks?.autoCreateDaysOff?.isEnabled || false,
         autoCreateDaysOff_DayOfWeekWhenCreate: settings?.tasks?.autoCreateDaysOff?.dayOfWeekWhenCreate,
         autoCreateDaysOff_TimeWhenCreate: moment(settings?.tasks?.autoCreateDaysOff?.timeWhenCreate, 'HH:mm:ss'),
@@ -61,16 +67,32 @@ export const SettingsTasksUpdate: FC = () => {
             labelCol={formStyles}
             initialValues={initialValues}
         >
-            <Row gutter={16}>
-                <Col span={12}>
+            <div className={'settingsBlock'}>
+                <Space>
                     <Form.Item
-                        label="Auto set working hours for full timers"
-                        name={nameof<FormValues>('autoSetWorkingHoursForFullTimers')}
+                        name={nameof<FormValues>('autoSetWorkingHoursForFullTimers_IsEnabled')}
+                        style={{marginBottom: 0}}
                     >
-                        <TimePicker placeholder={'Auto set working hours for full timers'}/>
+                        <Switch size={'small'}
+                                defaultChecked={initialValues.autoSetWorkingHoursForFullTimers_IsEnabled}/>
                     </Form.Item>
-                </Col>
-            </Row>
+                    <Title level={4}>Auto set working hours for full timers</Title>
+                </Space>
+                <Row gutter={16}>
+                    <Col span={8}>
+                        <Form.Item
+                            label="Time when set"
+                            name={nameof<FormValues>('autoSetWorkingHoursForFullTimers_TimeWhenCreate')}
+                        >
+                            <TimePicker
+                                placeholder={'Time when set'}
+                                disabled={!autoSetWorkingHoursForFullTimers_IsEnabled}
+                            />
+                        </Form.Item>
+                    </Col>
+                </Row>
+            </div>
+
             <div className={'settingsBlock'}>
                 <Space>
                     <Form.Item
@@ -90,7 +112,7 @@ export const SettingsTasksUpdate: FC = () => {
                             <Select
                                 allowClear
                                 placeholder="Day of week"
-                                disabled={!isEnabled}
+                                disabled={!autoCreateDaysOff_IsEnabled}
                             >
                                 {(Object.values(DayOfWeek) as Array<DayOfWeek>).map((value) => (
                                     <Select.Option key={value} value={value}>
@@ -107,7 +129,7 @@ export const SettingsTasksUpdate: FC = () => {
                         >
                             <TimePicker
                                 placeholder={'Time'}
-                                disabled={!isEnabled}
+                                disabled={!autoCreateDaysOff_IsEnabled}
                             />
                         </Form.Item>
                     </Col>
@@ -120,7 +142,7 @@ export const SettingsTasksUpdate: FC = () => {
                                 mode="multiple"
                                 allowClear
                                 placeholder="Days of week"
-                                disabled={!isEnabled}
+                                disabled={!autoCreateDaysOff_IsEnabled}
                             >
                                 {(Object.values(DayOfWeek) as Array<DayOfWeek>).map((value) => (
                                     <Select.Option key={value} value={value}>

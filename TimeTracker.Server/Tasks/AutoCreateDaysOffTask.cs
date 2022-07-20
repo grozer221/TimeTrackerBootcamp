@@ -1,7 +1,6 @@
 ﻿using Quartz;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
-using TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO;
 
 namespace TimeTracker.Server.Tasks
 {

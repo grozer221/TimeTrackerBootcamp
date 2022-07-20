@@ -6,16 +6,14 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsTasksUpdate
 {
     public class SettingsTasksUpdateInput : IModelable<SettingsTasks>
     {
-        public TimeOnly AutoSetWorkingHoursForFullTimers { get; set; }
+        public SettingsTasksAutoSetWorkingHoursForFullTimersInput AutoSetWorkingHoursForFullTimers { get; set; }
         public SettingsTasksAutoCreateDaysOffInput AutoCreateDaysOff { get; set; }
 
         public SettingsTasks ToModel()
         {
-            var autoSetWorkingHoursForFullTimersDateTime = new DateTime(2022, 1, 1);
-            autoSetWorkingHoursForFullTimersDateTime += AutoSetWorkingHoursForFullTimers.ToTimeSpan();
             return new SettingsTasks
             {
-                AutoSetWorkingHoursForFullTimers = autoSetWorkingHoursForFullTimersDateTime,
+                AutoSetWorkingHoursForFullTimers = this.AutoSetWorkingHoursForFullTimers.ToModel(),
                 AutoCreateDaysOff = this.AutoCreateDaysOff.ToModel(),
             };
         }
@@ -25,7 +23,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsTasksUpdate
     {
         public SettingsTasksUpdateInputType()
         {
-            Field<TimeOnlyGraphType, TimeOnly>()
+            Field<SettingsTasksAutoSetWorkingHoursForFullTimersInputType, SettingsTasksAutoSetWorkingHoursForFullTimersInput>()
                  .Name("AutoSetWorkingHoursForFullTimers")
                  .Resolve(context => context.Source.AutoSetWorkingHoursForFullTimers);
             

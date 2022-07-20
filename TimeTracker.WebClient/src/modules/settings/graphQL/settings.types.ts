@@ -21,7 +21,7 @@ export type SettingsApplication = {
 }
 
 export type SettingsTasks = {
-    autoSetWorkingHoursForFullTimers: string,
+    autoSetWorkingHoursForFullTimers: SettingsTasks_AutoSetWorkingHoursForFullTimers,
     autoCreateDaysOff: SettingsTasks_AutoCreateDaysOff,
 }
 
@@ -30,4 +30,9 @@ export type SettingsTasks_AutoCreateDaysOff = {
     dayOfWeekWhenCreate: DayOfWeek,
     timeWhenCreate: string,
     daysOfWeek: DayOfWeek[],
+}
+
+export type SettingsTasks_AutoSetWorkingHoursForFullTimers = {
+    isEnabled: boolean,
+    timeWhenCreate: string,
 }
