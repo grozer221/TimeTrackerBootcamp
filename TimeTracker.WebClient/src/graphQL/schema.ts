@@ -12,6 +12,7 @@ export const schema = gql`
         users: UsersQueries!
         calendarDays: CalendarDaysQueries!
         settings: SettingsQueries!
+        fileManager: FileManagerQueries!
     }
 
     type AuthQueries {
@@ -57,6 +58,7 @@ export const schema = gql`
         IMPERSONATE
         UPDATE_SETTINGS
         CLEAR_CACHE
+        UPDATE_FILE_MANAGER
     }
 
     enum Employment {
@@ -186,14 +188,14 @@ export const schema = gql`
         id: Guid!
         createdAt: DateTime!
         updatedAt: DateTime!
-        employment: SettingsEmploymentType
-        application: SettingsApplicationType
-        tasks: SettingsTasksType
+        employment: SettingsEmploymentType!
+        application: SettingsApplicationType!
+        tasks: SettingsTasksType!
     }
 
     type SettingsEmploymentType {
-        fullTimeHoursInWorkday: Int
-        partTimeHoursInWorkday: [Int]
+        fullTimeHoursInWorkday: Int!
+        partTimeHoursInWorkday: [Int]!
     }
 
     type SettingsApplicationType {
@@ -203,8 +205,13 @@ export const schema = gql`
     }
 
     type SettingsTasksType {
-        autoSetWorkingHoursForFullTimers: TimeOnly
+        autoSetWorkingHoursForFullTimers: SettingsTasksAutoSetWorkingHoursForFullTimersType
         autoCreateDaysOff: SettingsTasksAutoCreateDaysOffType
+    }
+
+    type SettingsTasksAutoSetWorkingHoursForFullTimersType {
+        isEnabled: Boolean
+        timeWhenCreate: TimeOnly
     }
 
     """
@@ -229,6 +236,27 @@ export const schema = gql`
         SATURDAY
     }
 
+    type FileManagerQueries {
+        getInFolder(
+            """
+            Argument for get in directory
+            """
+            folderPath: String!
+        ): [FileManagerItemType]!
+    }
+
+    type FileManagerItemType {
+        name: String!
+        path: String
+        createdAt: String
+        kind: FileManagerItemKind!
+    }
+
+    enum FileManagerItemKind {
+        FILE
+        FOLDER
+    }
+
     type Mutations {
         auth: AuthMutations!
         tracks: TracksMutation!
@@ -236,7 +264,7 @@ export const schema = gql`
         calendarDays: CalendarDaysMutations!
         settings: SettingsMutations!
         cache: CacheMutations!
-        files: FilesMutations!
+        fileManager: FileManagerMutations!
     }
 
     type AuthMutations {
@@ -292,13 +320,13 @@ export const schema = gql`
             """
             trackInput: TrackInputType!
         ): TrackType!
-        stop(
+        createOther(
             """
-            Id of track
+            Argument for create track
             """
-            id: Guid! = "00000000-0000-0000-0000-000000000000"
+            trackInput: TrackOtherInputType!
         ): TrackType!
-        delete(
+        remove(
             """
             Id of track
             """
@@ -315,6 +343,16 @@ export const schema = gql`
     input TrackInputType {
         title: String!
         description: String
+        startTime: DateTime
+        endTime: DateTime
+    }
+
+    input TrackOtherInputType {
+        userId: Guid!
+        title: String!
+        description: String
+        startTime: DateTime!
+        endTime: DateTime!
     }
 
     input TrackUpdateInputType {
@@ -466,12 +504,17 @@ export const schema = gql`
     }
 
     input SettingsTasksUpdateInputType {
-        autoSetWorkingHoursForFullTimers: TimeOnly
+        autoSetWorkingHoursForFullTimers: SettingsTasksAutoSetWorkingHoursForFullTimersInputType
         autoCreateDaysOff: SettingsTasksAutoCreateDaysOffInputType
     }
 
+    input SettingsTasksAutoSetWorkingHoursForFullTimersInputType {
+        isEnabled: Boolean!
+        timeWhenCreate: TimeOnly
+    }
+
     input SettingsTasksAutoCreateDaysOffInputType {
-        isEnabled: Boolean
+        isEnabled: Boolean!
         dayOfWeekWhenCreate: DayOfWeek
         timeWhenCreate: TimeOnly
         daysOfWeek: [DayOfWeek]
@@ -481,16 +524,28 @@ export const schema = gql`
         refreshApp: Boolean!
     }
 
-    type FilesMutations {
-        upload(
+    type FileManagerMutations {
+        createFolder(
+            """
+            Argument for get in directory
+            """
+            fileManagerCreateFolderInputType: FileManagerCreateFolderInputType!
+        ): Boolean!
+        uploadFiles(
             """
             Argument for update employment settings
             """
-            filesUploadInputType: FilesUploadInputType!
-        ): [String]!
+            fileManagerUploadFilesInputType: FileManagerUploadFilesInputType!
+        ): [FileManagerItemType]!
     }
 
-    input FilesUploadInputType {
+    input FileManagerCreateFolderInputType {
+        folderPath: String!
+        newFolderName: String!
+    }
+
+    input FileManagerUploadFilesInputType {
+        folderPath: String!
         files: [Upload]!
     }
 

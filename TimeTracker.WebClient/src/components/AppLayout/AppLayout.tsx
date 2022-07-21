@@ -12,10 +12,12 @@ import {
     CalendarOutlined,
     DownOutlined,
     FieldTimeOutlined,
+    FileSearchOutlined,
     LogoutOutlined,
     ProfileOutlined,
     ReloadOutlined,
     SettingOutlined,
+    ToolOutlined,
     UsergroupAddOutlined
 } from "@ant-design/icons";
 import {RootState} from "../../store/store";
@@ -93,6 +95,18 @@ export const AppLayout: FC<Props> = ({children}) => {
             key: '/users',
             icon: <UsergroupAddOutlined/>,
             label: <Link to={'users'}>Users</Link>,
+        },
+        {
+            key: '/tools',
+            icon: <ToolOutlined/>,
+            label: <div>Tools</div>,
+            children: [
+                {
+                    key: '/tools/file-manager',
+                    icon: <FileSearchOutlined/>,
+                    label: <Link to={'tools/file-manager'}>File manager</Link>,
+                }
+            ]
         },
         {
             key: '/settings',

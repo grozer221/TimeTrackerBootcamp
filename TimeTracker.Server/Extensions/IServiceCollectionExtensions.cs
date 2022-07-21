@@ -52,14 +52,14 @@ namespace TimeTracker.Server.Extensions
         {
             services
                 .AddAuthentication(BasicAuthenticationHandler.SchemeName)
-                .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, options => { });
+                .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, _ => { });
             return services;
         }
 
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
             services.AddSingleton<IAuthService, AuthService>();
-            services.AddSingleton<IFileUploadService, FileUploadService>();
+            services.AddSingleton<FileManagerService>();
             return services;
         }
 

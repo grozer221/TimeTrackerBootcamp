@@ -9,7 +9,6 @@ import {RootState} from "../../../../store/store";
 import {nameof} from "../../../../utils/stringUtils";
 import {linkRegexPattern} from "../../../../utils/regexUtils";
 import {ExtraHeaderButtons} from "../../../../components/ExtraHeaderButtons";
-import {ButtonUploadFile} from "../../../files/components/ButtonUploadFile/ButtonUploadFile";
 
 const {Text} = Typography;
 
@@ -87,10 +86,10 @@ export const SettingsApplicationUpdate: FC = ({}) => {
                                 value={faviconUrl}
                                 onChange={e => setFaviconUrl(e.target.value)}
                             />
-                            <ButtonUploadFile
-                                accept={'.png,.jpg,.jpeg,.gif'}
-                                onUploaded={files => setFaviconUrl(files[0])}
-                            />
+                            {/*<ButtonUploadFile*/}
+                            {/*    accept={'.png,.jpg,.jpeg,.gif'}*/}
+                            {/*    onUploaded={files => setFaviconUrl(files[0])}*/}
+                            {/*/>*/}
                         </Input.Group>
                     </Form.Item>
                     <div className={'mt--10'}>
@@ -120,10 +119,10 @@ export const SettingsApplicationUpdate: FC = ({}) => {
                                 value={logoUrl}
                                 onChange={e => setLogoUrl(e.target.value)}
                             />
-                            <ButtonUploadFile
-                                accept={'.png,.jpg,.jpeg,.gif'}
-                                onUploaded={files => setLogoUrl(files[0])}
-                            />
+                            {/*<ButtonUploadFile*/}
+                            {/*    accept={'.png,.jpg,.jpeg,.gif'}*/}
+                            {/*    onUploaded={files => setLogoUrl(files[0])}*/}
+                            {/*/>*/}
                         </Input.Group>
                     </Form.Item>
                     <div className={'mt--10'}>
