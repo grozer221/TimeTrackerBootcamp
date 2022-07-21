@@ -2,7 +2,7 @@
 {
     public class SettingsTasks
     {
-        public SettingsTasksAutoSetWorkingHoursForFullTimers? AutoSetWorkingHoursForFullTimers { get; set; }
-        public SettingsTasksAutoCreateDaysOff? AutoCreateDaysOff { get; set; }
+        public SettingsTasksAutoSetWorkingHoursForFullTimers AutoSetWorkingHoursForFullTimers { get; set; } = new SettingsTasksAutoSetWorkingHoursForFullTimers();
+        public SettingsTasksAutoCreateDaysOff AutoCreateDaysOff { get; set; } = new SettingsTasksAutoCreateDaysOff();
     }
 }

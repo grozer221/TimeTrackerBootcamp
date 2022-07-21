@@ -2,9 +2,9 @@ import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
 
 export type Settings = {
     id: string,
-    employment?: SettingsEmployment,
-    application?: SettingsApplication,
-    tasks?: SettingsTasks,
+    employment: SettingsEmployment,
+    application: SettingsApplication,
+    tasks: SettingsTasks,
     createdAt: string,
     updatedAt: string,
 }
@@ -15,9 +15,9 @@ export type SettingsEmployment = {
 }
 
 export type SettingsApplication = {
-    title: string,
-    faviconUrl: string,
-    logoUrl: string,
+    title?: string,
+    faviconUrl?: string,
+    logoUrl?: string,
 }
 
 export type SettingsTasks = {

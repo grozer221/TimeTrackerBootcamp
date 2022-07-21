@@ -23,25 +23,21 @@ namespace TimeTracker.Server.Tasks
         public async Task Execute(IJobExecutionContext context)
         {
             var settings = await settingsManager.GetAsync();
-            if(settings.Tasks?.AutoCreateDaysOff != null)
+            var dateTimeNow = DateTime.Now;
+            foreach (var day in settings.Tasks.AutoCreateDaysOff.DaysOfWeek)
             {
-                var dateTimeNow = DateTime.Now;
-                foreach (var day in settings.Tasks.AutoCreateDaysOff.DaysOfWeek)
+                int difference = (int)day - (int)dateTimeNow.DayOfWeek;
+                var now = DateTime.Now;
+                var nowAdded = now.AddDays(difference);
+                var calendarDay = await calendarDayManager.GetByDateAsync(nowAdded);
+                if(calendarDay == null)
                 {
-                    int difference = (int)day - (int)dateTimeNow.DayOfWeek;
-                    var now = DateTime.Now;
-                    var nowAdded = now.AddDays(difference);
-                    var calendarDay = await calendarDayManager.GetByDateAsync(nowAdded);
-                    if(calendarDay == null)
+                    await calendarDayManager.CreateAsync(new CalendarDayModel
                     {
-                        await calendarDayManager.CreateAsync(new CalendarDayModel
-                        {
-                            Date = nowAdded,
-                            Kind = Business.Enums.DayKind.DayOff,
-                        });
-                    }
+                        Date = nowAdded,
+                        Kind = Business.Enums.DayKind.DayOff,
+                    });
                 }
-
             }
             Console.WriteLine($"[{DateTime.Now}] -- AutoCreateDaysOffTask");
         }
@@ -68,10 +64,10 @@ namespace TimeTracker.Server.Tasks
         private async Task<string> GetCron()
         {
             var settings = await settingsManager.GetAsync();
-            var hour = settings.Tasks.AutoCreateDaysOff?.TimeWhenCreate.Hour ?? 1;
-            var minute = settings.Tasks.AutoCreateDaysOff?.TimeWhenCreate.Minute ?? 1;
-            var second = settings.Tasks.AutoCreateDaysOff?.TimeWhenCreate.Second ?? 1;
-            var daysOfWeek = settings.Tasks.AutoCreateDaysOff == null ? 1 : (int)settings.Tasks.AutoCreateDaysOff.DayOfWeekWhenCreate + 1;
+            var hour = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Hour;
+            var minute = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Minute;
+            var second = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Second;
+            var daysOfWeek = (int)settings.Tasks.AutoCreateDaysOff.DayOfWeekWhenCreate + 1;
             return $"{second} {minute} {hour} ? * {daysOfWeek}";
         }
     }
