@@ -1,4 +1,5 @@
 ﻿using GraphQL;
+using GraphQL.Types;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Models.SettingsCategories;
@@ -15,16 +16,16 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
     {
         public SettingsType(IHttpContextAccessor httpContextAccessor) : base()
         {
-            Field<SettingsEmploymentType, SettingsEmployment>()
+            Field<NonNullGraphType<SettingsEmploymentType>, SettingsEmployment>()
                .Name("Employment")
                .Resolve(context => context.Source.Employment)
                .AuthorizeWith(AuthPolicies.Authenticated);
 
-            Field<SettingsApplicationType, SettingsApplication>()
+            Field<NonNullGraphType<SettingsApplicationType>, SettingsApplication>()
                .Name("Application")
                .Resolve(context => context.Source.Application);
             
-            Field<SettingsTasksType, SettingsTasks>()
+            Field<NonNullGraphType<SettingsTasksType>, SettingsTasks>()
                .Name("Tasks")
                .Resolve(context =>
                {

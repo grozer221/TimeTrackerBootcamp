@@ -1,7 +1,7 @@
 ﻿using GraphQL.Types;
 using GraphQL.Upload.AspNetCore;
 
-namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
+namespace TimeTracker.Server.GraphQL.Modules.Files.DTO
 {
     public class FilesUploadInput
     {

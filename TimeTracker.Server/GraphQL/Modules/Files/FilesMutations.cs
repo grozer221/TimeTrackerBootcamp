@@ -2,7 +2,7 @@
 using GraphQL.Types;
 using TimeTracker.Server.Abstractions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
-using TimeTracker.Server.GraphQL.Modules.Settings.DTO;
+using TimeTracker.Server.GraphQL.Modules.Files.DTO;
 
 namespace TimeTracker.Server.GraphQL.Modules.Files
 {

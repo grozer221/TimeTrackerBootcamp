@@ -22,15 +22,9 @@ namespace TimeTracker.Server.Services
             var settings = await settingsManager.GetAsync();
 
             var scheduler = await schedulerFactory.GetScheduler();
-            if (settings.Tasks != null)
+            if (!settings.Tasks.AutoCreateDaysOff.IsEnabled)
             {
-                if(settings.Tasks.AutoCreateDaysOff != null)
-                {
-                    if (!settings.Tasks.AutoCreateDaysOff.IsEnabled)
-                    {
-                        await scheduler.PauseJob(AutoCreateDaysOffTask.JobKey);
-                    }
-                }
+                await scheduler.PauseJob(AutoCreateDaysOffTask.JobKey);
             }
         }
 

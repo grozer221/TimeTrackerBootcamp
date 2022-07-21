@@ -6,7 +6,6 @@ using Quartz;
 using System.Reflection;
 using System.Security.Claims;
 using TimeTracker.Business.Enums;
-using TimeTracker.Business.Managers;
 using TimeTracker.Server.Abstractions;
 using TimeTracker.Server.GraphQL;
 using TimeTracker.Server.GraphQL.Modules.Auth;
@@ -58,8 +57,15 @@ namespace TimeTracker.Server.Extensions
 
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
+            var serviceProvider = services.BuildServiceProvider();
+            var webHostEnvironment = serviceProvider.GetRequiredService<IWebHostEnvironment>();
+            if (webHostEnvironment.IsProduction())
+            {
+                services.AddHostedService<AutoBuildFrontendService>();
+            }
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<IFileUploadService, FileUploadService>();
+            services.AddSingleton<ICmdCommandService, CmdCommandService>();
             return services;
         }
 
