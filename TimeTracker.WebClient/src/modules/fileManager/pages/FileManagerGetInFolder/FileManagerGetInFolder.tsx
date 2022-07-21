@@ -1,11 +1,12 @@
 import React, {FC, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {fileManagerActions} from "../../store/fileManager.actions";
-import {Link, useLocation, useNavigate, useParams, useSearchParams} from "react-router-dom";
+import {Link, useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {RootState} from "../../../../store/store";
 import {FileManagerItem, FileManagerItemKind} from "../../graphQL/fileManager.types";
 import {
     CloudDownloadOutlined,
+    CopyOutlined,
     DeleteOutlined,
     FileAddOutlined,
     FileOutlined,
@@ -22,8 +23,8 @@ import {capitalize} from "../../../../utils/stringUtils";
 type Props = {};
 export const FileManagerGetInFolder: FC<Props> = ({}) => {
     const dispatch = useDispatch();
-    const params = useParams();
-    const folderPath = params.folderPath || '';
+    const [searchParams, setSearchParams] = useSearchParams()
+    const folderPath = searchParams.get('folderPath') || '';
     const items = useSelector((s: RootState) => s.fileManager.items);
     const loadingGetInFolder = useSelector((s: RootState) => s.fileManager.loadingGetInFolder);
     const [selectedItem, setSelectedItem] = useState<FileManagerItem | null>(null)
@@ -35,6 +36,7 @@ export const FileManagerGetInFolder: FC<Props> = ({}) => {
     }, [folderPath])
 
     const getInFolder = () => {
+        setSelectedItem(null);
         dispatch(fileManagerActions.getInFolderAsync(folderPath))
     }
 
@@ -46,7 +48,7 @@ export const FileManagerGetInFolder: FC<Props> = ({}) => {
     }
 
     const setFolderPath = (folderPath: string) => {
-        navigate(`../${folderPath}`);
+        setSearchParams({folderPath})
     }
 
     const onStepBack = () => {
@@ -62,11 +64,6 @@ export const FileManagerGetInFolder: FC<Props> = ({}) => {
 
     return (
         <Space direction={'vertical'} className={s.wrapperPage}>
-            {loadingGetInFolder &&
-                <div className={'absoluteCenter'}>
-                    <Loading/>
-                </div>
-            }
             <Space>
                 <Tooltip title="Step back">
                     <Button
@@ -83,12 +80,12 @@ export const FileManagerGetInFolder: FC<Props> = ({}) => {
                     />
                 </Tooltip>
                 <Tooltip title="Create folder">
-                    <Link to={`create-folder`} state={{popup: location}}>
+                    <Link to={`create-folder?folderPath=${folderPath}`} state={{popup: location}}>
                         <Button icon={<FolderAddOutlined/>} size={'small'}/>
                     </Link>
                 </Tooltip>
-                <Tooltip title="Upload file">
-                    <Link to={`upload-files`} state={{popup: location}}>
+                <Tooltip title="Upload files">
+                    <Link to={`upload-files?folderPath=${folderPath}`} state={{popup: location}}>
                         <Button
                             icon={<FileAddOutlined/>}
                             size={'small'}
@@ -103,6 +100,14 @@ export const FileManagerGetInFolder: FC<Props> = ({}) => {
                             disabled={!(selectedItem?.kind === FileManagerItemKind.File)}
                         />
                     </a>
+                </Tooltip>
+                <Tooltip title="Copy to clipboard">
+                    <Button
+                        icon={<CopyOutlined/>}
+                        size={'small'}
+                        disabled={!(selectedItem?.kind === FileManagerItemKind.File)}
+                        onClick={() => navigator.clipboard.writeText(selectedItem?.path || '')}
+                    />
                 </Tooltip>
                 <Tooltip title="Remove">
                     <Popconfirm
@@ -148,6 +153,11 @@ export const FileManagerGetInFolder: FC<Props> = ({}) => {
                     )
                 })}
             </Breadcrumb>
+            {loadingGetInFolder &&
+                <div className={'absoluteCenter'}>
+                    <Loading/>
+                </div>
+            }
         </Space>
     );
 };

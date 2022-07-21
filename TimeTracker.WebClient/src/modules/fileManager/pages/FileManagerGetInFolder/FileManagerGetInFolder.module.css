@@ -2,11 +2,11 @@
     position: relative;
 }
 
-.tableFileManager{
+.tableFileManager {
     width: 500px;
 }
 
-.tableFileManager td:nth-child(2){
+.tableFileManager td:nth-child(2) {
     width: 300px;
 }
 

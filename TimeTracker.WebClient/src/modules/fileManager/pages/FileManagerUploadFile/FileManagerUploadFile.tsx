@@ -21,8 +21,8 @@ export const FileManagerUploadFile: FC = () => {
     const dispatch = useDispatch();
     const loadingUploadFiles = useSelector((s: RootState) => s.fileManager.loadingUploadFiles);
     const navigate = useNavigate();
-    const params = useParams();
-    const folderPath = params.folderPath || '';
+    const [searchParams, setSearchParams] = useSearchParams()
+    const folderPath = searchParams.get('folderPath') || '';
     const [files, setFiles] = useState<FileType[]>([])
     const hiddenFileInput = React.useRef<HTMLInputElement | null>(null);
 

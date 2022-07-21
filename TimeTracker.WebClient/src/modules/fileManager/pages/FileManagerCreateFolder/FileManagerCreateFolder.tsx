@@ -18,8 +18,8 @@ export const FileManagerCreateFolder: FC = () => {
     const [form] = useForm<FormValues>()
     const loadingCreateFolder = useSelector((s: RootState) => s.fileManager.loadingCreateFolder);
     const navigate = useNavigate();
-    const params = useParams();
-    const folderPath = params.folderPath || '';
+    const [searchParams, setSearchParams] = useSearchParams()
+    const folderPath = searchParams.get('folderPath') || '';
 
     const onFinish = (values: FormValues) => {
         dispatch(fileManagerActions.createFolderAsync(folderPath, values.newFolderName))

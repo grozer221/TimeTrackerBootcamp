@@ -59,7 +59,6 @@ export const App = () => {
                         <Route path={"tools/*"}>
                             <Route path={"file-manager/*"}>
                                 <Route index element={<FileManagerGetInFolder/>}/>
-                                <Route path={':folderPath'} element={<FileManagerGetInFolder/>}/>
                             </Route>
                         </Route>
                         <Route path={'error'} element={<Error/>}/>
@@ -79,8 +78,8 @@ export const App = () => {
                             </Route>
                             <Route path={"tools/*"}>
                                 <Route path={"file-manager/*"}>
-                                    <Route path=":folderPath/create-folder" element={<FileManagerCreateFolder/>}/>
-                                    <Route path=":folderPath/upload-files" element={<FileManagerUploadFile/>}/>
+                                    <Route path="create-folder" element={<FileManagerCreateFolder/>}/>
+                                    <Route path="upload-files" element={<FileManagerUploadFile/>}/>
                                 </Route>
                             </Route>
                         </Routes>
