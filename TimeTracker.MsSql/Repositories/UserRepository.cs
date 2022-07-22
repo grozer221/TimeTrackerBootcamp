@@ -1,6 +1,9 @@
 ﻿using Dapper;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
+using TimeTracker.Business.Models.UserFilter;
 using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.MsSql.Repositories
@@ -41,20 +44,40 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public async Task<GetEntitiesResponse<UserModel>> GetAsync(string like, int take, int skip)
+        public async Task<GetEntitiesResponse<UserModel>> GetAsync(UserFilter filter, int take, int skip)
         {
-            like = "%" + like + "%";
+            string email = "%" + filter.Email + "%";
+            string firstname = "%" + filter.FirstName + "%";
+            string lastname = "%" + filter.LastName + "%";
+            string premisionsQuery = "";
+            string roles = "";
+
+            if (filter.Permissions.Count() != 0)
+                premisionsQuery = " and " + String.Join(" and ", filter.Permissions.Select(i => "PermissionsString like '%" + i + "%'"));
+
+            if (filter.Roles.Count() != 0)
+                roles = " and " + String.Join(" or ", filter.Roles.Select(i => "RoleNumber = " + (int)i));
 
             string getCountQuery = @"select count(*) FROM Users 
-                                    where Email like @like";
+                                    where Email like @email
+                                          	and FirstName like @firstname
+                                            and LastName like @lastname "
+                                            + premisionsQuery + roles;
+
+            int skipNumber = skip * take;
 
             string getEntitieQuery = @"select * FROM Users 
-                                     where Email like @like 
-                                     ORDER BY Id
-                                     OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+                                     where Email like @email
+                                          	and FirstName like @firstname
+                                            and LastName like @lastname "
+                                            + premisionsQuery + roles +
+                                     @"ORDER BY Id
+                                     OFFSET @skipNumber ROWS FETCH NEXT @take ROWS ONLY";
+
             using (var connection = dapperContext.CreateConnection())
             {
-                var reader = await connection.QueryMultipleAsync($"{getCountQuery};{getEntitieQuery}", new { like, take, skip });
+                var reader = await connection.QueryMultipleAsync($"{getCountQuery};{getEntitieQuery}",
+                    new { email, firstname, lastname, take, skipNumber });
                 int total = reader.Read<int>().FirstOrDefault();
                 var users = reader.Read<UserModel>();
                 return new GetEntitiesResponse<UserModel>
@@ -92,7 +115,7 @@ namespace TimeTracker.MsSql.Repositories
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, new {id, password});
+                await connection.ExecuteAsync(query, new { id, password });
             }
         }
 
