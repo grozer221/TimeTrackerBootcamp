@@ -13,3 +13,12 @@ export type User = {
     createdAt: string,
     updatedAt: string,
 }
+
+export type UserFilter = {
+    firstName?: string,
+    lastName?: string,
+    middleName?: string,
+    email?: string,
+    permissions?: Permission[]
+    roles?: Role[]
+}

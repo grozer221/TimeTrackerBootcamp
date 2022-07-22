@@ -20,6 +20,8 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
+import {UsersPage} from "./modules/users/pages/UsersPage/UsersPage";
+import {CreateUserModal} from "./modules/users/components/CreateUserModal/CreateUserModal";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -49,6 +51,9 @@ export const App = () => {
                         <Route path={'calendar/*'} element={<CalendarPage/>}>
                             <Route path={'*'} element={<Error/>}/>
                         </Route>
+                        <Route path={'users/*'} element={<UsersPage/>}>
+                            <Route path={'*'} element={<Error/>}/>
+                        </Route>
                         <Route path={'settings/:tab'} element={<SettingsPage/>}/>
                         <Route path={"auth/*"}>
                             <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
@@ -68,16 +73,19 @@ export const App = () => {
                                     <Route path="remove/:date" element={<CalendarDaysRemovePage/>}/>
                                 </Route>
                             </Route>
+                            <Route path={'users/*'}>
+                                <Route path="create" element={<CreateUserModal/>}/>
+                            </Route>
                         </Routes>
                     )}
-                </AppLayout>
-                : <Routes>
-                    <Route path={"auth/*"}>
+                        </AppLayout>
+                        : <Routes>
+                        <Route path={"auth/*"}>
                         <Route path="login" element={<AuthLoginPage/>}/>
-                    </Route>
-                    <Route path={'*'} element={<Navigate to={'/auth/login'}/>}/>
-                </Routes>
+                        </Route>
+                        <Route path={'*'} element={<Navigate to={'/auth/login'}/>}/>
+                        </Routes>
+                    }
+                </>
+                );
             }
-        </>
-    );
-}

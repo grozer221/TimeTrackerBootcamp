@@ -109,9 +109,9 @@ export const schema = gql`
   type UsersQueries {
     get(
       """
-      Argument for a search
+      Filter for a search by multiple parameters
       """
-      like: String!
+      filter: UserFilterType!
 
       """
       Argument represent count of tracks on page
@@ -129,6 +129,15 @@ export const schema = gql`
       """
       id: Guid! = "00000000-0000-0000-0000-000000000000"
     ): UserType!
+  }
+
+  input UserFilterType {
+    email: String
+    firstName: String
+    lastName: String
+    middleName: String
+    permissions: [Permission]
+    roles: [Role]
   }
 
   type GetUserResponseType {
