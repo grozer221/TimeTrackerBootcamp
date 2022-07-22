@@ -47,12 +47,10 @@ export const CalendarPage = () => {
     }
 
     const onSelect = (newDate: Moment) => {
-        console.log('onSelect', newDate.format('YYYY-MM-DD'))
         dispatch(calendarDaysActions.setSelectedDate(newDate));
     };
 
     const onPanelChange = (newDate: Moment) => {
-        console.log('onPanelChange', newDate.format('YYYY-MM-DD'))
         const fromTo = getFromTo(newDate);
         dispatch(calendarDaysActions.getAsync(fromTo[0], fromTo[1]));
     };

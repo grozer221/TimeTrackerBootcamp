@@ -1,6 +1,5 @@
 import React, {ChangeEvent, FC, useContext, useEffect, useRef, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {useNavigate, useParams, useSearchParams} from "react-router-dom";
 import {RootState} from "../../../../store/store";
 import {Button, Form, FormInstance, Input, InputRef, message, Modal, Popconfirm, Table} from "antd";
 import Title from "antd/lib/typography/Title";
@@ -20,11 +19,10 @@ type FileType = {
 export const FileManagerUploadFile: FC = () => {
     const dispatch = useDispatch();
     const loadingUploadFiles = useSelector((s: RootState) => s.fileManager.loadingUploadFiles);
-    const navigate = useNavigate();
-    const [searchParams, setSearchParams] = useSearchParams()
-    const folderPath = searchParams.get('folderPath') || '';
     const [files, setFiles] = useState<FileType[]>([])
     const hiddenFileInput = React.useRef<HTMLInputElement | null>(null);
+    const isUploadFilesPageVisible = useSelector((s: RootState) => s.fileManager.isUploadFilesPageVisible);
+    const folderPath = useSelector((s: RootState) => s.fileManager.folderPath);
 
     const handleDelete = (key: React.Key) => {
         const newData = files.filter(item => item.key !== key);
@@ -99,7 +97,6 @@ export const FileManagerUploadFile: FC = () => {
             message.error('Choose a files')
             return;
         }
-        console.log(uploadFiles)
         dispatch(fileManagerActions.uploadFilesAsync(folderPath, uploadFiles))
     }
 
@@ -119,10 +116,10 @@ export const FileManagerUploadFile: FC = () => {
         <Modal
             title={<Title level={4}>Upload files</Title>}
             confirmLoading={loadingUploadFiles}
-            visible={true}
+            visible={isUploadFilesPageVisible}
             onOk={onFinish}
             okText={'Create'}
-            onCancel={() => navigate(-1)}
+            onCancel={() => dispatch(fileManagerActions.setIsUploadFilesPageVisible(false))}
         >
             <Table
                 className={s.table}

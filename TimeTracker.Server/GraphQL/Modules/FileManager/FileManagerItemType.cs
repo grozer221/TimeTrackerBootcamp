@@ -21,6 +21,10 @@ namespace TimeTracker.Server.GraphQL.Modules.FileManager
             Field<NonNullGraphType<FileManagerItemKindType>, FileManagerItemKind>()
                 .Name("Kind")
                 .Resolve(context => context.Source.Kind);
+            
+            Field<NonNullGraphType<FileManagerItemPermissionsType>, FileManagerItemPermissions>()
+                .Name("Permissions")
+                .Resolve(context => context.Source.Permissions);
         }
     }
 }

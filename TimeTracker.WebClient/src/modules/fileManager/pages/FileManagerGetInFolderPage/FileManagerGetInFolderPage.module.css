@@ -6,20 +6,16 @@
     width: 500px;
 }
 
-.tableFileManager td:nth-child(2) {
-    width: 300px;
-}
-
 .tableFileManager, .tableFileManager th {
     border: 1px solid grey;
 }
 
-
-.tableFileManager tr {
+.tableFileManager tr:not(.theader) {
+    cursor: pointer;
     transition: all 0.5s ease;
 }
 
-.tableFileManager tr:not(.selected):hover {
+.tableFileManager tr:not(.selected):not(.theader):hover {
     background-color: #bdc3c7;
 }
 

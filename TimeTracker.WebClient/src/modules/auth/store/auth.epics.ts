@@ -34,10 +34,7 @@ export const loginEpic: Epic<ReturnType<typeof authActions.userLoginAsync>, any,
                     navigateActions.navigate(-2),
                     getSettingsAction(response.data?.auth.login.user.role, response.data?.auth.login.user.permissions),
                 ]),
-                catchError(error => {
-                    console.log('login error', error)
-                    return of(notificationsActions.addError(error.message))
-                }),
+                catchError(error => of(notificationsActions.addError(error.message))),
             )
         )
     );

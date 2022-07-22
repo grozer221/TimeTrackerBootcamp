@@ -20,9 +20,9 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
-import {FileManagerGetInFolder} from "./modules/fileManager/pages/FileManagerGetInFolder/FileManagerGetInFolder";
-import {FileManagerCreateFolder} from "./modules/fileManager/pages/FileManagerCreateFolder/FileManagerCreateFolder";
-import {FileManagerUploadFile} from "./modules/fileManager/pages/FileManagerUploadFile/FileManagerUploadFile";
+import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
+import {FileManagerCreateFolder} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
+import {FileManagerUploadFile} from "./modules/fileManager/components/FileManagerUploadFile/FileManagerUploadFile";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -58,7 +58,7 @@ export const App = () => {
                         </Route>
                         <Route path={"tools/*"}>
                             <Route path={"file-manager/*"}>
-                                <Route index element={<FileManagerGetInFolder/>}/>
+                                <Route index element={<FileManagerGetInFolderPage/>}/>
                             </Route>
                         </Route>
                         <Route path={'error'} element={<Error/>}/>

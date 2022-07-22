@@ -12,7 +12,6 @@ import {settingsReducer} from "../modules/settings/store/settings.reducer";
 import {settingsEpics} from "../modules/settings/store/settings.epics";
 import {cacheReducer} from "../modules/cache/store/cache.reducer";
 import {cacheEpics} from "../modules/cache/store/cache.epics";
-import {filesEpics} from "../modules/files/store/files.epics";
 import {fileManagerReducer} from "../modules/fileManager/store/fileManager.reducer";
 import {fileManagerEpics} from "../modules/fileManager/store/fileManager.epics";
 

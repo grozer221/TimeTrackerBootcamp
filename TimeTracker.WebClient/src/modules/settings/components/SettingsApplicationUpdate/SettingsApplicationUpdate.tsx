@@ -9,6 +9,8 @@ import {RootState} from "../../../../store/store";
 import {nameof} from "../../../../utils/stringUtils";
 import {linkRegexPattern} from "../../../../utils/regexUtils";
 import {ExtraHeaderButtons} from "../../../../components/ExtraHeaderButtons";
+import {FileManagerOpenButton} from "../../../fileManager/components/FileManagerOpenButton";
+import {FileManagerItem} from "../../../fileManager/graphQL/fileManager.types";
 
 const {Text} = Typography;
 
@@ -23,13 +25,13 @@ export const SettingsApplicationUpdate: FC = ({}) => {
     const settings = useSelector((s: RootState) => s.settings.settings)
     const [faviconUrl, setFaviconUrl] = useState<string | undefined>(settings?.application?.faviconUrl);
     const [logoUrl, setLogoUrl] = useState<string | undefined>(settings?.application?.logoUrl);
+    const [fileManagerVisible, setFileManagerVisible] = useState(false);
 
     useEffect(() => {
 
     }, [])
 
     const onFinish = (values: FormValues) => {
-        console.log(values)
         const settingsApplicationUpdateInputType: SettingsApplicationUpdateInputType = {
             title: values.title,
             faviconUrl: faviconUrl,
@@ -42,6 +44,16 @@ export const SettingsApplicationUpdate: FC = ({}) => {
         form.resetFields()
         setFaviconUrl(settings?.application?.faviconUrl)
         setLogoUrl(settings?.application?.logoUrl)
+    }
+
+    const onSelectFaviconUrl = (item: FileManagerItem) => {
+        setFileManagerVisible(false)
+        setFaviconUrl(item.path);
+    }
+
+    const onSelectLogoUrl = (item: FileManagerItem) => {
+        setFileManagerVisible(false)
+        setLogoUrl(item.path);
     }
 
 
@@ -86,10 +98,11 @@ export const SettingsApplicationUpdate: FC = ({}) => {
                                 value={faviconUrl}
                                 onChange={e => setFaviconUrl(e.target.value)}
                             />
-                            {/*<ButtonUploadFile*/}
-                            {/*    accept={'.png,.jpg,.jpeg,.gif'}*/}
-                            {/*    onUploaded={files => setFaviconUrl(files[0])}*/}
-                            {/*/>*/}
+                            <FileManagerOpenButton
+                                visible={fileManagerVisible}
+                                setVisible={setFileManagerVisible}
+                                onSelectFile={onSelectFaviconUrl}
+                            />
                         </Input.Group>
                     </Form.Item>
                     <div className={'mt--10'}>
@@ -119,10 +132,11 @@ export const SettingsApplicationUpdate: FC = ({}) => {
                                 value={logoUrl}
                                 onChange={e => setLogoUrl(e.target.value)}
                             />
-                            {/*<ButtonUploadFile*/}
-                            {/*    accept={'.png,.jpg,.jpeg,.gif'}*/}
-                            {/*    onUploaded={files => setLogoUrl(files[0])}*/}
-                            {/*/>*/}
+                            <FileManagerOpenButton
+                                visible={fileManagerVisible}
+                                setVisible={setFileManagerVisible}
+                                onSelectFile={onSelectLogoUrl}
+                            />
                         </Input.Group>
                     </Form.Item>
                     <div className={'mt--10'}>

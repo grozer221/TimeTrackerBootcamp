@@ -6,5 +6,6 @@
         public string Path { get; set; }
         public string CreatedAt { get; set; }
         public FileManagerItemKind Kind { get; set; }
+        public FileManagerItemPermissions Permissions { get; set; }
     }
 }

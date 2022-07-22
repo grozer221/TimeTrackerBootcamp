@@ -31,6 +31,8 @@ namespace TimeTracker.Server.GraphQL.Modules.FileManager
                 .Argument<NonNullGraphType<FileManagerUploadFilesInputType>, FileManagerUploadFilesInput>("FileManagerUploadFilesInputType", "Argument for update employment settings")
                 .ResolveAsync(async context =>
                 {
+                    if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateFileManager))
+                        throw new ExecutionError("You do not have permissions for upload files in file manager");
                     var fileManagerUploadFilesInput = context.GetArgument<FileManagerUploadFilesInput>("FileManagerUploadFilesInputType");
                     var fileManagerItems = new List<FileManagerItem>();
                     foreach (var file in fileManagerUploadFilesInput.Files)
@@ -39,6 +41,41 @@ namespace TimeTracker.Server.GraphQL.Modules.FileManager
                         fileManagerItems.Add(fileManagerItem);
                     }
                     return fileManagerItems;
+                })
+                .AuthorizeWith(AuthPolicies.Authenticated);
+
+            Field<NonNullGraphType<FileManagerItemType>, FileManagerItem>()
+                .Name("RenameFile")
+                .Argument<NonNullGraphType<FileManagerRenameInputType>, FileManagerRenameInput>("FileManagerRenameInputType", "Argument for update employment settings")
+                .ResolveAsync(async context =>
+                {
+                    if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateFileManager))
+                        throw new ExecutionError("You do not have permissions for rename files in file manager");
+                    var fileManagerRenameInput = context.GetArgument<FileManagerRenameInput>("FileManagerRenameInputType");
+                    return await fileManagerService.RenameFileAsync(fileManagerRenameInput.FromPath, fileManagerRenameInput.ToName); ;
+                })
+                .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<BooleanGraphType>, bool>()
+                .Name("Remove")
+                .Argument<NonNullGraphType<FileManagerRemoveInputType>, FileManagerRemoveInput>("FileManagerRemoveInputType", "Argument for update employment settings")
+                .ResolveAsync(async context =>
+                {
+                    if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateFileManager))
+                        throw new ExecutionError("You do not have permissions for remove in file manager");
+                    var fileManagerRemoveInput = context.GetArgument<FileManagerRemoveInput>("FileManagerRemoveInputType");
+                    switch (fileManagerRemoveInput.Kind)
+                    {
+                        case FileManagerItemKind.File:
+                            await fileManagerService.RemoveFileAsync(fileManagerRemoveInput.Path);
+                            break;
+                        case FileManagerItemKind.Folder:
+                            await fileManagerService.RemoveFolderAsync(fileManagerRemoveInput.Path);
+                            break;
+                        default:
+                            throw new NotImplementedException();
+                    }
+                    return true;
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
         }

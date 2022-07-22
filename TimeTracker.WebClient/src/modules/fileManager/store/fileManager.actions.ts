@@ -1,11 +1,24 @@
 import {ValueOf} from "../../../store/store";
-import {FileManagerItem} from "../graphQL/fileManager.types";
+import {FileManagerItem, FileManagerItemKind} from "../graphQL/fileManager.types";
 
 export const prefix = 'FILE_MANAGER_';
 
 export const fileManagerActions = {
-    setLastGotInFolder: (folderPath: string) => ({
-        type: `${prefix}SET_LAST_GOT_IN_FOLDER`,
+    setIsCreateFolderPageVisible: (visible: boolean) => ({
+        type: `${prefix}SET_IS_CREATE_FOLDER_PAGE_VISIBLE`,
+        payload: visible,
+    } as const),
+    setIsUploadFilesPageVisible: (visible: boolean) => ({
+        type: `${prefix}SET_IS_UPLOAD_FILES_PAGE_VISIBLE`,
+        payload: visible,
+    } as const),
+    setIsRenameFilePageVisible: (visible: boolean) => ({
+        type: `${prefix}SET_IS_RENAME_FILE_PAGE_VISIBLE`,
+        payload: visible,
+    } as const),
+
+    setFolderPath: (folderPath: string) => ({
+        type: `${prefix}SET_FOLDER_PATH`,
         payload: folderPath,
     } as const),
     getInFolderAsync: (folderPath: string) => ({
@@ -36,6 +49,24 @@ export const fileManagerActions = {
     } as const),
     setLoadingUploadFiles: (loading: boolean) => ({
         type: `${prefix}SET_LOADING_UPLOAD_FILES`,
+        payload: loading,
+    } as const),
+
+    removeAsync: (path: string, kind: FileManagerItemKind) => ({
+        type: `${prefix}REMOVE_ASYNC`,
+        payload: {path, kind},
+    } as const),
+    setLoadingRemove: (loading: boolean) => ({
+        type: `${prefix}SET_LOADING_REMOVE`,
+        payload: loading,
+    } as const),
+
+    renameFileAsync: (fromPath: string, toName: string) => ({
+        type: `${prefix}RENAME_FILE_ASYNC`,
+        payload: {fromPath, toName},
+    } as const),
+    setLoadingRenameFile: (loading: boolean) => ({
+        type: `${prefix}SET_LOADING_RENAME_FILE`,
         payload: loading,
     } as const),
 };

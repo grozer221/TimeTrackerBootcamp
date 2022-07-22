@@ -6,5 +6,6 @@ export const FILE_MANAGER_ITEM_FRAGMENT = gql`
         path
         createdAt
         kind
+        permissions
     }
 `
