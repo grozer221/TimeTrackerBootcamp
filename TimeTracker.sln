@@ -13,7 +13,7 @@ Project("{54A90642-561A-4BB1-A94E-469ADEE60C69}") = "TimeTracker.WebClient", "Ti
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTracker.Test", "TimeTracker.Test\TimeTracker.Test.csproj", "{59D714F1-D477-4312-BBFE-B9D3D37EA18C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TimeTracker.Caching", "TimeTracker.Caching\TimeTracker.Caching.csproj", "{3E60A1E9-312D-45D4-AA9F-E168785FD7C3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TimeTracker.Caching", "TimeTracker.Caching\TimeTracker.Caching.csproj", "{3E60A1E9-312D-45D4-AA9F-E168785FD7C3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

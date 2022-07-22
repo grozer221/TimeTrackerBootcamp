@@ -1,7 +1,7 @@
 import {Claims} from "../modules/auth/graphQL/auth.types";
 
 export const uppercaseToWords = (str: string): string => {
-    const withSpaces = str.replace('_', ' ').toLowerCase()
+    const withSpaces = str.replace(/_/g, ' ').toLowerCase()
     return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
 }
 

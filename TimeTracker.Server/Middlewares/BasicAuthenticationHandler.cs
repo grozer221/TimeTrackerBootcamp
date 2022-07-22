@@ -12,10 +12,6 @@ namespace TimeTracker.Server.Middlewares
 {
     public class BasicAuthenticationOptions : AuthenticationSchemeOptions
     {
-        public BasicAuthenticationOptions()
-        {
-
-        }
     }
 
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>

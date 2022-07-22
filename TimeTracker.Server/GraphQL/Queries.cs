@@ -1,6 +1,7 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.CalendarDays;
+using TimeTracker.Server.GraphQL.Modules.FileManager;
 using TimeTracker.Server.GraphQL.Modules.Settings;
 using TimeTracker.Server.GraphQL.Modules.Tracks;
 using TimeTracker.Server.GraphQL.Modules.Users;
@@ -29,6 +30,10 @@ namespace TimeTracker.Server.GraphQL
             
             Field<NonNullGraphType<SettingsQueries>>()
                 .Name("Settings")
+                .Resolve(_ => new { });
+            
+            Field<NonNullGraphType<FileManagerQueries>>()
+                .Name("FileManager")
                 .Resolve(_ => new { });
         }
     }

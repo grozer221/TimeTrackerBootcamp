@@ -10,5 +10,6 @@
         Impersonate,
         UpdateSettings,
         ClearCache,
+        UpdateFileManager,
     }
 }

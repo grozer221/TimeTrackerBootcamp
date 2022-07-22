@@ -20,10 +20,12 @@ export const client = new ApolloClient({
     cache: new InMemoryCache(),
     defaultOptions: {
         watchQuery: {
+            fetchPolicy: 'no-cache',
             errorPolicy: 'all',
             notifyOnNetworkStatusChange: true,
         },
         query: {
+            fetchPolicy: 'no-cache',
             errorPolicy: 'all',
             notifyOnNetworkStatusChange: true,
         },

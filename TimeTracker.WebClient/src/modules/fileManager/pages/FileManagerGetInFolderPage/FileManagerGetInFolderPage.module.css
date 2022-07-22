@@ -1,0 +1,32 @@
+.wrapperPage {
+    position: relative;
+}
+
+.tableFileManager {
+    width: 500px;
+}
+
+.tableFileManager, .tableFileManager th {
+    border: 1px solid grey;
+}
+
+.tableFileManager tr:not(.theader) {
+    cursor: pointer;
+    transition: all 0.5s ease;
+}
+
+.tableFileManager tr:not(.selected):not(.theader):hover {
+    background-color: #bdc3c7;
+}
+
+.tableFileManager td {
+    padding: 3px 5px;
+}
+
+.selected {
+    background-color: lightskyblue;
+}
+
+.loading {
+    pointer-events: none
+}

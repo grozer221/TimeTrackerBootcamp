@@ -20,6 +20,9 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
+import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
+import {FileManagerCreateFolder} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
+import {FileManagerUploadFile} from "./modules/fileManager/components/FileManagerUploadFile/FileManagerUploadFile";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -53,6 +56,11 @@ export const App = () => {
                         <Route path={"auth/*"}>
                             <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
                         </Route>
+                        <Route path={"tools/*"}>
+                            <Route path={"file-manager/*"}>
+                                <Route index element={<FileManagerGetInFolderPage/>}/>
+                            </Route>
+                        </Route>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>
                         <Route path={'*'} element={<Error/>}/>
@@ -66,6 +74,12 @@ export const App = () => {
                                     <Route path="update/:date" element={<CalendarDaysUpdatePage/>}/>
                                     <Route path="remove" element={<CalendarDaysRemovePage/>}/>
                                     <Route path="remove/:date" element={<CalendarDaysRemovePage/>}/>
+                                </Route>
+                            </Route>
+                            <Route path={"tools/*"}>
+                                <Route path={"file-manager/*"}>
+                                    <Route path="create-folder" element={<FileManagerCreateFolder/>}/>
+                                    <Route path="upload-files" element={<FileManagerUploadFile/>}/>
                                 </Route>
                             </Route>
                         </Routes>
