@@ -29,6 +29,7 @@
 		<PackageReference Include="GraphQL.Server.Ui.Altair" Version="5.2.0" />
 		<PackageReference Include="GraphQL.SystemReactive" Version="4.7.1" />
 		<PackageReference Include="GraphQL.Upload.AspNetCore" Version="2.0.0" />
+		<PackageReference Include="MailKit" Version="3.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.6" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />

@@ -23,6 +23,8 @@ import './assets/AntDesignOverride.css';
 import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
 import {FileManagerCreateFolder} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
 import {FileManagerUploadFile} from "./modules/fileManager/components/FileManagerUploadFile/FileManagerUploadFile";
+import {AuthRequestResetPasswordPage} from "./modules/auth/pages/AuthRequestResetPasswordPage";
+import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -88,6 +90,8 @@ export const App = () => {
                 : <Routes>
                     <Route path={"auth/*"}>
                         <Route path="login" element={<AuthLoginPage/>}/>
+                        <Route path="request-reset" element={<AuthRequestResetPasswordPage/>}/>
+                        <Route path="reset-password/:token" element={<AuthResetPasswordPage/>}/>
                     </Route>
                     <Route path={'*'} element={<Navigate to={'/auth/login'}/>}/>
                 </Routes>
