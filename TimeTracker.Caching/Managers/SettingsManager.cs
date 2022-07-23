@@ -46,6 +46,12 @@ namespace TimeTracker.Caching.Managers
             return await settingsRepository.UpdateTasksAsync(settingsTasks);
         }
 
+        public async Task<SettingsModel> UpdateEmailAsync(SettingsEmail settingsEmail)
+        {
+            ResetCache();
+            return await settingsRepository.UpdateEmailAsync(settingsEmail);
+        }
+
         public void ResetCache()
         {
             memoryCache.Remove(GetAsyncKey);

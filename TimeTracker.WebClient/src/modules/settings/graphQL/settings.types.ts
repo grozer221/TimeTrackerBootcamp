@@ -5,6 +5,7 @@ export type Settings = {
     employment: SettingsEmployment,
     application: SettingsApplication,
     tasks: SettingsTasks,
+    email: SettingsEmail,
     createdAt: string,
     updatedAt: string,
 }
@@ -35,4 +36,9 @@ export type SettingsTasks_AutoCreateDaysOff = {
 export type SettingsTasks_AutoSetWorkingHoursForFullTimers = {
     isEnabled: boolean,
     timeWhenCreate: string,
+}
+
+export type SettingsEmail = {
+    name: string,
+    address: string,
 }

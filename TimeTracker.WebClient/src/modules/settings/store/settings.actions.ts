@@ -1,7 +1,7 @@
 import {ValueOf} from "../../../store/store";
 import {Settings} from "../graphQL/settings.types";
 import {
-    SettingsApplicationUpdateInputType,
+    SettingsApplicationUpdateInputType, SettingsEmailUpdateInputType,
     SettingsEmploymentUpdateInputType,
     SettingsTasksUpdateInputType
 } from "../graphQL/settings.mutations";
@@ -38,6 +38,10 @@ export const settingsActions = {
     updateTasksAsync: (settingsTasksUpdateInputType: SettingsTasksUpdateInputType) => ({
         type: `${prefix}UPDATE_TASKS_ASYNC`,
         payload: settingsTasksUpdateInputType
+    } as const),
+    updateEmailAsync: (settingsEmailUpdateInputType: SettingsEmailUpdateInputType) => ({
+        type: `${prefix}UPDATE_EMAIL_ASYNC`,
+        payload: settingsEmailUpdateInputType
     } as const),
     setLoadingUpdate: (loading: boolean) => ({
         type: `${prefix}SET_LOADING_UPDATE`,

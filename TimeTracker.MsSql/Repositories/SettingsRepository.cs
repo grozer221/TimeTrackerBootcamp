@@ -83,5 +83,20 @@ namespace TimeTracker.MsSql.Repositories
             }
             return settings;
         }
+
+        public async Task<SettingsModel> UpdateEmailAsync(SettingsEmail settingsEmail)
+        {
+            var settings = await GetAsync();
+            settings.Email = settingsEmail;
+            settings.UpdatedAt = DateTime.Now;
+            string query = @"update Settings
+                            SET EmailString = @EmailString, UpdatedAt = @UpdatedAt
+                            WHERE Id = @Id";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, settings);
+            }
+            return settings;
+        }
     }
 }

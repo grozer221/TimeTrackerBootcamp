@@ -64,5 +64,14 @@ namespace TimeTracker.MsSql.Repositories
                 await connection.ExecuteAsync(query, new { userId, token });
             }
         }
+
+        public async Task RemoveAllForUserAsync(Guid userId)
+        {
+            string query = "delete from Tokens where userId = @userId";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, new { userId });
+            }
+        }
     }
 }
