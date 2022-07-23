@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TimeTracker.Business.Models;
+﻿using TimeTracker.Business.Models;
 
 namespace TimeTracker.Business.Repositories
 {
-    public interface IResetTokenRepository
+    public interface IResetPassTokenRepository
     {
-        Task<TokenModel> GetByTokenAsync(string token);
-        Task<TokenModel> CreateAsync(TokenModel model);
+        Task<ResetPassTokenModel> GetByTokenAsync(string token);
+        Task<ResetPassTokenModel> CreateAsync(ResetPassTokenModel model);
         Task RemoveAsync(Guid userId, string token);
-
+        Task RemoveAllForUserAsync(Guid userId);
     }
 }

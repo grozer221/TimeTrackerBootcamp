@@ -57,6 +57,7 @@ export const App = () => {
                         <Route path={'settings/:tab'} element={<SettingsPage/>}/>
                         <Route path={"auth/*"}>
                             <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
+                            <Route path="reset-password/:token" element={<Navigate to={'/time-tracker'}/>}/>
                         </Route>
                         <Route path={"tools/*"}>
                             <Route path={"file-manager/*"}>
@@ -90,7 +91,7 @@ export const App = () => {
                 : <Routes>
                     <Route path={"auth/*"}>
                         <Route path="login" element={<AuthLoginPage/>}/>
-                        <Route path="request-reset" element={<AuthRequestResetPasswordPage/>}/>
+                        <Route path="request-reset-password" element={<AuthRequestResetPasswordPage/>}/>
                         <Route path="reset-password/:token" element={<AuthResetPasswordPage/>}/>
                     </Route>
                     <Route path={'*'} element={<Navigate to={'/auth/login'}/>}/>

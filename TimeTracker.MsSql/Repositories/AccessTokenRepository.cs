@@ -4,40 +4,40 @@ using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.MsSql.Repositories
 {
-    public class TokenRepository : ITokenRepository
+    public class AccessTokenRepository : IAccessTokenRepository
     {
         private readonly DapperContext dapperContext;
 
-        public TokenRepository(DapperContext dapperContext)
+        public AccessTokenRepository(DapperContext dapperContext)
         {
             this.dapperContext = dapperContext;
         }
 
-        public async Task<TokenModel> GetByToken(string token)
+        public async Task<AceessTokenModel> GetByToken(string token)
         {
-            string query = $"select * from Tokens where token = @token";
+            string query = $"select * from AccessTokens where token = @token";
             using (var connection = dapperContext.CreateConnection())
             {
-                return await connection.QueryFirstOrDefaultAsync<TokenModel>(query, new { token });
+                return await connection.QueryFirstOrDefaultAsync<AceessTokenModel>(query, new { token });
             }
         }
 
-        public async Task<IEnumerable<TokenModel>> GetByUserId(Guid userId)
+        public async Task<IEnumerable<AceessTokenModel>> GetByUserId(Guid userId)
         {
-            string query = $"select * from Tokens where userId = @userId";
+            string query = $"select * from AccessTokens where userId = @userId";
             using (var connection = dapperContext.CreateConnection())
             {
-                return await connection.QueryAsync<TokenModel>(query, new { userId });
+                return await connection.QueryAsync<AceessTokenModel>(query, new { userId });
             }
         }
 
-        public async Task<TokenModel> CreateAsync(TokenModel model)
+        public async Task<AceessTokenModel> CreateAsync(AceessTokenModel model)
         {
             model.Id = Guid.NewGuid();
             DateTime dateTimeNow = DateTime.Now;
             model.CreatedAt = dateTimeNow;
             model.UpdatedAt = dateTimeNow;
-            string query = $@"insert into Tokens 
+            string query = $@"insert into AccessTokens 
                             (Id, Token, UserId, CreatedAt, UpdatedAt) 
                             values (@Id, @Token, @UserId, @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
@@ -49,7 +49,7 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task RemoveAsync(Guid userId, string token)
         {
-            string query = "delete from Tokens where userId = @userId and token = @token";
+            string query = "delete from AccessTokens where userId = @userId and token = @token";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new { userId, token });
@@ -58,7 +58,7 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task RemoveAllForUserExceptTokenAsync(Guid userId, string token)
         {
-            string query = "delete from Tokens where userId = @userId and token != @token";
+            string query = "delete from AccessTokens where userId = @userId and token != @token";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new { userId, token });
@@ -67,7 +67,7 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task RemoveAllForUserAsync(Guid userId)
         {
-            string query = "delete from Tokens where userId = @userId";
+            string query = "delete from AccessTokens where userId = @userId";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new { userId });

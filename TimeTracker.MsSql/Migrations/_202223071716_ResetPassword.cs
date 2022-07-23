@@ -1,4 +1,5 @@
 ﻿using FluentMigrator;
+using System.Data;
 
 namespace TimeTracker.MsSql.Migrations
 {
@@ -10,7 +11,7 @@ namespace TimeTracker.MsSql.Migrations
             Create.Table("ResetTokens")
                 .WithColumn("Id").AsGuid().NotNullable().PrimaryKey()
                 .WithColumn("Token").AsString(300).NotNullable().Unique()
-                .WithColumn("UserId").AsGuid().NotNullable().ForeignKey("Users", "Id").OnDeleteOrUpdate(System.Data.Rule.Cascade)
+                .WithColumn("UserId").AsGuid().NotNullable().ForeignKey("Users", "Id").OnDeleteOrUpdate(Rule.Cascade)
                 .WithColumn("CreatedAt").AsDateTime().NotNullable()
                 .WithColumn("UpdatedAt").AsDateTime().NotNullable();
         }

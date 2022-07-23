@@ -1,5 +1,5 @@
 import React, {FC, useEffect} from "react";
-import {Button, Checkbox, Form, Input} from "antd";
+import {Button, Checkbox, Form, Input, Row} from "antd";
 import {useDispatch, useSelector} from "react-redux";
 import {authActions} from "../../store/auth.actions";
 import {AuthLoginInputType} from "../../graphQL/auth.mutations";
@@ -46,15 +46,11 @@ export const AuthLoginPage: FC = () => {
                 </Form.Item>
 
                 <Form.Item>
-                    <Checkbox>Remember me</Checkbox>
+                    <Row justify={'space-between'} align={'middle'}>
+                        <Checkbox>Remember me</Checkbox>
+                        <Link to="../request-reset-password">Forget password</Link>
+                    </Row>
                 </Form.Item>
-
-                <Form.Item>
-                    <Link to="../request-reset">
-                        Forget password
-                    </Link>
-                </Form.Item>
-
                 <Form.Item>
                     <Button type="primary" htmlType="submit" className="login-form-button">
                         LOGIN

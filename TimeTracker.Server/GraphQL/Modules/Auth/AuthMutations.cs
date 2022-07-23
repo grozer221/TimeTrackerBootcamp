@@ -15,17 +15,17 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
     public class AuthMutations : ObjectGraphType
     {
         public AuthMutations(
-            IUserRepository userRepository, 
-            IAuthService authService, 
-            ITokenRepository tokenRepository,
-            IResetTokenRepository resetTokenRepository,
+            IUserRepository userRepository,
+            IAuthService authService,
+            IAccessTokenRepository aceessTokenRepository,
+            IResetPassTokenRepository resetTokenRepository,
             IHttpContextAccessor httpContextAccessor,
-            INotification notification,
+            INotificationService notificationService,
             IValidator<AuthLoginInput> authLoginInputValidator,
             IValidator<AuthRegisterInput> authRegisterInputValidator,
             IValidator<AuthChangePasswordInput> authChangePasswordInputValidation,
             IValidator<AuthRequestResetPasswordInput> authRequestResetPasswordInputValidation,
-            IValidator<AuthResetPasswordInput> authResetPasswordInputValidation) 
+            IValidator<AuthResetPasswordInput> authResetPasswordInputValidation)
         {
             Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
                 .Name("Login")
@@ -37,26 +37,26 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     var user = await userRepository.GetByEmailAsync(authLoginInput.Email);
                     if (user == null || !authService.ComparePasswords(authLoginInput.Password, user.Password, user.Salt))
                         throw new Exception("Bad credentials");
-                    TokenModel token = new TokenModel
+                    AceessTokenModel accessToken = new AceessTokenModel
                     {
                         Token = authService.GenerateAccessToken(user.Id, user.Email, user.Role, user.Permissions),
                         UserId = user.Id,
                     };
-                    token = await tokenRepository.CreateAsync(token);
+                    accessToken = await aceessTokenRepository.CreateAsync(accessToken);
                     return new AuthResponse()
                     {
-                        Token = token.Token,
+                        Token = accessToken.Token,
                         User = user,
                     };
                 });
-            
+
             Field<NonNullGraphType<BooleanGraphType>, bool>()
                 .Name("Logout")
                 .ResolveAsync(async context =>
                 {
                     var userId = httpContextAccessor.HttpContext.GetUserId();
                     var token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
-                    await tokenRepository.RemoveAsync(userId, token);
+                    await aceessTokenRepository.RemoveAsync(userId, token);
                     return true;
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
@@ -78,12 +78,12 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     user.Role = Role.Administrator;
                     user.Permissions = new List<Permission>();
                     user = await userRepository.CreateAsync(user);
-                    TokenModel token = new TokenModel
+                    AceessTokenModel token = new AceessTokenModel
                     {
                         Token = authService.GenerateAccessToken(user.Id, user.Email, user.Role, user.Permissions),
                         UserId = user.Id,
                     };
-                    token = await tokenRepository.CreateAsync(token);
+                    token = await aceessTokenRepository.CreateAsync(token);
                     return new AuthResponse()
                     {
                         Token = token.Token,
@@ -106,7 +106,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     user.Salt = salt;
                     await userRepository.UpdatePasswordAsync(user.Id, user.Password, user.Salt);
                     string token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
-                    await tokenRepository.RemoveAllForUserExceptTokenAsync(user.Id, token);
+                    await aceessTokenRepository.RemoveAllForUserExceptTokenAsync(user.Id, token);
                     return true;
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
@@ -122,12 +122,12 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     var impersonateUser = await userRepository.GetByIdAsync(impersonateUserId);
                     if (impersonateUser == null)
                         throw new ExecutionError("User not found");
-                    TokenModel token = new TokenModel
+                    AceessTokenModel token = new AceessTokenModel
                     {
                         Token = authService.GenerateAccessToken(impersonateUser.Id, impersonateUser.Email, impersonateUser.Role, impersonateUser.Permissions),
                         UserId = impersonateUser.Id,
                     };
-                    token = await tokenRepository.CreateAsync(token);
+                    token = await aceessTokenRepository.CreateAsync(token);
                     return new AuthResponse()
                     {
                         Token = token.Token,
@@ -151,17 +151,16 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         string token = authService.GenerateResetPasswordToken(user.Id, user.Email);
                         string path = $"{protocol}://{httpContextAccessor.HttpContext.Request.Host}/auth/reset-password/{token}";
                         string msg = $"This is link for reset your password. If you don`t undestand what is it don`t do anything.\n{path}";
+                        await notificationService.SendMessageAsync(user.Email, "Reset Password", msg);
 
-                        var model = new TokenModel()
+                        await resetTokenRepository.RemoveAllForUserAsync(user.Id);
+                        var model = new ResetPassTokenModel()
                         {
                             Token = token,
                             UserId = user.Id
                         };
-
-                        await notification.SendMessageAsync(user.Email, "Reset Password", msg);
                         await resetTokenRepository.CreateAsync(model);
                     }
-
                     return true;
                 });
 
@@ -172,22 +171,20 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 {
                     var authResetPasswordInput = context.GetArgument<AuthResetPasswordInput>("AuthResetPasswordInputType");
                     authResetPasswordInputValidation.ValidateAndThrow(authResetPasswordInput);
-                    var id = authService.ValidatePasswordToken(authResetPasswordInput.Token);
+                    var userId = authService.ValidatePasswordToken(authResetPasswordInput.Token);
                     var model = await resetTokenRepository.GetByTokenAsync(authResetPasswordInput.Token);
-                    if (id == null || model == null)
+                    if (userId == null || model == null)
                     {
                         throw new Exception("Bad token");
                     }
-                    var user = await userRepository.GetByIdAsync(id.Value);
+                    var user = await userRepository.GetByIdAsync(userId.Value);
                     user.Password = authResetPasswordInput.Password.CreateMD5WithSalt(out var salt);
                     user.Salt = salt;
                     await userRepository.UpdatePasswordAsync(user.Id, user.Password, user.Salt);
-                    await resetTokenRepository.RemoveAsync(user.Id, model.Token);
-                    //string token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
-                    //await tokenRepository.RemoveAllForUserExceptTokenAsync(user.Id, token); Замінить
+                    await resetTokenRepository.RemoveAllForUserAsync(user.Id);
+                    await aceessTokenRepository.RemoveAllForUserAsync(user.Id);
                     return true;
                 });
-
         }
     }
 }
