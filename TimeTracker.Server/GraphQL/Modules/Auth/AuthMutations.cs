@@ -17,7 +17,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
         public AuthMutations(
             IUserRepository userRepository, 
             IAuthService authService, 
-            ITokenRepository tokenRepository, 
+            ITokenRepository tokenRepository,
+            IResetTokenRepository resetTokenRepository,
             IHttpContextAccessor httpContextAccessor,
             INotification notification,
             IValidator<AuthLoginInput> authLoginInputValidator,
@@ -147,10 +148,18 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     if (user != null)
                     {
                         string protocol = httpContextAccessor.HttpContext.Request.IsHttps ? "https" : "http";
-                        string path = $"{protocol}://{httpContextAccessor.HttpContext.Request.Host}/auth/reset-password/{authService.GenerateResetPasswordToken(user.Id, user.Email)}";
-                        string msg = $"This is link for reset your password. If you don`t undestand what is it don`t do anything. {path}";
-                        await notification.SendMessageAsync(user.Email, "Reset Password", msg);
+                        string token = authService.GenerateResetPasswordToken(user.Id, user.Email);
+                        string path = $"{protocol}://{httpContextAccessor.HttpContext.Request.Host}/auth/reset-password/{token}";
+                        string msg = $"This is link for reset your password. If you don`t undestand what is it don`t do anything.\n{path}";
 
+                        var model = new TokenModel()
+                        {
+                            Token = token,
+                            UserId = user.Id
+                        };
+
+                        await notification.SendMessageAsync(user.Email, "Reset Password", msg);
+                        await resetTokenRepository.CreateAsync(model);
                     }
 
                     return true;
@@ -164,7 +173,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     var authResetPasswordInput = context.GetArgument<AuthResetPasswordInput>("AuthResetPasswordInputType");
                     authResetPasswordInputValidation.ValidateAndThrow(authResetPasswordInput);
                     var id = authService.ValidatePasswordToken(authResetPasswordInput.Token);
-                    if (id == null)
+                    var model = await resetTokenRepository.GetByTokenAsync(authResetPasswordInput.Token);
+                    if (id == null || model == null)
                     {
                         throw new Exception("Bad token");
                     }
@@ -172,7 +182,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     user.Password = authResetPasswordInput.Password.CreateMD5WithSalt(out var salt);
                     user.Salt = salt;
                     await userRepository.UpdatePasswordAsync(user.Id, user.Password, user.Salt);
-                    string token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
+                    await resetTokenRepository.RemoveAsync(user.Id, model.Token);
+                    //string token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
                     //await tokenRepository.RemoveAllForUserExceptTokenAsync(user.Id, token); Замінить
                     return true;
                 });

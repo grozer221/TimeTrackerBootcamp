@@ -26,6 +26,7 @@ namespace TimeTracker.MsSql.Extensions
             services.AddScoped<ITokenRepository, TokenRepository>();
             services.AddScoped<ITrackRepository, TrackRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IResetTokenRepository, ResetTokenRepository>();
             return services;
         }
     }
