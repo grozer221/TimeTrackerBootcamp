@@ -60,6 +60,7 @@ namespace TimeTracker.Server.Extensions
         {
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<FileManagerService>();
+            services.AddSingleton<INotification, EmailNotificationService>();
             return services;
         }
 

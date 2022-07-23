@@ -5,7 +5,7 @@ import {authActions} from "../../store/auth.actions";
 import {AuthLoginInputType} from "../../graphQL/auth.mutations";
 import './AuthLoginPage.css'
 import {RootState} from "../../../../store/store";
-import {useNavigate} from "react-router-dom";
+import {Link, useNavigate} from "react-router-dom";
 
 export const AuthLoginPage: FC = () => {
     const dispatch = useDispatch()
@@ -50,10 +50,17 @@ export const AuthLoginPage: FC = () => {
                 </Form.Item>
 
                 <Form.Item>
+                    <Link to="../request-reset">
+                        Forget password
+                    </Link>
+                </Form.Item>
+
+                <Form.Item>
                     <Button type="primary" htmlType="submit" className="login-form-button">
                         LOGIN
                     </Button>
                 </Form.Item>
+
             </Form>
         </div>
     )

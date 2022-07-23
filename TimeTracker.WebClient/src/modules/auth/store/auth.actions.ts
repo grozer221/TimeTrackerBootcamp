@@ -1,6 +1,10 @@
 import {User} from "../../users/graphQL/users.types";
 import {ValueOf} from "../../../store/store";
-import {AuthLoginInputType} from "../graphQL/auth.mutations";
+import {
+    AuthLoginInputType,
+    AuthRequestResetPasswordInputType,
+    AuthResetPasswordInputType
+} from "../graphQL/auth.mutations";
 
 export const authActions = {
     userLoginAsync: (credentials: AuthLoginInputType) => ({
@@ -20,6 +24,14 @@ export const authActions = {
     } as const),
     logoutAsync: () => ({
         type: 'LOG_OUT_ASYNC'
+    } as const),
+    requestResetPasswordAsync: (authRequestResetPasswordInputType: AuthRequestResetPasswordInputType) => ({
+        type: 'REQUEST_RESET_PASSWORD_ASYNC',
+        payload: authRequestResetPasswordInputType
+    } as const),
+    resetPasswordAsync: (authResetPasswordInputType: AuthResetPasswordInputType) => ({
+        type: 'RESET_PASSWORD_ASYNC',
+        payload: authResetPasswordInputType
     } as const),
 };
 
