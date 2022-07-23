@@ -12,11 +12,11 @@ import {
 } from "../graphQL/settings.queries";
 import {notificationsActions} from "../../notifications/store/notifications.actions";
 import {
-    SETTINGS_APPLICATION_UPDATE_MUTATION,
+    SETTINGS_APPLICATION_UPDATE_MUTATION, SETTINGS_EMAIL_UPDATE_MUTATION,
     SETTINGS_EMPLOYMENT_UPDATE_MUTATION,
     SETTINGS_TASKS_UPDATE_MUTATION,
     SettingsApplicationUpdateData,
-    SettingsApplicationUpdateVars,
+    SettingsApplicationUpdateVars, SettingsEmailUpdateData, SettingsEmailUpdateVars,
     SettingsEmploymentUpdateData,
     SettingsEmploymentUpdateVars,
     SettingsTasksUpdateData,
@@ -132,6 +132,30 @@ export const settingsTasksUpdateEpic: Epic<ReturnType<typeof settingsActions.upd
     );
 
 
+export const settingsEmailUpdateEpic: Epic<ReturnType<typeof settingsActions.updateEmailAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType('SETTINGS_UPDATE_EMAIL_ASYNC'),
+        mergeMap(action =>
+            from(client.mutate<SettingsEmailUpdateData, SettingsEmailUpdateVars>({
+                mutation: SETTINGS_EMAIL_UPDATE_MUTATION,
+                variables: {settingsEmailUpdateInputType: action.payload},
+            })).pipe(
+                mergeMap(response =>
+                    response.data
+                        ? [
+                            settingsActions.setSettings(response.data.settings.updateEmail),
+                            notificationsActions.addSuccess('Settings email successfully saved')
+                        ]
+                        : [notificationsActions.addError('Response is empty')]
+                ),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(settingsActions.setLoadingUpdate(true)),
+                endWith(settingsActions.setLoadingUpdate(false)),
+            )
+        )
+    );
+
+
 export const settingsEpics = combineEpics(
     getForAdministratorOrHavePermissionUpdateEpic,
     // @ts-ignore
@@ -140,4 +164,5 @@ export const settingsEpics = combineEpics(
     settingsEmploymentUpdateEpic,
     settingsApplicationUpdateEpic,
     settingsTasksUpdateEpic,
+    settingsEmailUpdateEpic,
 )

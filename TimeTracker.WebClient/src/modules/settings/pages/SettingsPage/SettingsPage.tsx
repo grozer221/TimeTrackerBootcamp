@@ -8,10 +8,11 @@ import {SettingsApplicationUpdate} from "../../components/SettingsApplicationUpd
 import {useSelector} from "react-redux";
 import {RootState} from "../../../../store/store";
 import {Loading} from "../../../../components/Loading/Loading";
+import {SettingsEmailUpdate} from "../../components/SettingsEmailUpdate/SettingsEmailUpdate";
 
 const {TabPane} = Tabs;
 
-type Tab = 'application' | 'employment' | 'tasks';
+type Tab = 'application' | 'employment' | 'tasks' | 'email';
 
 export const SettingsPage: FC = () => {
     const {tab} = useParams();
@@ -53,6 +54,12 @@ export const SettingsPage: FC = () => {
                     key="tasks"
                 >
                     {selectedTab === 'tasks' && <SettingsTasksUpdate/>}
+                </TabPane>
+                <TabPane
+                    tab={<span><ClockCircleOutlined/>Email</span>}
+                    key="email"
+                >
+                    {selectedTab === 'email' && <SettingsEmailUpdate/>}
                 </TabPane>
             </Tabs>
         </Row>

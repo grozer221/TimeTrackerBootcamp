@@ -27,5 +27,12 @@ namespace TimeTracker.Business.Models
             get => JsonConvert.DeserializeObject<SettingsTasks>(TasksString ?? string.Empty) ?? new SettingsTasks();
             set => TasksString = JsonConvert.SerializeObject(value);
         }
+        
+        public string EmailString { get; private set; }
+        public SettingsEmail Email
+        {
+            get => JsonConvert.DeserializeObject<SettingsEmail>(EmailString ?? string.Empty) ?? new SettingsEmail();
+            set => EmailString = JsonConvert.SerializeObject(value);
+        }
     }
 }

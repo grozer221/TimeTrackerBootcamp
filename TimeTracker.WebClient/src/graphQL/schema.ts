@@ -191,6 +191,7 @@ export const schema = gql`
         employment: SettingsEmploymentType!
         application: SettingsApplicationType!
         tasks: SettingsTasksType!
+        email: SettingsEmailType!
     }
 
     type SettingsEmploymentType {
@@ -236,6 +237,11 @@ export const schema = gql`
         SATURDAY
     }
 
+    type SettingsEmailType {
+        name: String
+        address: String
+    }
+
     type FileManagerQueries {
         getInFolder(
             """
@@ -250,11 +256,17 @@ export const schema = gql`
         path: String
         createdAt: String
         kind: FileManagerItemKind!
+        permissions: FileManagerItemPermissions!
     }
 
     enum FileManagerItemKind {
         FILE
         FOLDER
+    }
+
+    enum FileManagerItemPermissions {
+        READ
+        READ_AND_WRITE
     }
 
     type Mutations {
@@ -490,6 +502,12 @@ export const schema = gql`
             """
             settingsTasksUpdateInputType: SettingsTasksUpdateInputType!
         ): SettingsType!
+        updateEmail(
+            """
+            Argument for update tasks settings
+            """
+            settingsEmailUpdateInputType: SettingsEmailUpdateInputType!
+        ): SettingsType!
     }
 
     input SettingsEmploymentUpdateInputType {
@@ -520,6 +538,11 @@ export const schema = gql`
         daysOfWeek: [DayOfWeek]
     }
 
+    input SettingsEmailUpdateInputType {
+        name: String!
+        address: String!
+    }
+
     type CacheMutations {
         refreshApp: Boolean!
     }
@@ -537,6 +560,18 @@ export const schema = gql`
             """
             fileManagerUploadFilesInputType: FileManagerUploadFilesInputType!
         ): [FileManagerItemType]!
+        renameFile(
+            """
+            Argument for update employment settings
+            """
+            fileManagerRenameInputType: FileManagerRenameInputType!
+        ): FileManagerItemType!
+        remove(
+            """
+            Argument for update employment settings
+            """
+            fileManagerRemoveInputType: FileManagerRemoveInputType!
+        ): Boolean!
     }
 
     input FileManagerCreateFolderInputType {
@@ -553,4 +588,14 @@ export const schema = gql`
     A meta type that represents a file upload.
     """
     scalar Upload
+
+    input FileManagerRenameInputType {
+        fromPath: String!
+        toName: String!
+    }
+
+    input FileManagerRemoveInputType {
+        path: String!
+        kind: FileManagerItemKind!
+    }
 `

@@ -20,6 +20,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
             IHttpContextAccessor httpContextAccessor,
             IValidator<SettingsEmploymentUpdateInput> settingsCommonUpdateInputValidator,
             IValidator<SettingsApplicationUpdateInput> settingsApplicationUpdateInputValidator, 
+            IValidator<SettingsEmailUpdateInput> settingsEmailUpdateInputValidator, 
             ISchedulerFactory schedulerFactory,
             AutoCreateDaysOffTask autoCreateDaysOffTask)
         {
@@ -69,6 +70,20 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                     else
                         await scheduler.PauseJob(AutoCreateDaysOffTask.JobKey);
                    return newSettings;
+               })
+               .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<SettingsType>, SettingsModel>()
+               .Name("UpdateEmail")
+               .Argument<NonNullGraphType<SettingsEmailUpdateInputType>, SettingsEmailUpdateInput>("SettingsEmailUpdateInputType", "Argument for update tasks settings")
+               .ResolveAsync(async context =>
+               {
+                   if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateSettings))
+                       throw new ExecutionError("You do not have permissions for update tasks settings");
+                   var settingsEmailUpdateInput = context.GetArgument<SettingsEmailUpdateInput>("SettingsEmailUpdateInputType");
+                   settingsEmailUpdateInputValidator.ValidateAndThrow(settingsEmailUpdateInput);
+                   var settingsEmail = settingsEmailUpdateInput.ToModel();
+                   return await settingsManager.UpdateEmailAsync(settingsEmail);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
         }
