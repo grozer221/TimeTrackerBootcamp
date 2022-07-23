@@ -19,9 +19,12 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
             IAuthService authService, 
             ITokenRepository tokenRepository, 
             IHttpContextAccessor httpContextAccessor,
+            INotification notification,
             IValidator<AuthLoginInput> authLoginInputValidator,
             IValidator<AuthRegisterInput> authRegisterInputValidator,
-            IValidator<AuthChangePasswordInput> authChangePasswordInputValidation)
+            IValidator<AuthChangePasswordInput> authChangePasswordInputValidation,
+            IValidator<AuthRequestResetPasswordInput> authRequestResetPasswordInputValidation,
+            IValidator<AuthResetPasswordInput> authResetPasswordInputValidation) 
         {
             Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
                 .Name("Login")
@@ -131,6 +134,49 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     };
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
+
+            Field<NonNullGraphType<BooleanGraphType>, bool>()
+                .Name("RequestResetPassword")
+                .Argument<NonNullGraphType<AuthRequestResetPasswordInputType>, AuthRequestResetPasswordInput>("AuthRequestResetPasswordInputType", "")
+                .ResolveAsync(async context =>
+                {
+                    var authRequestResetPasswordInput = context.GetArgument<AuthRequestResetPasswordInput>("AuthRequestResetPasswordInputType");
+                    authRequestResetPasswordInputValidation.ValidateAndThrow(authRequestResetPasswordInput);
+                    var user = await userRepository.GetByEmailAsync(authRequestResetPasswordInput.Email);
+
+                    if (user != null)
+                    {
+                        string protocol = httpContextAccessor.HttpContext.Request.IsHttps ? "https" : "http";
+                        string path = $"{protocol}://{httpContextAccessor.HttpContext.Request.Host}/auth/reset-password/{authService.GenerateResetPasswordToken(user.Id, user.Email)}";
+                        string msg = $"This is link for reset your password. If you don`t undestand what is it don`t do anything. {path}";
+                        await notification.SendMessageAsync(user.Email, "Reset Password", msg);
+
+                    }
+
+                    return true;
+                });
+
+            Field<NonNullGraphType<BooleanGraphType>, bool>()
+                .Name("ResetPassword")
+                .Argument<NonNullGraphType<AuthResetPasswordInputType>, AuthResetPasswordInput>("AuthResetPasswordInputType", "")
+                .ResolveAsync(async context =>
+                {
+                    var authResetPasswordInput = context.GetArgument<AuthResetPasswordInput>("AuthResetPasswordInputType");
+                    authResetPasswordInputValidation.ValidateAndThrow(authResetPasswordInput);
+                    var id = authService.ValidatePasswordToken(authResetPasswordInput.Token);
+                    if (id == null)
+                    {
+                        throw new Exception("Bad token");
+                    }
+                    var user = await userRepository.GetByIdAsync(id.Value);
+                    user.Password = authResetPasswordInput.Password.CreateMD5WithSalt(out var salt);
+                    user.Salt = salt;
+                    await userRepository.UpdatePasswordAsync(user.Id, user.Password, user.Salt);
+                    string token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
+                    //await tokenRepository.RemoveAllForUserExceptTokenAsync(user.Id, token); Замінить
+                    return true;
+                });
+
         }
     }
 }

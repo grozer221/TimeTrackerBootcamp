@@ -3,15 +3,15 @@ using GraphQL.Types;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth.DTO
 {
-    public class AuthChangePasswordInputValidation : AbstractValidator<AuthChangePasswordInput>
+    public class AuthResetPasswordInputValidation : AbstractValidator<AuthResetPasswordInput>
     {
-        public AuthChangePasswordInputValidation()
+        public AuthResetPasswordInputValidation()
         {
-            RuleFor(l => l.OldPassword)
+            RuleFor(l => l.Password)
                 .NotEmpty()
                 .NotNull();
 
-            RuleFor(l => l.NewPassword)
+            RuleFor(l => l.Token)
                 .NotEmpty()
                 .NotNull();
         }
