@@ -9,7 +9,6 @@ export type User = {
     email: string,
     role: Role,
     permissions: Permission[],
-    amountHoursPerMonth: number,
     createdAt: string,
     updatedAt: string,
 }

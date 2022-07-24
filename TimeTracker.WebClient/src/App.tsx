@@ -20,6 +20,11 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
+import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
+import {FileManagerCreateFolder} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
+import {FileManagerUploadFile} from "./modules/fileManager/components/FileManagerUploadFile/FileManagerUploadFile";
+import {AuthRequestResetPasswordPage} from "./modules/auth/pages/AuthRequestResetPasswordPage";
+import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
 import {UsersPage} from "./modules/users/pages/UsersPage/UsersPage";
 import {CreateUserModal} from "./modules/users/components/CreateUserModal/CreateUserModal";
 
@@ -57,6 +62,12 @@ export const App = () => {
                         <Route path={'settings/:tab'} element={<SettingsPage/>}/>
                         <Route path={"auth/*"}>
                             <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
+                            <Route path="reset-password/:token" element={<Navigate to={'/time-tracker'}/>}/>
+                        </Route>
+                        <Route path={"tools/*"}>
+                            <Route path={"file-manager/*"}>
+                                <Route index element={<FileManagerGetInFolderPage/>}/>
+                            </Route>
                         </Route>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>
@@ -76,6 +87,12 @@ export const App = () => {
                             <Route path={'users/*'}>
                                 <Route path="create" element={<CreateUserModal/>}/>
                             </Route>
+                            <Route path={"tools/*"}>
+                                <Route path={"file-manager/*"}>
+                                    <Route path="create-folder" element={<FileManagerCreateFolder/>}/>
+                                    <Route path="upload-files" element={<FileManagerUploadFile/>}/>
+                                </Route>
+                            </Route>
                         </Routes>
                     )}
                         </AppLayout>
@@ -89,3 +106,12 @@ export const App = () => {
                 </>
                 );
             }
+                        <Route path="request-reset-password" element={<AuthRequestResetPasswordPage/>}/>
+                        <Route path="reset-password/:token" element={<AuthResetPasswordPage/>}/>
+                    </Route>
+                    <Route path={'*'} element={<Navigate to={'/auth/login'}/>}/>
+                </Routes>
+            }
+        </>
+    );
+}

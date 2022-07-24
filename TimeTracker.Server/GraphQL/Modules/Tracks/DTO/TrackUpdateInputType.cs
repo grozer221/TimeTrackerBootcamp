@@ -4,6 +4,27 @@ using TimeTracker.Server.GraphQL.Abstractions;
 
 namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
 {
+    public class TrackUpdateInput
+    {
+        public Guid Id { get; set; }
+        public string Title { get; set; }
+        public string? Description { get; set; }
+        public DateTime? StartTime { get; set; }
+        public DateTime? EndTime { get; set; }
+
+        public TrackModel ToModel()
+        {
+            return new TrackModel
+            {
+                Id = this.Id,
+                Title = this.Title,
+                Description = this.Description,
+                StartTime = this.StartTime,
+                EndTime = this.EndTime
+            };
+        }
+    }
+
     public class TrackUpdateInputType : InputObjectGraphType<TrackUpdateInput>
     {
         public TrackUpdateInputType()

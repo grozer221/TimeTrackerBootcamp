@@ -3,7 +3,13 @@ import {RootState} from "../../../store/store";
 import {catchError, endWith, from, mergeMap, of, startWith} from "rxjs";
 import {authActions} from "./auth.actions";
 import {client} from "../../../graphQL/client";
-import {AUTH_LOG_IN_MUTATION, AUTH_LOG_OUT_MUTATION, AuthLoginData, AuthLoginVars} from "../graphQL/auth.mutations";
+import {
+    AUTH_LOG_IN_MUTATION,
+    AUTH_LOG_OUT_MUTATION, AUTH_REQUEST_RESET_PASSWORD_MUTATION, AUTH_RESET_PASSWORD_MUTATION,
+    AuthLoginData,
+    AuthLoginVars,
+    AuthRequestResetData, AuthRequestResetVars, AuthResetData, AuthResetVars
+} from "../graphQL/auth.mutations";
 import {AUTH_ME_QUERY, AuthMeData, AuthMeVars} from "../graphQL/auth.queries";
 import {appActions} from "../../app/store/app.actions";
 import {navigateActions} from "../../navigate/store/navigate.actions";
@@ -34,10 +40,7 @@ export const loginEpic: Epic<ReturnType<typeof authActions.userLoginAsync>, any,
                     navigateActions.navigate(-2),
                     getSettingsAction(response.data?.auth.login.user.role, response.data?.auth.login.user.permissions),
                 ]),
-                catchError(error => {
-                    console.log('login error', error)
-                    return of(notificationsActions.addError(error.message))
-                }),
+                catchError(error => of(notificationsActions.addError(error.message))),
             )
         )
     );
@@ -73,6 +76,40 @@ export const logoutEpic: Epic<ReturnType<typeof authActions.logoutAsync>, any, R
             })).pipe(
                 mergeMap(response => [
                     authActions.setAuthedUser(null, null),
+                    navigateActions.navigate("/auth/login")
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+            )
+        )
+    );
+
+export const requestResetPasswordEpic: Epic<ReturnType<typeof authActions.requestResetPasswordAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType("REQUEST_RESET_PASSWORD_ASYNC"),
+        mergeMap(action =>
+            from(client.mutate<AuthRequestResetData, AuthRequestResetVars>({
+                mutation: AUTH_REQUEST_RESET_PASSWORD_MUTATION,
+                variables: {authRequestResetPasswordInputType: action.payload}
+            })).pipe(
+                mergeMap(response => [
+                    notificationsActions.addSuccess("Confirmation link send on your email.")
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+            )
+        )
+    );
+
+export const resetPasswordEpic: Epic<ReturnType<typeof authActions.resetPasswordAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType("RESET_PASSWORD_ASYNC"),
+        mergeMap(action =>
+            from(client.mutate<AuthResetData, AuthResetVars>({
+                mutation: AUTH_RESET_PASSWORD_MUTATION,
+                variables: {authResetPasswordInputType: action.payload}
+            })).pipe(
+                mergeMap(response => [
+                    notificationsActions.addSuccess("Password changed!"),
+                    navigateActions.navigate("../login")
                 ]),
                 catchError(error => of(notificationsActions.addError(error.message))),
             )
@@ -80,4 +117,4 @@ export const logoutEpic: Epic<ReturnType<typeof authActions.logoutAsync>, any, R
     );
 
 // @ts-ignore
-export const authEpics = combineEpics(loginEpic, meEpic, logoutEpic)
+export const authEpics = combineEpics(loginEpic, meEpic, logoutEpic, requestResetPasswordEpic, resetPasswordEpic)

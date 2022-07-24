@@ -3,11 +3,7 @@ import {RootState} from "../../../store/store";
 import {catchError, endWith, from, map, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
 import {calendarDaysActions} from "./calendarDays.actions";
-import {
-    CALENDAR_DAYS_GET_QUERY,
-    CalendarDaysGetData,
-    CalendarDaysGetVars
-} from "../graphQL/calendarDays.queries";
+import {CALENDAR_DAYS_GET_QUERY, CalendarDaysGetData, CalendarDaysGetVars} from "../graphQL/calendarDays.queries";
 import {
     CALENDAR_DAYS_CREATE_MUTATION,
     CALENDAR_DAYS_CREATE_RANGE_MUTATION,

@@ -16,6 +16,5 @@ namespace TimeTracker.Business.Repositories
         Task<TrackModel> CreateAsync(TrackModel model);
         Task<TrackModel> UpdateAsync(TrackModel model);
         Task<TrackModel> RemoveAsync(Guid id);
-        Task<TrackModel> StopAsync(Guid id);
     }
 }

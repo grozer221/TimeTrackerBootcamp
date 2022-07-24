@@ -1,5 +1,5 @@
 import {gql} from '@apollo/client';
-import {User, UserFilter} from "./users.types";
+import {User} from "./users.types";
 import {USER_FRAGMENT} from "./users.fragments";
 
 export type GetUsersDataType = { users: { get: { entities: User[], total: number, pageSize: number } } }

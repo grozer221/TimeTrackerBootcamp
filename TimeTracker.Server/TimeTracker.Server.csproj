@@ -6,7 +6,16 @@
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
 
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+	  <LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
+	<PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+	  <LangVersion>preview</LangVersion>
+	</PropertyGroup>
+
 	<ItemGroup>
+		<PackageReference Include="CloudinaryDotNet" Version="1.19.0" />
 		<PackageReference Include="FluentMigrator" Version="3.3.2" />
 		<PackageReference Include="FluentMigrator.Runner" Version="3.3.2" />
 		<PackageReference Include="FluentMigrator.Runner.SqlServer" Version="3.3.2" />
@@ -20,9 +29,12 @@
 		<PackageReference Include="GraphQL.Server.Ui.Altair" Version="5.2.0" />
 		<PackageReference Include="GraphQL.SystemReactive" Version="4.7.1" />
 		<PackageReference Include="GraphQL.Upload.AspNetCore" Version="2.0.0" />
+		<PackageReference Include="MailKit" Version="3.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.6" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
+		<PackageReference Include="Quartz" Version="3.4.0" />
+		<PackageReference Include="Quartz.Extensions.Hosting" Version="3.4.0" />
 	</ItemGroup>
 
 	<ItemGroup>

@@ -1,6 +1,7 @@
 import {gql} from '@apollo/client';
 import {SETTINGS_FRAGMENT} from "./settings.fragments";
 import {Settings} from "./settings.types";
+import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
 
 export type SettingsEmploymentUpdateData = { settings: { updateEmployment: Settings } }
 export type SettingsEmploymentUpdateVars = { settingsEmploymentUpdateInputType: SettingsEmploymentUpdateInputType }
@@ -41,13 +42,42 @@ export const SETTINGS_APPLICATION_UPDATE_MUTATION = gql`
 export type SettingsTasksUpdateData = { settings: { updateTasks: Settings } }
 export type SettingsTasksUpdateVars = { settingsTasksUpdateInputType: SettingsTasksUpdateInputType }
 export type SettingsTasksUpdateInputType = {
-    autoSetWorkingHoursForFullTimers: string,
+    autoSetWorkingHoursForFullTimers: SettingsTasksUpdateInputType_AutoSetWorkingHoursForFullTimers,
+    autoCreateDaysOff: SettingsTasksUpdateInputType_AutoCreateDaysOff
+}
+export type SettingsTasksUpdateInputType_AutoCreateDaysOff = {
+    isEnabled: boolean,
+    dayOfWeekWhenCreate?: DayOfWeek,
+    timeWhenCreate?: string,
+    daysOfWeek?: DayOfWeek[],
+}
+export type SettingsTasksUpdateInputType_AutoSetWorkingHoursForFullTimers = {
+    isEnabled: boolean,
+    timeWhenCreate?: string,
 }
 export const SETTINGS_TASKS_UPDATE_MUTATION = gql`
     ${SETTINGS_FRAGMENT}
     mutation SettingsUpdateTasks($settingsTasksUpdateInputType: SettingsTasksUpdateInputType!){
         settings {
             updateTasks(settingsTasksUpdateInputType: $settingsTasksUpdateInputType) {
+                ...SettingsFragment
+            }
+        }
+    }
+`;
+
+
+export type SettingsEmailUpdateData = { settings: { updateEmail: Settings } }
+export type SettingsEmailUpdateVars = { settingsEmailUpdateInputType: SettingsEmailUpdateInputType }
+export type SettingsEmailUpdateInputType = {
+    name?: string,
+    address?: string,
+}
+export const SETTINGS_EMAIL_UPDATE_MUTATION = gql`
+    ${SETTINGS_FRAGMENT}
+    mutation SettingsUpdateEmail($settingsEmailUpdateInputType: SettingsEmailUpdateInputType!){
+        settings {
+            updateEmail(settingsEmailUpdateInputType: $settingsEmailUpdateInputType) {
                 ...SettingsFragment
             }
         }

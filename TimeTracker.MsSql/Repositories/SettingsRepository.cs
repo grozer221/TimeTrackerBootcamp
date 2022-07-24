@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Models.SettingsCategories;
+using TimeTracker.Business.Models.SettingsCategories.SettingsTasksCategories;
 using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.MsSql.Repositories
@@ -75,6 +76,21 @@ namespace TimeTracker.MsSql.Repositories
             settings.UpdatedAt = DateTime.Now;
             string query = @"update Settings
                             SET TasksString = @TasksString, UpdatedAt = @UpdatedAt
+                            WHERE Id = @Id";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, settings);
+            }
+            return settings;
+        }
+
+        public async Task<SettingsModel> UpdateEmailAsync(SettingsEmail settingsEmail)
+        {
+            var settings = await GetAsync();
+            settings.Email = settingsEmail;
+            settings.UpdatedAt = DateTime.Now;
+            string query = @"update Settings
+                            SET EmailString = @EmailString, UpdatedAt = @UpdatedAt
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {

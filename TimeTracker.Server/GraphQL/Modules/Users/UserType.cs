@@ -1,6 +1,7 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
+using TimeTracker.Business.Repositories;
 using TimeTracker.Server.GraphQL.Abstractions;
 using TimeTracker.Server.GraphQL.EnumTypes;
 
@@ -8,7 +9,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
 {
     public class UserType : BaseType<UserModel>
     {
-        public UserType() : base()
+        public UserType(IServiceProvider serviceProvider) : base()
         {
             Field<StringGraphType, string>()
                .Name("FirstName")
@@ -38,9 +39,15 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                .Name("Employment")
                .Resolve(context => context.Source.Employment);
             
-            Field<NonNullGraphType<IntGraphType>, int>()
-               .Name("AmountHoursPerMonth")
-               .Resolve(context => context.Source.AmountHoursPerMonth);
+            Field<NonNullGraphType<ListGraphType<UserType>>, IEnumerable<UserModel>>()
+               .Name("UsersWhichCanApproveVocationRequest")
+               .ResolveAsync(async context =>
+               {
+                   using var scope = serviceProvider.CreateScope();
+                   var users_UsersWhichCanApproveVocationRequestsRepository = scope.ServiceProvider.GetRequiredService<IUsers_UsersWhichCanApproveVocationRequestsRepository>();
+                   var userId = context.Source.Id;
+                   return await users_UsersWhichCanApproveVocationRequestsRepository.GetUsersWhichCanApproveVacationRequests(userId);
+               });
         }
     }
   

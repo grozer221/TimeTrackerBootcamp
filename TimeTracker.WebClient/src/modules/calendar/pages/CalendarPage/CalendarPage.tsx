@@ -6,15 +6,15 @@ import {useDispatch, useSelector} from "react-redux";
 import {calendarDaysActions} from "../../../calendarDays/store/calendarDays.actions";
 import {RootState} from "../../../../store/store";
 import s from './CalendarPage.module.css';
-import {ButtonCreate} from "../../../../components/ButtonCreate/ButtonCreate";
+import {ButtonCreate} from "../../../../components/ButtonCreate";
 import {DayKind} from "../../../../graphQL/enums/DayKind";
-import {ButtonRemove} from "../../../../components/ButtonRemove/ButtonRemove";
+import {ButtonRemove} from "../../../../components/ButtonRemove";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
 import {Loading} from "../../../../components/Loading/Loading";
 import {getDate} from "../../../../utils/dateUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
-import {ButtonUpdate} from "../../../../components/ButtonUpdate/ButtonUpdate";
+import {ButtonUpdate} from "../../../../components/ButtonUpdate";
 
 const {Text} = Typography;
 
@@ -47,12 +47,10 @@ export const CalendarPage = () => {
     }
 
     const onSelect = (newDate: Moment) => {
-        console.log('onSelect', newDate.format('YYYY-MM-DD'))
         dispatch(calendarDaysActions.setSelectedDate(newDate));
     };
 
     const onPanelChange = (newDate: Moment) => {
-        console.log('onPanelChange', newDate.format('YYYY-MM-DD'))
         const fromTo = getFromTo(newDate);
         dispatch(calendarDaysActions.getAsync(fromTo[0], fromTo[1]));
     };

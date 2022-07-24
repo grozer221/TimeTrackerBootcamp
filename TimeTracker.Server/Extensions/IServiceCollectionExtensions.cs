@@ -2,13 +2,17 @@
 using GraphQL;
 using GraphQL.Server;
 using GraphQL.SystemTextJson;
+using Quartz;
 using System.Reflection;
 using System.Security.Claims;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business.Managers;
+using TimeTracker.Server.Abstractions;
 using TimeTracker.Server.GraphQL;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.Middlewares;
 using TimeTracker.Server.Services;
+using TimeTracker.Server.Tasks;
 
 namespace TimeTracker.Server.Extensions
 {
@@ -48,13 +52,30 @@ namespace TimeTracker.Server.Extensions
         {
             services
                 .AddAuthentication(BasicAuthenticationHandler.SchemeName)
-                .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, options => { });
+                .AddScheme<BasicAuthenticationOptions, BasicAuthenticationHandler>(BasicAuthenticationHandler.SchemeName, _ => { });
             return services;
         }
 
         public static IServiceCollection AddServices(this IServiceCollection services)
         {
-            services.AddSingleton<AuthService>();
+            services.AddSingleton<IAuthService, AuthService>();
+            services.AddSingleton<FileManagerService>();
+            services.AddSingleton<INotificationService, EmailNotificationService>();
+            return services;
+        }
+
+        public static IServiceCollection AddTasks(this IServiceCollection services)
+        {
+            services.AddHostedService<TasksService>();
+            services.AddScoped<AutoCreateDaysOffTask>();
+            services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+            services.AddQuartz(q =>
+            {
+                q.UseMicrosoftDependencyInjectionScopedJobFactory();
+                q.AddJob<AutoCreateDaysOffTask>(configure => configure.WithIdentity(AutoCreateDaysOffTask.JobKey));
+                var autoCreateDaysOffTask = services.BuildServiceProvider().GetRequiredService<AutoCreateDaysOffTask>();
+                q.AddTrigger(configure => autoCreateDaysOffTask.ConfigureTriggerConfiguratorAsync(configure).GetAwaiter().GetResult());
+            });
             return services;
         }
     }

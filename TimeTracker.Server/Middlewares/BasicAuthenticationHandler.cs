@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Net.Http.Headers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -11,30 +12,26 @@ namespace TimeTracker.Server.Middlewares
 {
     public class BasicAuthenticationOptions : AuthenticationSchemeOptions
     {
-        public BasicAuthenticationOptions()
-        {
-
-        }
     }
 
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
         public const string SchemeName = "TimeTrackerSchemeName";
-        private readonly ITokenRepository tokenRepository;
+        private readonly IAccessTokenRepository tokenRepository;
 
         public BasicAuthenticationHandler(
             IOptionsMonitor<BasicAuthenticationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            ITokenRepository tokenRepository) : base(options, logger, encoder, clock)
+            IAccessTokenRepository tokenRepository) : base(options, logger, encoder, clock)
         {
             this.tokenRepository = tokenRepository;
         }
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
-            string token = Request.Headers["Authorization"];
+            string token = Request.Headers[HeaderNames.Authorization];
             var handler = new JwtSecurityTokenHandler();
             var validations = new TokenValidationParameters
             {

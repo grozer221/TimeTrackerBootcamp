@@ -96,8 +96,10 @@ namespace TimeTracker.MsSql.Repositories
             model.CreatedAt = dateTimeNow;
             model.UpdatedAt = dateTimeNow;
             string query = $@"insert into Users 
-                            (Id, Email, Password, FirstName, LastName, MiddleName, RoleNumber, PermissionsString, Employment, AmountHoursPerMonth, CreatedAt, UpdatedAt) values 
-                            (@Id, @Email, @Password, @FirstName, @LastName, @MiddleName, @RoleNumber, @PermissionsString, @Employment, @AmountHoursPerMonth, @CreatedAt, @UpdatedAt)";
+                            (Id,   Email,  Password,  Salt,  FirstName,  LastName,  MiddleName,  
+                                 RoleNumber,  PermissionsString,  Employment,  CreatedAt,  UpdatedAt) values 
+                            (@Id, @Email, @Password, @Salt, @FirstName, @LastName, @MiddleName, 
+                                @RoleNumber, @PermissionsString, @Employment, @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, model);
@@ -105,17 +107,17 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public async Task UpdatePasswordAsync(Guid id, string password)
+        public async Task UpdatePasswordAsync(Guid userId, string password, string salt)
         {
-            var previousModel = await GetByIdAsync(id);
+            var previousModel = await GetByIdAsync(userId);
             if (previousModel == null)
                 throw new Exception("User not found");
             string query = @"update Users
-                            SET Password = @Password
+                            SET Password = @Password, Salt = @Salt
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, new { id, password });
+                await connection.ExecuteAsync(query, new { id = userId, password, salt});
             }
         }
 
@@ -128,7 +130,7 @@ namespace TimeTracker.MsSql.Repositories
             string query = @"update Users
                             SET Email = @Email, FirstName = @FirstName, LastName = @LastName, 
                                 MiddleName = @MiddleName, PermissionsString = @PermissionsString, 
-                                Employment = @Employment, AmountHoursPerMonth = @AmountHoursPerMonth
+                                Employment = @Employment
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {

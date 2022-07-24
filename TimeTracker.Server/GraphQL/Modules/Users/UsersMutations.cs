@@ -14,6 +14,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
     {
         public UsersMutations(
             IUserRepository userRepository, 
+            IUsers_UsersWhichCanApproveVocationRequestsRepository users_UsersWhichCanApproveVocationRequestsRepository, 
             IHttpContextAccessor httpContextAccessor,
             IValidator<UsersCreateInput> usersCreateInputValidator,
             IValidator<UsersUpdateInput> usersUpdateInputValidator,
@@ -29,7 +30,19 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                    var usersCreateInput = context.GetArgument<UsersCreateInput>("UsersCreateInputType");
                    await usersCreateInputValidator.ValidateAndThrowAsync(usersCreateInput);
                    var user = usersCreateInput.ToModel();
-                   return await userRepository.CreateAsync(user);
+                   user.Password = user.Password.CreateMD5WithSalt(out var salt);
+                   user.Salt = salt;
+                   user = await userRepository.CreateAsync(user);
+                   foreach(var userWhichCanApproveVocationRequestId in usersCreateInput.UsersWhichCanApproveVocationRequestIds)
+                   {
+                       var userWhichCanApproveVocationRequest = new Users_UsersWhichCanApproveVocationRequests
+                       {
+                           UserId = user.Id,
+                           UserWhichCanApproveVocationRequestId = userWhichCanApproveVocationRequestId,
+                       };
+                       await users_UsersWhichCanApproveVocationRequestsRepository.CreateUsersWhichCanApproveVacationRequests(userWhichCanApproveVocationRequest);
+                   }
+                   return user;
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
             
@@ -43,7 +56,18 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                    var usersUpdateInput = context.GetArgument<UsersUpdateInput>("UsersUpdateInputType");
                    await usersUpdateInputValidator.ValidateAndThrowAsync(usersUpdateInput);
                    var user = usersUpdateInput.ToModel();
-                   return await userRepository.UpdateAsync(user);
+                   user = await userRepository.UpdateAsync(user);
+                   await users_UsersWhichCanApproveVocationRequestsRepository.RemoveUsersWhichCanApproveVacationRequests(user.Id);
+                   foreach (var userWhichCanApproveVocationRequestId in usersUpdateInput.UsersWhichCanApproveVocationRequestIds)
+                   {
+                       var userWhichCanApproveVocationRequest = new Users_UsersWhichCanApproveVocationRequests
+                       {
+                           UserId = user.Id,
+                           UserWhichCanApproveVocationRequestId = userWhichCanApproveVocationRequestId,
+                       };
+                       await users_UsersWhichCanApproveVocationRequestsRepository.CreateUsersWhichCanApproveVacationRequests(userWhichCanApproveVocationRequest);
+                   }
+                   return user;
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
             
@@ -56,6 +80,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                        throw new ExecutionError("You do not have permissions for remove user");
                    var usersRemoveInput = context.GetArgument<UsersRemoveInput>("UsersRemoveInputType");
                    await usersRemoveInputValidator.ValidateAndThrowAsync(usersRemoveInput);
+                   var user = await userRepository.GetByEmailAsync(usersRemoveInput.Email);
+                   await users_UsersWhichCanApproveVocationRequestsRepository.RemoveUsersWhichCanApproveVacationRequests(user.Id);
                    return await userRepository.RemoveAsync(usersRemoveInput.Email);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);

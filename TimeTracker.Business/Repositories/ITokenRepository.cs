@@ -2,12 +2,13 @@
 
 namespace TimeTracker.Business.Repositories
 {
-    public interface ITokenRepository
+    public interface IAccessTokenRepository
     {
-        Task<TokenModel> CreateAsync(TokenModel model);
-        Task<IEnumerable<TokenModel>> GetByUserId(Guid userId);
-        Task<TokenModel> GetByToken(string token);
+        Task<AceessTokenModel> CreateAsync(AceessTokenModel model);
+        Task<IEnumerable<AceessTokenModel>> GetByUserId(Guid userId);
+        Task<AceessTokenModel> GetByToken(string token);
         Task RemoveAsync(Guid userId, string token);
+        Task RemoveAllForUserExceptTokenAsync(Guid userId, string token);
         Task RemoveAllForUserAsync(Guid userId);
     }
 }

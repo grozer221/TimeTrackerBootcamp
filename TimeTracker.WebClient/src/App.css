@@ -21,10 +21,36 @@
     width: 100%;
 }
 
-.mt--10{
+.mt--10 {
     margin-top: -10px;
 }
 
 .invisible {
     display: none;
+}
+
+.imagePreview {
+    width: 150px;
+    height: 75px;
+}
+
+.imagePreview img {
+    width: 150px;
+    height: 75px;
+    object-fit: contain;
+}
+
+.settingsBlock {
+    margin-top: 20px;
+}
+
+.settingsBlock h1, h2, h3, h4, h5, h6 {
+    margin-bottom: 0 !important;
+}
+
+.absoluteCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }

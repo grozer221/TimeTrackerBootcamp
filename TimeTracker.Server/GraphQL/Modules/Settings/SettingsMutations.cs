@@ -1,12 +1,15 @@
 ﻿using FluentValidation;
 using GraphQL;
 using GraphQL.Types;
+using Quartz;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.Settings.DTO;
+using TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsTasksUpdate;
+using TimeTracker.Server.Tasks;
 
 namespace TimeTracker.Server.GraphQL.Modules.Settings
 {
@@ -16,7 +19,10 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
             ISettingsManager settingsManager,
             IHttpContextAccessor httpContextAccessor,
             IValidator<SettingsEmploymentUpdateInput> settingsCommonUpdateInputValidator,
-            IValidator<SettingsApplicationUpdateInput> settingsApplicationUpdateInputValidator)
+            IValidator<SettingsApplicationUpdateInput> settingsApplicationUpdateInputValidator, 
+            IValidator<SettingsEmailUpdateInput> settingsEmailUpdateInputValidator, 
+            ISchedulerFactory schedulerFactory,
+            AutoCreateDaysOffTask autoCreateDaysOffTask)
         {
             Field<NonNullGraphType<SettingsType>, SettingsModel>()
                .Name("UpdateEmployment")
@@ -55,7 +61,29 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                        throw new ExecutionError("You do not have permissions for update tasks settings");
                    var settingsTasksUpdateInput = context.GetArgument<SettingsTasksUpdateInput>("SettingsTasksUpdateInputType");
                    var settingsCommon = settingsTasksUpdateInput.ToModel();
-                   return await settingsManager.UpdateTasksAsync(settingsCommon);
+                   var newSettings = await settingsManager.UpdateTasksAsync(settingsCommon);
+
+                   var scheduler = await schedulerFactory.GetScheduler();
+                   await scheduler.RescheduleJob(AutoCreateDaysOffTask.TriggerKey, await autoCreateDaysOffTask.CreateTriggerAsync());
+                    if (newSettings.Tasks.AutoCreateDaysOff.IsEnabled)
+                        await scheduler.ResumeJob(AutoCreateDaysOffTask.JobKey);
+                    else
+                        await scheduler.PauseJob(AutoCreateDaysOffTask.JobKey);
+                   return newSettings;
+               })
+               .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<SettingsType>, SettingsModel>()
+               .Name("UpdateEmail")
+               .Argument<NonNullGraphType<SettingsEmailUpdateInputType>, SettingsEmailUpdateInput>("SettingsEmailUpdateInputType", "Argument for update tasks settings")
+               .ResolveAsync(async context =>
+               {
+                   if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateSettings))
+                       throw new ExecutionError("You do not have permissions for update tasks settings");
+                   var settingsEmailUpdateInput = context.GetArgument<SettingsEmailUpdateInput>("SettingsEmailUpdateInputType");
+                   settingsEmailUpdateInputValidator.ValidateAndThrow(settingsEmailUpdateInput);
+                   var settingsEmail = settingsEmailUpdateInput.ToModel();
+                   return await settingsManager.UpdateEmailAsync(settingsEmail);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
         }

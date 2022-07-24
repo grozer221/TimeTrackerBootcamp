@@ -17,7 +17,23 @@ export const SETTINGS_APPLICATION_FRAGMENT = gql`
 
 export const SETTINGS_TASKS_FRAGMENT = gql`
     fragment SettingsTasksFragment on SettingsTasksType {
-        autoSetWorkingHoursForFullTimers
+        autoSetWorkingHoursForFullTimers {
+            isEnabled
+            timeWhenCreate
+        }
+        autoCreateDaysOff {
+            isEnabled
+            dayOfWeekWhenCreate
+            timeWhenCreate
+            daysOfWeek
+        }
+    }
+`
+
+export const SETTINGS_EMAIL_FRAGMENT = gql`
+    fragment SettingsEmailFragment on SettingsEmailType {
+        name
+        address
     }
 `
 
@@ -25,6 +41,7 @@ export const SETTINGS_FRAGMENT = gql`
     ${SETTINGS_EMPLOYMENT_FRAGMENT}
     ${SETTINGS_APPLICATION_FRAGMENT}
     ${SETTINGS_TASKS_FRAGMENT}
+    ${SETTINGS_EMAIL_FRAGMENT}
     fragment SettingsFragment on SettingsType {
         id
         employment {
@@ -35,6 +52,9 @@ export const SETTINGS_FRAGMENT = gql`
         }
         tasks {
             ...SettingsTasksFragment
+        }
+        email {
+            ...SettingsEmailFragment
         }
         createdAt
         updatedAt
