@@ -63,7 +63,15 @@ namespace TimeTracker.Server.Tasks
 
         private async Task<string> GetCron()
         {
-            var settings = await settingsManager.GetAsync();
+            SettingsModel settings;
+            try
+            {
+                settings = await settingsManager.GetAsync();
+            }
+            catch
+            {
+                settings = new SettingsModel();
+            }
             var hour = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Hour;
             var minute = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Minute;
             var second = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Second;
