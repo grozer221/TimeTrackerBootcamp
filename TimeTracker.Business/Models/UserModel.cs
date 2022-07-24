@@ -26,5 +26,7 @@ namespace TimeTracker.Business.Models
             set => PermissionsString = JsonConvert.SerializeObject(value, new StringEnumConverter());
         }
         public Employment Employment { get; set; }
+
+        public IEnumerable<UserModel> UsersWhichCanApproveVacationRequest { get; set; } = new List<UserModel>();
     }
 }
