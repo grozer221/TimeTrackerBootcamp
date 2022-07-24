@@ -13,3 +13,13 @@ export const USER_FRAGMENT = gql`
         updatedAt
     }
 `
+
+export const USER_WITH_USERS_WHICH_CAN_APPROVE_VOCATION_REQUESTS_FRAGMENT = gql`
+    ${USER_FRAGMENT}
+    fragment UserWithUsersWhichCanApproveVocationRequestsFragment on UserType {
+        ...UserFragment
+        usersWhichCanApproveVocationRequest {
+            ...UserFragment
+        }
+    }
+`

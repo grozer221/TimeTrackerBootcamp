@@ -41,6 +41,25 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
                     return permissions.Count() == permissions.Distinct().Count();
                 })
                 .WithMessage("Permissions can not duplicate");
+
+            RuleFor(l => l.UsersWhichCanApproveVocationRequestIds)
+                .NotNull()
+                .MustAsync(async (usersWhichCanApproveVocationRequestIds, _) =>
+                {
+                    foreach(var userWhichCanApproveVocationRequestId in usersWhichCanApproveVocationRequestIds)
+                    {
+                        var user = await userRepository.GetByIdAsync(userWhichCanApproveVocationRequestId);
+                        if (user == null)
+                            return false;
+                    }
+                    return true;
+                })
+                .WithMessage("One of users which can approve vocation request ids does not exists")
+                .Must(usersWhichCanApproveVocationRequestIds =>
+                {
+                    return usersWhichCanApproveVocationRequestIds.Count() == usersWhichCanApproveVocationRequestIds.Distinct().Count();
+                })
+                .WithMessage("Users which can approve vocation request ids can not duplicate");
         }
     }
 }
