@@ -20,8 +20,12 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
-import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
-import {FileManagerCreateFolder} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
+import {
+    FileManagerGetInFolderPage
+} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
+import {
+    FileManagerCreateFolder
+} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
 import {FileManagerUploadFile} from "./modules/fileManager/components/FileManagerUploadFile/FileManagerUploadFile";
 import {AuthRequestResetPasswordPage} from "./modules/auth/pages/AuthRequestResetPasswordPage";
 import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
@@ -95,17 +99,10 @@ export const App = () => {
                             </Route>
                         </Routes>
                     )}
-                        </AppLayout>
-                        : <Routes>
-                        <Route path={"auth/*"}>
+                </AppLayout>
+                : <Routes>
+                    <Route path={"auth/*"}>
                         <Route path="login" element={<AuthLoginPage/>}/>
-                        </Route>
-                        <Route path={'*'} element={<Navigate to={'/auth/login'}/>}/>
-                        </Routes>
-                    }
-                </>
-                );
-            }
                         <Route path="request-reset-password" element={<AuthRequestResetPasswordPage/>}/>
                         <Route path="reset-password/:token" element={<AuthResetPasswordPage/>}/>
                     </Route>

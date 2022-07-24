@@ -35,7 +35,7 @@ const menu = (
         items={[
             {key: '1', label: 'Edit'},
             {key: '2', label: 'Delete'},
-            {key: '3', label: 'View'},
+            {key: '3', label: 'View'}
         ]}
     />
 )

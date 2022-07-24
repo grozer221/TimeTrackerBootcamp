@@ -37,8 +37,8 @@ const rootEpic = combineEpics(
     calendarDaysEpics,
     settingsEpics,
     cacheEpics,
-    usersPageEpics
-    fileManagerEpics
+    usersPageEpics,
+    fileManagerEpics,
 );
 // @ts-ignore
 epicMiddleware.run(rootEpic);
