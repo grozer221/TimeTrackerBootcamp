@@ -11,6 +11,7 @@ export type User = {
     permissions: Permission[],
     createdAt: string,
     updatedAt: string,
+    usersWhichCanApproveVacationRequest: User[]
 }
 
 export type UserFilter = {

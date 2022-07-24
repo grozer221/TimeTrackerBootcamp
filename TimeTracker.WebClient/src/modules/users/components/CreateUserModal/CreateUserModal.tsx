@@ -1,6 +1,6 @@
 import * as React from 'react';
-import {Button, Form, Input, Modal, Select, Space} from "antd";
-import {FC, memo, useState} from "react";
+import {Button, Divider, Form, Input, Modal, Select, Space, Typography} from "antd";
+import {FC, KeyboardEventHandler, memo, useCallback, useEffect, useState} from "react";
 import {UserAddOutlined} from "@ant-design/icons";
 import './CreateUserModal.css'
 import Title from "antd/lib/typography/Title";
@@ -10,7 +10,12 @@ import {CalendarDaysCreateRangeInputType} from "../../../calendarDays/graphQL/ca
 import {DayOfWeek} from "../../../../graphQL/enums/DayOfWeek";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
+import {User, UserFilter} from "../../graphQL/users.types";
+import {usersPageActions} from "../../store/usersPage.actions";
+import {RootState} from "../../../../store/store";
+import {CreateUserInput} from "../../graphQL/users.mutations";
+
 
 type FormValues = {
     firstName: string,
@@ -19,14 +24,22 @@ type FormValues = {
     email: string,
     password: string,
     repeatPassword: string,
-    permissions: Permission[]
+    permissions: Permission[],
+    usersWhichCanApproveVacationRequest: User[],
 }
 
 type Props = {};
-export const CreateUserModal: FC<Props> = memo(() => {
+export const CreateUserModal: FC<Props> = () => {
     const navigate = useNavigate();
     const [form] = useForm()
     const dispatch = useDispatch()
+    let [searchUrl, setSearchUrl] = useState("")
+
+    let users = useSelector((s: RootState) => s.usersPage.usersForVocation)
+
+    useEffect(()=>{
+        dispatch(usersPageActions.fetchUsersForVocationsSelect(""))
+    },[])
 
     const handleOk = async () => {
         try {
@@ -34,15 +47,25 @@ export const CreateUserModal: FC<Props> = memo(() => {
             const firstName = form.getFieldValue(nameof<FormValues>("firstName"))
             const lastName = form.getFieldValue(nameof<FormValues>("lastName"))
             const middleName = form.getFieldValue(nameof<FormValues>("middleName"))
+            const email = form.getFieldValue(nameof<FormValues>("email"))
             const password = form.getFieldValue(nameof<FormValues>("password"))
-            const permissions = form.getFieldValue(nameof<FormValues>("permissions"))
+            const permissions = form.getFieldValue(nameof<FormValues>("permissions")) ?? []
+            const usersWhichCanApproveVacationRequest =
+                form.getFieldValue(nameof<FormValues>("usersWhichCanApproveVacationRequest")) ?? []
 
-            //dispatch
+            let newUser: CreateUserInput = {
+                firstName, lastName, middleName, email, permissions, password,
+                usersWhichCanApproveVocationRequestIds: usersWhichCanApproveVacationRequest
+            } as CreateUserInput
+
+            dispatch(usersPageActions.createUser(newUser))
 
         } catch (e) {
             console.log(e)
         }
     }
+
+    console.log(users)
 
     return (
         <Modal
@@ -69,9 +92,9 @@ export const CreateUserModal: FC<Props> = memo(() => {
                 </Form.Item>
 
                 <Form.Item name={nameof<FormValues>("middleName")}
-                           label={"Middlename:"}
-                           rules={[{required: true, message: 'Please input user Middlename!'}]}>
-                    <Input placeholder="Input user Middlename"/>
+                           label={"Middle name:"}
+                           rules={[{required: true, message: 'Please input user Middle name!'}]}>
+                    <Input placeholder="Input user Middle name"/>
                 </Form.Item>
 
                 <Form.Item name={nameof<FormValues>("email")}
@@ -129,8 +152,29 @@ export const CreateUserModal: FC<Props> = memo(() => {
                     </Select>
                 </Form.Item>
 
+                <Form.Item
+                    name={nameof<FormValues>("usersWhichCanApproveVacationRequest")}
+                    label={'Can approve vacation requests for users:'}
+                >
+                    <Select
+                        className={'w-100'}
+                        mode="multiple"
+                        allowClear
+                        placeholder="Users"
+                        filterOption={false}
+                        onSearch={(e) => {
+                            dispatch(usersPageActions.fetchUsersForVocationsSelect(e))
+                        }}
+                    >
+                        {users.map((user) => (
+                            <Select.Option key={user.id} value={user.id}>
+                                {user.email}
+                            </Select.Option>
+                        ))}
+                    </Select>
+                </Form.Item>
             </Form>
         </Modal>
     )
         ;
-});
+};

@@ -35,6 +35,7 @@ export const schema = gql`
         role: Role!
         permissions: [Permission]!
         employment: Employment
+        usersWhichCanApproveVocationRequest: [UserType]!
     }
 
     scalar Guid
@@ -108,12 +109,12 @@ export const schema = gql`
         endTime: DateTime
     }
 
-  type UsersQueries {
-    get(
-      """
-      Filter for a search by multiple parameters
-      """
-      filter: UserFilterType!
+    type UsersQueries {
+        get(
+            """
+            Filter for a search by multiple parameters
+            """
+            filter: UserFilterType!
 
             """
             Argument represent count of tracks on page
@@ -133,11 +134,20 @@ export const schema = gql`
         ): UserType!
     }
 
-  type GetUserResponseType {
-    entities: [UserType]!
-    total: Int!
-    pageSize: Int!
-  }
+    type GetUserResponseType {
+        entities: [UserType]!
+        total: Int!
+        pageSize: Int!
+    }
+
+    input UserFilterType {
+        email: String
+        firstName: String
+        lastName: String
+        middleName: String
+        permissions: [Permission]
+        roles: [Role]
+    }
 
     type CalendarDaysQueries {
         get(
@@ -305,6 +315,12 @@ export const schema = gql`
             """
             userId: Guid! = "00000000-0000-0000-0000-000000000000"
         ): AuthResponseType!
+        requestResetPassword(
+            authRequestResetPasswordInputType: AuthRequestResetPasswordInputType!
+        ): Boolean!
+        resetPassword(
+            authResetPasswordInputType: AuthResetPasswordInputType!
+        ): Boolean!
     }
 
     input AuthLoginInputType {
@@ -323,6 +339,15 @@ export const schema = gql`
     input AuthChangePasswordInputType {
         oldPassword: String!
         newPassword: String!
+    }
+
+    input AuthRequestResetPasswordInputType {
+        email: String!
+    }
+
+    input AuthResetPasswordInputType {
+        password: String!
+        token: String!
     }
 
     type TracksMutation {
@@ -388,6 +413,12 @@ export const schema = gql`
             """
             usersUpdateInputType: UsersUpdateInputType!
         ): UserType!
+        updatePassword(
+            """
+            Arguments for update password for user
+            """
+            usersUpdatePasswordInputType: UsersUpdatePasswordInputType!
+        ): UserType!
         remove(
             """
             Argument for remove user
@@ -403,6 +434,7 @@ export const schema = gql`
         lastName: String!
         middleName: String!
         permissions: [Permission]!
+        usersWhichCanApproveVocationRequestIds: [Guid]!
     }
 
     input UsersUpdateInputType {
@@ -412,6 +444,13 @@ export const schema = gql`
         lastName: String!
         middleName: String!
         permissions: [Permission]!
+        usersWhichCanApproveVocationRequestIds: [Guid]!
+    }
+
+    input UsersUpdatePasswordInputType {
+        id: Guid!
+        password: String!
+        confirmPassword: String!
     }
 
     input UsersRemoveInputType {
@@ -539,8 +578,8 @@ export const schema = gql`
     }
 
     input SettingsEmailUpdateInputType {
-        name: String!
-        address: String!
+        name: String
+        address: String
     }
 
     type CacheMutations {

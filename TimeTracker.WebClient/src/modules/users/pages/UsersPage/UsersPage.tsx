@@ -24,7 +24,6 @@ import {ColumnsType, ColumnType} from "antd/es/table";
 import {DownCircleFilled, UserAddOutlined} from '@ant-design/icons';
 import {SearchOutlined} from "@ant-design/icons";
 import {FilterConfirmProps} from "antd/es/table/interface";
-import {CreateUserModal} from "../../components/CreateUserModal/CreateUserModal";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {usersPageActions} from "../../store/usersPage.actions";
 
@@ -71,11 +70,15 @@ export const UsersPage = () => {
 
     // handle functions for filter dropdowns
     const handleChange: TableProps<User>['onChange'] = (pagination, filters, sorter) => {
-        setFilter(prevState => ({
-            ...prevState,
-            ["roles"]: filters["role"] as Role[] ?? [],
-            ["permissions"]: filters["permissions"] as Permission[] ?? []
-        }))
+
+        setFilter(prevState => {
+            if (prevState === filter) return prevState
+            return {
+                ...prevState,
+                ["roles"]: filters["role"] as Role[] ?? [],
+                ["permissions"]: filters["permissions"] as Permission[] ?? []
+            }
+        })
     };
 
     const handleSearch = (
@@ -85,20 +88,16 @@ export const UsersPage = () => {
     ) => {
         confirm()
         if (dataIndex != 'permissions' && dataIndex != 'role') {
-            setFilter(prevState => ({
-                ...prevState,
-                [dataIndex]: selectedKeys[0]
-            }))
+            setFilter(prevState => {
+                return {...prevState, [dataIndex]: selectedKeys[0]}
+            })
         }
     };
 
     const handleReset = (confirm: (param?: FilterConfirmProps | undefined) => void,
                          selectedKeys: React.Key[], dataIndex: DataIndex) => {
         confirm()
-        setFilter(prevState => ({
-            ...prevState,
-            [dataIndex]: ""
-        }))
+        setFilter(prevState => ({...prevState, [dataIndex]: ""}))
     };
 
     //getColumnSearchProps - generate dropdowns for filters wit input field
@@ -190,12 +189,6 @@ export const UsersPage = () => {
                     <Button type="primary" icon={<UserAddOutlined/>}> Add User</Button>
                 </Link>
             </Col>
-            <Col span={8}>
-                <Space align={"center"} size={"small"}>
-                    <label>Date limits:</label>
-                    <DatePicker.RangePicker/>
-                </Space>
-            </Col>
         </Row>
         <Divider/>
         <Table
@@ -209,7 +202,6 @@ export const UsersPage = () => {
                 defaultPageSize: pageSize,
                 showSizeChanger: true,
                 onChange: (page, pageSize1) => {
-                    console.log(page, pageSize1)
                     setCurrentPage(page - 1)
                     dispatch(usersPageActions.getAsync(filter, pageSize1, page - 1));
                 }

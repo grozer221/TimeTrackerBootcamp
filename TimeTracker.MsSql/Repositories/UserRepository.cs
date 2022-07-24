@@ -49,35 +49,40 @@ namespace TimeTracker.MsSql.Repositories
             string email = "%" + filter.Email + "%";
             string firstname = "%" + filter.FirstName + "%";
             string lastname = "%" + filter.LastName + "%";
-            string premisionsQuery = "";
+            string middlename = "%" + filter.MiddleName + "%";
+            var allPremisions = filter.Permissions.Select(p => p.ToString()).ToArray();
+            var permissionsCount = filter.Permissions.Count();
             string roles = "";
-
-            if (filter.Permissions.Count() != 0)
-                premisionsQuery = " and " + String.Join(" and ", filter.Permissions.Select(i => "PermissionsString like '%" + i + "%'"));
 
             if (filter.Roles.Count() != 0)
                 roles = " and " + String.Join(" or ", filter.Roles.Select(i => "RoleNumber = " + (int)i));
 
             string getCountQuery = @"select count(*) FROM Users 
-                                    where Email like @email
-                                          	and FirstName like @firstname
-                                            and LastName like @lastname "
-                                            + premisionsQuery + roles;
+                                    where FirstName like @firstname
+                                        and LastName like @lastname
+                                        and MiddleName like @middlename
+                                        and	Email like @email
+                                        and
+                                    @permissionsCount = (
+	                                        select count(value) from OPENJSON([PermissionsString]) 
+	                                        where value in @allPremisions )";
+
 
             int skipNumber = skip * take;
 
-            string getEntitieQuery = @"select * FROM Users 
-                                     where Email like @email
-                                          	and FirstName like @firstname
-                                            and LastName like @lastname "
-                                            + premisionsQuery + roles +
-                                     @"ORDER BY Id
-                                     OFFSET @skipNumber ROWS FETCH NEXT @take ROWS ONLY";
+            string getEntitieQuery = @"select * FROM Users
+                                        where FirstName like @firstname
+                                        and LastName like @lastname
+                                        and MiddleName like @middlename
+                                        and	Email like @email
+                                        and @permissionsCount = (
+	                                        select count(value) from OPENJSON([PermissionsString]) 
+	                                        where value in @allPremisions )";
 
             using (var connection = dapperContext.CreateConnection())
             {
-                var reader = await connection.QueryMultipleAsync($"{getCountQuery};{getEntitieQuery}",
-                    new { email, firstname, lastname, take, skipNumber });
+                var reader = await connection.QueryMultipleAsync($"{ getCountQuery};{getEntitieQuery}",
+                    new { email, firstname, lastname, middlename, take, skipNumber, allPremisions, permissionsCount});
                 int total = reader.Read<int>().FirstOrDefault();
                 var users = reader.Read<UserModel>();
                 return new GetEntitiesResponse<UserModel>
@@ -117,7 +122,7 @@ namespace TimeTracker.MsSql.Repositories
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, new { id = userId, password, salt});
+                await connection.ExecuteAsync(query, new { id = userId, password, salt });
             }
         }
 
