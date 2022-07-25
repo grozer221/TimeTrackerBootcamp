@@ -10,5 +10,6 @@ namespace TimeTracker.Business.Repositories
         Task<SettingsModel> UpdateEmploymentAsync(SettingsEmployment settingsEmployment);
         Task<SettingsModel> UpdateApplicationAsync(SettingsApplication settingsApplication);
         Task<SettingsModel> UpdateTasksAsync(SettingsTasks settingsTasks);
+        Task<SettingsModel> UpdateEmailAsync(SettingsEmail settingsEmail);
     }
 }

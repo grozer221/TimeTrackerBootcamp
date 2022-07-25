@@ -65,3 +65,21 @@ export const SETTINGS_TASKS_UPDATE_MUTATION = gql`
         }
     }
 `;
+
+
+export type SettingsEmailUpdateData = { settings: { updateEmail: Settings } }
+export type SettingsEmailUpdateVars = { settingsEmailUpdateInputType: SettingsEmailUpdateInputType }
+export type SettingsEmailUpdateInputType = {
+    name?: string,
+    address?: string,
+}
+export const SETTINGS_EMAIL_UPDATE_MUTATION = gql`
+    ${SETTINGS_FRAGMENT}
+    mutation SettingsUpdateEmail($settingsEmailUpdateInputType: SettingsEmailUpdateInputType!){
+        settings {
+            updateEmail(settingsEmailUpdateInputType: $settingsEmailUpdateInputType) {
+                ...SettingsFragment
+            }
+        }
+    }
+`;

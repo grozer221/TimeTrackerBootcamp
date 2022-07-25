@@ -1,8 +1,8 @@
 import React, {FC, useState} from 'react';
 import {Button, Dropdown, Layout, Menu, Row, Space} from 'antd';
 import {Link} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "../../modules/auth/store/auth.actions";
+import {useDispatch} from "react-redux";
+import {authActions} from "../../modules/auth/store/auth.slice";
 import s from './AppLayout.module.css';
 import {AppBreadcrumb} from "../AppBreadcrumb";
 import {
@@ -20,10 +20,10 @@ import {
     ToolOutlined,
     UsergroupAddOutlined
 } from "@ant-design/icons";
-import {RootState} from "../../store/store";
+import {useAppSelector} from "../../store/store";
 import Logo from '../../assets/images/clockify-logo-with-title.png';
 import {ItemType} from "antd/lib/menu/hooks/useItems";
-import {cacheActions} from "../../modules/cache/store/cache.actions";
+import {cacheActions} from "../../modules/cache/store/cache.slice";
 import {isAdministratorOrHavePermissions} from "../../utils/permissions";
 import {Permission} from "../../graphQL/enums/Permission";
 
@@ -38,9 +38,9 @@ export const getHeaderExtraButtonsElement = (): HTMLDivElement => document.getEl
 export const AppLayout: FC<Props> = ({children}) => {
     const [collapsed, setCollapsed] = useState(false);
     const dispatch = useDispatch()
-    const authedUser = useSelector((s: RootState) => s.auth.authedUser);
-    const settings = useSelector((s: RootState) => s.settings.settings);
-    const loadingRefreshApp = useSelector((s: RootState) => s.cache.loadingRefreshApp);
+    const authedUser = useAppSelector(s => s.auth.authedUser);
+    const settings = useAppSelector(s => s.settings.settings);
+    const loadingRefreshApp = useAppSelector(s => s.cache.loadingRefreshApp);
 
     const headerMenu = (
         <Menu
@@ -48,10 +48,21 @@ export const AppLayout: FC<Props> = ({children}) => {
                 {
                     key: 'Profile',
                     label: (
-                        <Link to={'#'}>
+                        <Link to={`/users/${authedUser?.email}`}>
                             <Space>
                                 <ProfileOutlined/>
                                 <span>Profile</span>
+                            </Space>
+                        </Link>
+                    ),
+                },
+                {
+                    key: 'My settings',
+                    label: (
+                        <Link to={'/my-settings/security'}>
+                            <Space>
+                                <SettingOutlined/>
+                                <span>My settings</span>
                             </Space>
                         </Link>
                     ),

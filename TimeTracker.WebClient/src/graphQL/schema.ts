@@ -35,6 +35,7 @@ export const schema = gql`
         role: Role!
         permissions: [Permission]!
         employment: Employment
+        usersWhichCanApproveVocationRequest: [UserType]!
     }
 
     scalar Guid
@@ -111,9 +112,9 @@ export const schema = gql`
     type UsersQueries {
         get(
             """
-            Argument for a search
+            Filter for a search by multiple parameters
             """
-            like: String!
+            filter: UserFilterType!
 
             """
             Argument represent count of tracks on page
@@ -137,6 +138,15 @@ export const schema = gql`
         entities: [UserType]!
         total: Int!
         pageSize: Int!
+    }
+
+    input UserFilterType {
+        email: String
+        firstName: String
+        lastName: String
+        middleName: String
+        permissions: [Permission]
+        roles: [Role]
     }
 
     type CalendarDaysQueries {
@@ -191,6 +201,7 @@ export const schema = gql`
         employment: SettingsEmploymentType!
         application: SettingsApplicationType!
         tasks: SettingsTasksType!
+        email: SettingsEmailType!
     }
 
     type SettingsEmploymentType {
@@ -236,6 +247,11 @@ export const schema = gql`
         SATURDAY
     }
 
+    type SettingsEmailType {
+        name: String
+        address: String
+    }
+
     type FileManagerQueries {
         getInFolder(
             """
@@ -250,11 +266,17 @@ export const schema = gql`
         path: String
         createdAt: String
         kind: FileManagerItemKind!
+        permissions: FileManagerItemPermissions!
     }
 
     enum FileManagerItemKind {
         FILE
         FOLDER
+    }
+
+    enum FileManagerItemPermissions {
+        READ
+        READ_AND_WRITE
     }
 
     type Mutations {
@@ -293,6 +315,12 @@ export const schema = gql`
             """
             userId: Guid! = "00000000-0000-0000-0000-000000000000"
         ): AuthResponseType!
+        requestResetPassword(
+            authRequestResetPasswordInputType: AuthRequestResetPasswordInputType!
+        ): Boolean!
+        resetPassword(
+            authResetPasswordInputType: AuthResetPasswordInputType!
+        ): Boolean!
     }
 
     input AuthLoginInputType {
@@ -311,6 +339,15 @@ export const schema = gql`
     input AuthChangePasswordInputType {
         oldPassword: String!
         newPassword: String!
+    }
+
+    input AuthRequestResetPasswordInputType {
+        email: String!
+    }
+
+    input AuthResetPasswordInputType {
+        password: String!
+        token: String!
     }
 
     type TracksMutation {
@@ -376,6 +413,12 @@ export const schema = gql`
             """
             usersUpdateInputType: UsersUpdateInputType!
         ): UserType!
+        updatePassword(
+            """
+            Arguments for update password for user
+            """
+            usersUpdatePasswordInputType: UsersUpdatePasswordInputType!
+        ): UserType!
         remove(
             """
             Argument for remove user
@@ -391,6 +434,7 @@ export const schema = gql`
         lastName: String!
         middleName: String!
         permissions: [Permission]!
+        usersWhichCanApproveVocationRequestIds: [Guid]!
     }
 
     input UsersUpdateInputType {
@@ -400,6 +444,13 @@ export const schema = gql`
         lastName: String!
         middleName: String!
         permissions: [Permission]!
+        usersWhichCanApproveVocationRequestIds: [Guid]!
+    }
+
+    input UsersUpdatePasswordInputType {
+        id: Guid!
+        password: String!
+        confirmPassword: String!
     }
 
     input UsersRemoveInputType {
@@ -490,6 +541,12 @@ export const schema = gql`
             """
             settingsTasksUpdateInputType: SettingsTasksUpdateInputType!
         ): SettingsType!
+        updateEmail(
+            """
+            Argument for update tasks settings
+            """
+            settingsEmailUpdateInputType: SettingsEmailUpdateInputType!
+        ): SettingsType!
     }
 
     input SettingsEmploymentUpdateInputType {
@@ -520,6 +577,11 @@ export const schema = gql`
         daysOfWeek: [DayOfWeek]
     }
 
+    input SettingsEmailUpdateInputType {
+        name: String
+        address: String
+    }
+
     type CacheMutations {
         refreshApp: Boolean!
     }
@@ -537,6 +599,18 @@ export const schema = gql`
             """
             fileManagerUploadFilesInputType: FileManagerUploadFilesInputType!
         ): [FileManagerItemType]!
+        renameFile(
+            """
+            Argument for update employment settings
+            """
+            fileManagerRenameInputType: FileManagerRenameInputType!
+        ): FileManagerItemType!
+        remove(
+            """
+            Argument for update employment settings
+            """
+            fileManagerRemoveInputType: FileManagerRemoveInputType!
+        ): Boolean!
     }
 
     input FileManagerCreateFolderInputType {
@@ -553,4 +627,14 @@ export const schema = gql`
     A meta type that represents a file upload.
     """
     scalar Upload
+
+    input FileManagerRenameInputType {
+        fromPath: String!
+        toName: String!
+    }
+
+    input FileManagerRemoveInputType {
+        path: String!
+        kind: FileManagerItemKind!
+    }
 `

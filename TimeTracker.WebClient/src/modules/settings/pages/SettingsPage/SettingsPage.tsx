@@ -1,6 +1,6 @@
 import React, {FC, useState} from 'react';
 import {Row, Tabs} from "antd";
-import {AppstoreOutlined, ClockCircleOutlined, UserOutlined} from "@ant-design/icons";
+import {AppstoreOutlined, ClockCircleOutlined, MailOutlined, UserOutlined} from "@ant-design/icons";
 import {SettingsEmploymentUpdate} from "../../components/SettingsEmploymentUpdate/SettingsEmploymentUpdate";
 import {useNavigate, useParams} from "react-router-dom";
 import {SettingsTasksUpdate} from "../../components/SettingsTasksUpdate/SettingsTasksUpdate";
@@ -8,10 +8,11 @@ import {SettingsApplicationUpdate} from "../../components/SettingsApplicationUpd
 import {useSelector} from "react-redux";
 import {RootState} from "../../../../store/store";
 import {Loading} from "../../../../components/Loading/Loading";
+import {SettingsEmailUpdate} from "../../components/SettingsEmailUpdate/SettingsEmailUpdate";
 
 const {TabPane} = Tabs;
 
-type Tab = 'application' | 'employment' | 'tasks';
+type Tab = 'application' | 'employment' | 'tasks' | 'email';
 
 export const SettingsPage: FC = () => {
     const {tab} = useParams();
@@ -32,7 +33,7 @@ export const SettingsPage: FC = () => {
     return (
         <Row>
             <Tabs
-                defaultActiveKey={tab || 'common'}
+                defaultActiveKey={tab || 'application'}
                 onChange={onChangeTabHandler}
                 style={{width: '100%'}}
             >
@@ -53,6 +54,12 @@ export const SettingsPage: FC = () => {
                     key="tasks"
                 >
                     {selectedTab === 'tasks' && <SettingsTasksUpdate/>}
+                </TabPane>
+                <TabPane
+                    tab={<span><MailOutlined/>Email</span>}
+                    key="email"
+                >
+                    {selectedTab === 'email' && <SettingsEmailUpdate/>}
                 </TabPane>
             </Tabs>
         </Row>

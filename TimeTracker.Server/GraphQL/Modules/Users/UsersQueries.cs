@@ -2,9 +2,11 @@
 using GraphQL.Types;
 using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
+using TimeTracker.Business.Models.UserFilter;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.GraphQL.Abstractions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
+using TimeTracker.Server.GraphQL.Modules.Users.DTO;
 
 namespace TimeTracker.Server.GraphQL.Modules.Users
 {
@@ -14,15 +16,15 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
         {
             Field<NonNullGraphType<GetEntitiesResponseType<UserType, UserModel>>, GetEntitiesResponse<UserModel>>()
                .Name("Get")
-               .Argument<NonNullGraphType<StringGraphType>, string>("Like", "Argument for a search")
+               .Argument<NonNullGraphType<UserFilterType>, UserFilter>("Filter", "Filter for a search by multiple parameters")
                .Argument<NonNullGraphType<IntGraphType>, int>("Take", "Argument represent count of tracks on page")
                .Argument<NonNullGraphType<IntGraphType>, int>("Skip", "Argument represnt page number")
                .ResolveAsync(async context =>
                {
-                   var like = context.GetArgument<string>("Like");
+                   var filter = context.GetArgument<UserFilter>("Filter");
                    var take = context.GetArgument<int>("Take");
                    var skip = context.GetArgument<int>("Skip");
-                   return await userRepository.GetAsync(like, take, skip);
+                   return await userRepository.GetAsync(filter, take, skip);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
 

@@ -10,7 +10,7 @@ import {ExtraHeaderButtons} from "../../../../components/ExtraHeaderButtons";
 import Title from "antd/lib/typography/Title";
 import {DayOfWeek} from "../../../../graphQL/enums/DayOfWeek";
 import {SettingsTasksUpdateInputType} from "../../graphQL/settings.mutations";
-import {settingsActions} from "../../store/settings.actions";
+import {settingsActions} from "../../store/settings.slice";
 
 type FormValues = {
     autoSetWorkingHoursForFullTimers_IsEnabled: boolean,

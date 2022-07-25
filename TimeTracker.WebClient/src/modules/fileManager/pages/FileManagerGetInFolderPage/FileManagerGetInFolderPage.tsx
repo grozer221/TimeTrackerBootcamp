@@ -1,6 +1,5 @@
 import React, {FC, useEffect, useState} from 'react';
 import {useDispatch, useSelector} from "react-redux";
-import {fileManagerActions} from "../../store/fileManager.actions";
 import {RootState} from "../../../../store/store";
 import {FileManagerItem, FileManagerItemKind, FileManagerItemPermissions} from "../../graphQL/fileManager.types";
 import {
@@ -22,6 +21,7 @@ import {capitalize, uppercaseToWords} from "../../../../utils/stringUtils";
 import {FileManagerCreateFolder} from "../../components/FileManagerCreateFolder/FileManagerCreateFolder";
 import {FileManagerUploadFile} from "../../components/FileManagerUploadFile/FileManagerUploadFile";
 import {FileManagerRenameFile} from "../../components/FileManagerRenameFile/FileManagerRenameFile";
+import {fileManagerActions} from '../../store/fileManager.slice';
 
 type Props = {
     onSelectFile?: (item: FileManagerItem) => void
@@ -50,6 +50,7 @@ export const FileManagerGetInFolderPage: FC<Props> = ({onSelectFile}) => {
     }
 
     const onDoubleClick = (item: FileManagerItem): void => {
+        console.log(item)
         switch (item.kind) {
             case FileManagerItemKind.File:
                 onSelectFile && onSelectFile(item);
@@ -148,7 +149,10 @@ export const FileManagerGetInFolderPage: FC<Props> = ({onSelectFile}) => {
                         <Popconfirm
                             title="Are you sure to remove?"
                             okText="Yes"
-                            onConfirm={() => selectedItem && dispatch(fileManagerActions.removeAsync(selectedItem.path, selectedItem.kind))}
+                            onConfirm={() => selectedItem && dispatch(fileManagerActions.removeAsync({
+                                path: selectedItem.path,
+                                kind: selectedItem.kind
+                            }))}
                             cancelText="No"
                             disabled={!selectedItem || selectedItem?.permissions === FileManagerItemPermissions.Read}
                         >

@@ -7,6 +7,7 @@ using TimeTracker.Business.Models.SettingsCategories.SettingsTasksCategories;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Abstractions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
+using TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsCategoriesTypes;
 using TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes;
 using TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes.SettingsTasksTypes;
 
@@ -32,6 +33,16 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                    if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateSettings))
                        throw new ExecutionError("You do not have permissions for get tasks settings");
                    return context.Source.Tasks;
+               })
+               .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<SettingsEmailType>, SettingsEmail>()
+               .Name("Email")
+               .Resolve(context =>
+               {
+                   if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateSettings))
+                       throw new ExecutionError("You do not have permissions for get email settings");
+                   return context.Source.Email;
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
         }

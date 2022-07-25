@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "./modules/auth/store/auth.actions";
+import {authActions} from "./modules/auth/store/auth.slice";
 import {RootState} from "./store/store";
 import {Notifications} from "./modules/notifications/components/Notifications/Notifications";
 import {NavigateTo} from "./modules/navigate/components/NavigateTo/NavigateTo";
@@ -20,9 +20,18 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
-import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
-import {FileManagerCreateFolder} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
+import {
+    FileManagerGetInFolderPage
+} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
+import {
+    FileManagerCreateFolder
+} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
 import {FileManagerUploadFile} from "./modules/fileManager/components/FileManagerUploadFile/FileManagerUploadFile";
+import {AuthRequestResetPasswordPage} from "./modules/auth/pages/AuthRequestResetPasswordPage";
+import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
+import {UsersPage} from "./modules/users/pages/UsersPage/UsersPage";
+import {CreateUserModal} from "./modules/users/components/CreateUserModal/CreateUserModal";
+import {MySettingsPage} from "./modules/settings/pages/MySettingsPage/MySettingsPage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -52,9 +61,14 @@ export const App = () => {
                         <Route path={'calendar/*'} element={<CalendarPage/>}>
                             <Route path={'*'} element={<Error/>}/>
                         </Route>
+                        <Route path={'users/*'} element={<UsersPage/>}>
+                            <Route path={'*'} element={<Error/>}/>
+                        </Route>
                         <Route path={'settings/:tab'} element={<SettingsPage/>}/>
+                        <Route path={'my-settings/:tab'} element={<MySettingsPage/>}/>
                         <Route path={"auth/*"}>
                             <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
+                            <Route path="reset-password/:token" element={<Navigate to={'/time-tracker'}/>}/>
                         </Route>
                         <Route path={"tools/*"}>
                             <Route path={"file-manager/*"}>
@@ -76,6 +90,9 @@ export const App = () => {
                                     <Route path="remove/:date" element={<CalendarDaysRemovePage/>}/>
                                 </Route>
                             </Route>
+                            <Route path={'users/*'}>
+                                <Route path="create" element={<CreateUserModal/>}/>
+                            </Route>
                             <Route path={"tools/*"}>
                                 <Route path={"file-manager/*"}>
                                     <Route path="create-folder" element={<FileManagerCreateFolder/>}/>
@@ -88,6 +105,8 @@ export const App = () => {
                 : <Routes>
                     <Route path={"auth/*"}>
                         <Route path="login" element={<AuthLoginPage/>}/>
+                        <Route path="request-reset-password" element={<AuthRequestResetPasswordPage/>}/>
+                        <Route path="reset-password/:token" element={<AuthResetPasswordPage/>}/>
                     </Route>
                     <Route path={'*'} element={<Navigate to={'/auth/login'}/>}/>
                 </Routes>

@@ -17,14 +17,14 @@ namespace TimeTracker.Server.Middlewares
     public class BasicAuthenticationHandler : AuthenticationHandler<BasicAuthenticationOptions>
     {
         public const string SchemeName = "TimeTrackerSchemeName";
-        private readonly ITokenRepository tokenRepository;
+        private readonly IAccessTokenRepository tokenRepository;
 
         public BasicAuthenticationHandler(
             IOptionsMonitor<BasicAuthenticationOptions> options,
             ILoggerFactory logger,
             UrlEncoder encoder,
             ISystemClock clock,
-            ITokenRepository tokenRepository) : base(options, logger, encoder, clock)
+            IAccessTokenRepository tokenRepository) : base(options, logger, encoder, clock)
         {
             this.tokenRepository = tokenRepository;
         }

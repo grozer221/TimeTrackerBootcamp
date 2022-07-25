@@ -6,5 +6,8 @@ namespace TimeTracker.Server.Abstractions
     {
         string GenerateAccessToken(Guid userId, string email, Role role, IEnumerable<Permission>? permissions);
         bool ComparePasswords(string inputPassword, string hashedPassword, string salt);
+        string GenerateResetPasswordToken(Guid userId, string email);
+        Guid? ValidatePasswordToken(string token);
+
     }
 }

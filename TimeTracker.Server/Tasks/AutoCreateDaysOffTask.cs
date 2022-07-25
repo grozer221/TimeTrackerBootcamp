@@ -1,4 +1,5 @@
 ﻿using Quartz;
+using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 
@@ -24,18 +25,25 @@ namespace TimeTracker.Server.Tasks
         {
             var settings = await settingsManager.GetAsync();
             var dateTimeNow = DateTime.Now;
-            foreach (var day in settings.Tasks.AutoCreateDaysOff.DaysOfWeek)
+            var mondayDate = DateTime.Today;
+            mondayDate = mondayDate
+                       .AddDays(-(((mondayDate.DayOfWeek - DayOfWeek.Monday) + 7) % 7));
+            var saturdayDate = mondayDate.AddDays(7);
+            var numDays = (int)((saturdayDate - mondayDate).TotalDays);
+            var currentWeekDates = Enumerable
+                       .Range(0, numDays)
+                       .Select(x => mondayDate.AddDays(x))
+                       .ToList();
+            var datesForCreateDayOff = currentWeekDates.Where(date => settings.Tasks.AutoCreateDaysOff.DaysOfWeek.Contains(date.DayOfWeek)).ToList();
+            foreach (var dateForCreateDayOff in datesForCreateDayOff)
             {
-                int difference = (int)day - (int)dateTimeNow.DayOfWeek;
-                var now = DateTime.Now;
-                var nowAdded = now.AddDays(difference);
-                var calendarDay = await calendarDayManager.GetByDateAsync(nowAdded);
+                var calendarDay = await calendarDayManager.GetByDateAsync(dateForCreateDayOff);
                 if(calendarDay == null)
                 {
                     await calendarDayManager.CreateAsync(new CalendarDayModel
                     {
-                        Date = nowAdded,
-                        Kind = Business.Enums.DayKind.DayOff,
+                        Date = dateForCreateDayOff,
+                        Kind = DayKind.DayOff,
                     });
                 }
             }
@@ -63,7 +71,15 @@ namespace TimeTracker.Server.Tasks
 
         private async Task<string> GetCron()
         {
-            var settings = await settingsManager.GetAsync();
+            SettingsModel settings;
+            try
+            {
+                settings = await settingsManager.GetAsync();
+            }
+            catch
+            {
+                settings = new SettingsModel();
+            }
             var hour = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Hour;
             var minute = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Minute;
             var second = settings.Tasks.AutoCreateDaysOff.TimeWhenCreate.Second;
