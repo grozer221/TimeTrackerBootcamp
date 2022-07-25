@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using GraphQL.Types;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth.DTO
 {
@@ -8,6 +7,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth.DTO
         public AuthResetPasswordInputValidation()
         {
             RuleFor(l => l.Password)
+                .MinimumLength(5)
                 .NotEmpty()
                 .NotNull();
 
