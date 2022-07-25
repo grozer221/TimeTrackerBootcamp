@@ -1,19 +1,15 @@
 import {combineEpics, Epic, ofType} from "redux-observable";
-import {usersPageActions} from "./usersPage.actions";
 import {RootState} from "../../../store/store";
-import {catchError, debounce, debounceTime, endWith, from, map, merge, mergeMap, of} from "rxjs";
+import {catchError, debounceTime, from, mergeMap, of} from "rxjs";
 import {client} from "../../../graphQL/client";
 import {GET_USERS_QUERY, GetUsersDataType, GetUsersInputType} from "../graphQL/users.queries";
-import {notificationsActions} from "../../notifications/store/notifications.actions";
-import {
-    CreateUserData,
-    CreateUserInputType,
-    USERS_CREATE_MUTATION
-} from "../graphQL/users.mutations";
+import {CreateUserData, CreateUserInputType, USERS_CREATE_MUTATION} from "../graphQL/users.mutations";
+import {usersActions} from "./users.slice";
+import {notificationsActions} from "../../notifications/store/notifications.slice";
 
-export const getUsersEpic: Epic<ReturnType<typeof usersPageActions.getAsync>, any, RootState> = (action$, state$) => {
+export const getUsersEpic: Epic<ReturnType<typeof usersActions.getAsync>, any, RootState> = (action$, state$) => {
     return action$.pipe(
-        ofType('USER_PAGE_GET_ASYNC'),
+        ofType(usersActions.getAsync.type),
         mergeMap(action =>
             from(client.query<GetUsersDataType, GetUsersInputType>({
                 query: GET_USERS_QUERY,
@@ -24,9 +20,11 @@ export const getUsersEpic: Epic<ReturnType<typeof usersPageActions.getAsync>, an
                 }
             })).pipe(
                 mergeMap(response => [
-                    usersPageActions.addUsers(response.data.users.get.entities),
-                    usersPageActions.updateUsersMetrics(response.data.users.get.total,
-                        response.data.users.get.pageSize)
+                    usersActions.addUsers(response.data.users.get.entities),
+                    usersActions.updateUsersMetrics({
+                        total: response.data.users.get.total,
+                        pageSize: response.data.users.get.pageSize,
+                    })
                 ])
             )
         ),
@@ -34,10 +32,10 @@ export const getUsersEpic: Epic<ReturnType<typeof usersPageActions.getAsync>, an
     )
 }
 
-export const getUsersForVocationsSelectEpic: Epic<ReturnType<typeof usersPageActions.fetchUsersForVocationsSelect>,
+export const getUsersForVocationsSelectEpic: Epic<ReturnType<typeof usersActions.fetchUsersForVocationsSelect>,
     any, RootState> = (action$, state$) => {
     return action$.pipe(
-        ofType('USER_PAGE_FETCH_USERS_FOR_VOCATIONS_SELECT'),
+        ofType(usersActions.fetchUsersForVocationsSelect.type),
         debounceTime(100),
         mergeMap(action =>
             from(client.query<GetUsersDataType, GetUsersInputType>({
@@ -49,7 +47,7 @@ export const getUsersForVocationsSelectEpic: Epic<ReturnType<typeof usersPageAct
                 }
             })).pipe(
                 mergeMap(response => [
-                    usersPageActions.addUsersForVocationsSelect(response.data.users.get.entities)
+                    usersActions.addUsersForVocationsSelect(response.data.users.get.entities)
                 ])
             )
         ),
@@ -57,10 +55,10 @@ export const getUsersForVocationsSelectEpic: Epic<ReturnType<typeof usersPageAct
     )
 }
 
-export const createUserEpic: Epic<ReturnType<typeof usersPageActions.createUser>,
+export const createUserEpic: Epic<ReturnType<typeof usersActions.createUser>,
     any, RootState> = (action$, state$) => {
     return action$.pipe(
-        ofType('USER_PAGE_CREATE_USER'),
+        ofType(usersActions.createUser.type),
         mergeMap(action =>
             from(client.mutate<CreateUserData, CreateUserInputType>({
                 mutation: USERS_CREATE_MUTATION,
@@ -78,5 +76,9 @@ export const createUserEpic: Epic<ReturnType<typeof usersPageActions.createUser>
 }
 
 
-// @ts-ignore
-export const usersPageEpics = combineEpics(getUsersEpic, getUsersForVocationsSelectEpic, createUserEpic)
+export const usersPageEpics = combineEpics(
+    getUsersEpic,
+    getUsersForVocationsSelectEpic,
+    // @ts-ignore
+    createUserEpic,
+)
