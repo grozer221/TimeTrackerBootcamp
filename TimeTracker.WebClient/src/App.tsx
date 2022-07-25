@@ -20,11 +20,17 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
-import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
-import {FileManagerCreateFolder} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
+import {
+    FileManagerGetInFolderPage
+} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
+import {
+    FileManagerCreateFolder
+} from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
 import {FileManagerUploadFile} from "./modules/fileManager/components/FileManagerUploadFile/FileManagerUploadFile";
 import {AuthRequestResetPasswordPage} from "./modules/auth/pages/AuthRequestResetPasswordPage";
 import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
+import {UsersPage} from "./modules/users/pages/UsersPage/UsersPage";
+import {CreateUserModal} from "./modules/users/components/CreateUserModal/CreateUserModal";
 import {MySettingsPage} from "./modules/settings/pages/MySettingsPage/MySettingsPage";
 
 export const App = () => {
@@ -55,6 +61,9 @@ export const App = () => {
                         <Route path={'calendar/*'} element={<CalendarPage/>}>
                             <Route path={'*'} element={<Error/>}/>
                         </Route>
+                        <Route path={'users/*'} element={<UsersPage/>}>
+                            <Route path={'*'} element={<Error/>}/>
+                        </Route>
                         <Route path={'settings/:tab'} element={<SettingsPage/>}/>
                         <Route path={'my-settings/:tab'} element={<MySettingsPage/>}/>
                         <Route path={"auth/*"}>
@@ -80,6 +89,9 @@ export const App = () => {
                                     <Route path="remove" element={<CalendarDaysRemovePage/>}/>
                                     <Route path="remove/:date" element={<CalendarDaysRemovePage/>}/>
                                 </Route>
+                            </Route>
+                            <Route path={'users/*'}>
+                                <Route path="create" element={<CreateUserModal/>}/>
                             </Route>
                             <Route path={"tools/*"}>
                                 <Route path={"file-manager/*"}>

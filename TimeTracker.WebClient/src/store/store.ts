@@ -52,6 +52,9 @@ import {authEpics} from "../modules/auth/store/auth.epics";
 import {calendarDaysEpics} from "../modules/calendarDays/store/calendarDays.epics";
 import {cacheEpics} from '../modules/cache/store/cache.epics';
 import {settingsEpics} from "../modules/settings/store/settings.epics";
+import {cacheReducer} from "../modules/cache/store/cache.reducer";
+import {cacheEpics} from "../modules/cache/store/cache.epics";
+import {fileManagerReducer} from "../modules/fileManager/store/fileManager.reducer";
 import {fileManagerEpics} from "../modules/fileManager/store/fileManager.epics";
 import {calendarDaysReducer} from "../modules/calendarDays/store/calendarDays.slice";
 import {fileManagerReducer} from "../modules/fileManager/store/fileManager.slice";
@@ -82,7 +85,8 @@ const rootEpic = combineEpics(
     calendarDaysEpics,
     settingsEpics,
     cacheEpics,
-    fileManagerEpics
+    usersPageEpics,
+    fileManagerEpics,
 );
 // @ts-ignore
 epicMiddleware.run(rootEpic);
