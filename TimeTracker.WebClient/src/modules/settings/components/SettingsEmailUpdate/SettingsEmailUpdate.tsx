@@ -4,10 +4,10 @@ import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
 import {SettingsEmailUpdateInputType} from "../../graphQL/settings.mutations";
 import {useDispatch, useSelector} from "react-redux";
-import {settingsActions} from "../../store/settings.actions";
 import {RootState} from "../../../../store/store";
 import {nameof} from "../../../../utils/stringUtils";
 import {ExtraHeaderButtons} from "../../../../components/ExtraHeaderButtons";
+import {settingsActions} from "../../store/settings.slice";
 
 type FormValues = {
     name?: string,

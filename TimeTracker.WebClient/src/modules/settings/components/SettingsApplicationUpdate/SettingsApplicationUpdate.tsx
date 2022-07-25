@@ -4,13 +4,13 @@ import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
 import {SettingsApplicationUpdateInputType} from "../../graphQL/settings.mutations";
 import {useDispatch, useSelector} from "react-redux";
-import {settingsActions} from "../../store/settings.actions";
 import {RootState} from "../../../../store/store";
 import {nameof} from "../../../../utils/stringUtils";
 import {linkRegexPattern} from "../../../../utils/regexUtils";
 import {ExtraHeaderButtons} from "../../../../components/ExtraHeaderButtons";
 import {FileManagerOpenButton} from "../../../fileManager/components/FileManagerOpenButton";
 import {FileManagerItem} from "../../../fileManager/graphQL/fileManager.types";
+import {settingsActions} from "../../store/settings.slice";
 
 const {Text} = Typography;
 

@@ -5,7 +5,7 @@ import {useForm} from "antd/es/form/Form";
 import moment, {Moment} from "moment";
 import {LineOutlined, UnorderedListOutlined} from "@ant-design/icons";
 import {useDispatch, useSelector} from "react-redux";
-import {calendarDaysActions} from "../../store/calendarDays.actions";
+import {calendarDaysActions} from "../../store/calendarDays.slice";
 import {RootState} from "../../../../store/store";
 import {DayOfWeek} from "../../../../graphQL/enums/DayOfWeek";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
@@ -59,7 +59,11 @@ export const CalendarDaysRemovePage = () => {
                     }
                     const fromAndTo = form.getFieldValue(fromAndToFieldName) as Moment[];
                     const daysOfWeek = form.getFieldValue(daysOfWeekFieldName) as DayOfWeek[];
-                    dispatch(calendarDaysActions.removeRangeAsync(fromAndTo[0].format('YYYY-MM-DD'), fromAndTo[1].format('YYYY-MM-DD'), daysOfWeek));
+                    dispatch(calendarDaysActions.removeRangeAsync({
+                        from: fromAndTo[0].format('YYYY-MM-DD'),
+                        to: fromAndTo[1].format('YYYY-MM-DD'),
+                        daysOfWeek
+                    }));
                     break;
             }
         } catch (e) {

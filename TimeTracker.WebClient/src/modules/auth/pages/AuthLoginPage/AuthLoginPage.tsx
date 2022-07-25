@@ -1,7 +1,7 @@
 import React, {FC, useEffect} from "react";
 import {Button, Checkbox, Form, Input, Row} from "antd";
 import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "../../store/auth.actions";
+import {authActions} from "../../store/auth.slice";
 import {AuthLoginInputType} from "../../graphQL/auth.mutations";
 import './AuthLoginPage.css'
 import {RootState} from "../../../../store/store";

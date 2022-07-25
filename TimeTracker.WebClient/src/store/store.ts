@@ -1,32 +1,80 @@
-import {applyMiddleware, combineReducers, createStore} from 'redux';
-import {composeWithDevTools} from "redux-devtools-extension";
-import {authReducer} from "../modules/auth/store/auth.reducer";
+// import {applyMiddleware, combineReducers, createStore} from 'redux';
+// import {composeWithDevTools} from "redux-devtools-extension";
+// import {authReducer} from "../modules/auth/store/auth.reducer";
+// import {combineEpics, createEpicMiddleware} from "redux-observable";
+// import {authEpics} from "../modules/auth/store/auth.epics";
+// import {calendarDaysReducer} from "../modules/calendarDays/store/calendarDays.reducer";
+// import {calendarDaysEpics} from "../modules/calendarDays/store/calendarDays.epics";
+// import {notificationsReducer} from "../modules/notifications/store/notifications.reducer";
+// import {navigateReducer} from "../modules/navigate/store/navigate.reducer";
+// import {appReducer} from "../modules/app/store/app.reducer";
+// import {settingsReducer} from "../modules/settings/store/settings.reducer";
+// import {settingsEpics} from "../modules/settings/store/settings.epics";
+// import {cacheReducer} from "../modules/cache/store/cache.reducer";
+// import {cacheEpics} from "../modules/cache/store/cache.epics";
+// import {fileManagerReducer} from "../modules/fileManager/store/fileManager.reducer";
+// import {fileManagerEpics} from "../modules/fileManager/store/fileManager.epics";
+//
+// const epicMiddleware = createEpicMiddleware();
+//
+// export const store = createStore(combineReducers({
+//     app: appReducer,
+//     auth: authReducer,
+//     calendarDays: calendarDaysReducer,
+//     notifications: notificationsReducer,
+//     navigate: navigateReducer,
+//     settings: settingsReducer,
+//     cache: cacheReducer,
+//     fileManager: fileManagerReducer,
+// }), composeWithDevTools(applyMiddleware(epicMiddleware)));
+//
+// const rootEpic = combineEpics(
+//     authEpics,
+//     // @ts-ignore
+//     calendarDaysEpics,
+//     settingsEpics,
+//     cacheEpics,
+//     fileManagerEpics
+// );
+// // @ts-ignore
+// epicMiddleware.run(rootEpic);
+//
+// export type ValueOf<T> = T[keyof T]
+// export type RootState = ReturnType<typeof store.getState>;
+// export type UseAppDispatch = typeof store.dispatch
+
+import {configureStore} from '@reduxjs/toolkit'
+import {appReducer} from "../modules/app/store/app.slice";
+import {TypedUseSelectorHook, useDispatch, useSelector} from "react-redux";
+import {authReducer} from "../modules/auth/store/auth.slice";
 import {combineEpics, createEpicMiddleware} from "redux-observable";
 import {authEpics} from "../modules/auth/store/auth.epics";
-import {calendarDaysReducer} from "../modules/calendarDays/store/calendarDays.reducer";
 import {calendarDaysEpics} from "../modules/calendarDays/store/calendarDays.epics";
-import {notificationsReducer} from "../modules/notifications/store/notifications.reducer";
-import {navigateReducer} from "../modules/navigate/store/navigate.reducer";
-import {appReducer} from "../modules/app/store/app.reducer";
-import {settingsReducer} from "../modules/settings/store/settings.reducer";
+import {cacheEpics} from '../modules/cache/store/cache.epics';
 import {settingsEpics} from "../modules/settings/store/settings.epics";
-import {cacheReducer} from "../modules/cache/store/cache.reducer";
-import {cacheEpics} from "../modules/cache/store/cache.epics";
-import {fileManagerReducer} from "../modules/fileManager/store/fileManager.reducer";
 import {fileManagerEpics} from "../modules/fileManager/store/fileManager.epics";
+import {calendarDaysReducer} from "../modules/calendarDays/store/calendarDays.slice";
+import {fileManagerReducer} from "../modules/fileManager/store/fileManager.slice";
+import {navigateReducer} from "../modules/navigate/store/navigate.slice";
+import {notificationsReducer} from "../modules/notifications/store/notifications.slice";
+import {settingsReducer} from "../modules/settings/store/settings.slice";
+import {cacheReducer} from "../modules/cache/store/cache.slice";
 
 const epicMiddleware = createEpicMiddleware();
 
-export const store = createStore(combineReducers({
-    app: appReducer,
-    auth: authReducer,
-    calendarDays: calendarDaysReducer,
-    notifications: notificationsReducer,
-    navigate: navigateReducer,
-    settings: settingsReducer,
-    cache: cacheReducer,
-    fileManager: fileManagerReducer,
-}), composeWithDevTools(applyMiddleware(epicMiddleware)));
+export const store = configureStore({
+    reducer: {
+        app: appReducer,
+        auth: authReducer,
+        calendarDays: calendarDaysReducer,
+        notifications: notificationsReducer,
+        navigate: navigateReducer,
+        settings: settingsReducer,
+        cache: cacheReducer,
+        fileManager: fileManagerReducer,
+    },
+    middleware: getDefaultMiddleware => getDefaultMiddleware({thunk: false}).concat(epicMiddleware)
+})
 
 const rootEpic = combineEpics(
     authEpics,
@@ -39,6 +87,8 @@ const rootEpic = combineEpics(
 // @ts-ignore
 epicMiddleware.run(rootEpic);
 
-export type ValueOf<T> = T[keyof T]
-export type RootState = ReturnType<typeof store.getState>;
-export type UseAppDispatch = typeof store.dispatch
+
+export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
+export const useAppDispatch: () => AppDispatch = useDispatch
+export const useAppSelector: TypedUseSelectorHook<RootState> = useSelector

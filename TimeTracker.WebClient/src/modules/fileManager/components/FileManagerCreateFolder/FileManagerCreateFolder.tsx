@@ -7,7 +7,7 @@ import {nameof} from "../../../../utils/stringUtils";
 import Input from "antd/es/input/Input";
 import {useForm} from "antd/es/form/Form";
 import Title from "antd/lib/typography/Title";
-import {fileManagerActions} from "../../store/fileManager.actions";
+import {fileManagerActions} from "../../store/fileManager.slice";
 
 type FormValues = {
     newFolderName: string,
@@ -21,7 +21,7 @@ export const FileManagerCreateFolder: FC = () => {
     const folderPath = useSelector((s: RootState) => s.fileManager.folderPath);
 
     const onFinish = (values: FormValues) => {
-        dispatch(fileManagerActions.createFolderAsync(folderPath, values.newFolderName))
+        dispatch(fileManagerActions.createFolderAsync({folderPath, newFolderName: values.newFolderName}))
     }
 
     const initialValues: FormValues = {

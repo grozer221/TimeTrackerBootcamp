@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "./modules/auth/store/auth.actions";
+import {authActions} from "./modules/auth/store/auth.slice";
 import {RootState} from "./store/store";
 import {Notifications} from "./modules/notifications/components/Notifications/Notifications";
 import {NavigateTo} from "./modules/navigate/components/NavigateTo/NavigateTo";

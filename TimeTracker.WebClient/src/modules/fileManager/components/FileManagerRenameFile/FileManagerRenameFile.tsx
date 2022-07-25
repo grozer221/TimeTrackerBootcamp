@@ -3,11 +3,11 @@ import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../../store/store";
 import {Form, Input, message, Modal} from "antd";
 import Title from "antd/lib/typography/Title";
-import {fileManagerActions} from "../../store/fileManager.actions";
 import {formStyles} from "../../../../assets/form";
 import {nameof} from "../../../../utils/stringUtils";
 import {useForm} from "antd/es/form/Form";
 import {FileManagerItem} from "../../graphQL/fileManager.types";
+import {fileManagerActions} from "../../store/fileManager.slice";
 
 type FormValues = {
     toName: string,
@@ -32,7 +32,7 @@ export const FileManagerRenameFile: FC<Props> = ({selectedItem}) => {
             }
             await form.validateFields();
             const toName = form.getFieldValue(nameof<FormValues>('toName'));
-            dispatch(fileManagerActions.renameFileAsync(selectedItem.path, toName))
+            dispatch(fileManagerActions.renameFileAsync({fromPath: selectedItem.path, toName}))
         } catch (e) {
             console.log(e);
         }

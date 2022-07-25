@@ -2,7 +2,7 @@ import React, {useEffect} from 'react';
 import {useDispatch, useSelector} from "react-redux";
 import {RootState} from "../../../../store/store";
 import {useNavigate} from "react-router-dom";
-import {navigateActions} from "../../store/navigate.actions";
+import {navigateActions} from "../../store/navigate.slice";
 
 export const NavigateTo = () => {
     const to = useSelector((s: RootState) => s.navigate.to)

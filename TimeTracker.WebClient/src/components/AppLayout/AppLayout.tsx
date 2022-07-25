@@ -2,7 +2,7 @@ import React, {FC, useState} from 'react';
 import {Button, Dropdown, Layout, Menu, Row, Space} from 'antd';
 import {Link} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "../../modules/auth/store/auth.actions";
+import {authActions} from "../../modules/auth/store/auth.slice";
 import s from './AppLayout.module.css';
 import {AppBreadcrumb} from "../AppBreadcrumb";
 import {
@@ -23,7 +23,7 @@ import {
 import {RootState} from "../../store/store";
 import Logo from '../../assets/images/clockify-logo-with-title.png';
 import {ItemType} from "antd/lib/menu/hooks/useItems";
-import {cacheActions} from "../../modules/cache/store/cache.actions";
+import {cacheActions} from "../../modules/cache/store/cache.slice";
 import {isAdministratorOrHavePermissions} from "../../utils/permissions";
 import {Permission} from "../../graphQL/enums/Permission";
 

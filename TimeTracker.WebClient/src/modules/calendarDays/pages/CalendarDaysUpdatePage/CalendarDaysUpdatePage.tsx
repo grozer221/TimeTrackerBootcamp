@@ -4,7 +4,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useForm} from "antd/es/form/Form";
 import moment, {Moment} from "moment";
 import {useDispatch, useSelector} from "react-redux";
-import {calendarDaysActions} from "../../store/calendarDays.actions";
+import {calendarDaysActions} from "../../store/calendarDays.slice";
 import {RootState} from "../../../../store/store";
 import {DayKind} from "../../../../graphQL/enums/DayKind";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";

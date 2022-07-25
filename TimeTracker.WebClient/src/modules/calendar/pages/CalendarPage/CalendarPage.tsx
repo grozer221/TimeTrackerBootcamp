@@ -1,10 +1,10 @@
 import React, {useEffect} from 'react';
 import {Calendar, Row, Space, Typography} from "antd";
-import {Moment} from 'moment';
+import moment, {Moment} from 'moment';
 import {Link, useLocation, useNavigate} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
-import {calendarDaysActions} from "../../../calendarDays/store/calendarDays.actions";
-import {RootState} from "../../../../store/store";
+import {useDispatch} from "react-redux";
+import {calendarDaysActions} from "../../../calendarDays/store/calendarDays.slice";
+import {useAppSelector} from "../../../../store/store";
 import s from './CalendarPage.module.css';
 import {ButtonCreate} from "../../../../components/ButtonCreate";
 import {DayKind} from "../../../../graphQL/enums/DayKind";
@@ -21,10 +21,10 @@ const {Text} = Typography;
 export const CalendarPage = () => {
     const location = useLocation();
     const dispatch = useDispatch();
-    const isAuth = useSelector((s: RootState) => s.auth.isAuth)
-    const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays)
-    const selectedDate = useSelector((s: RootState) => s.calendarDays.selectedDate)
-    const loading = useSelector((s: RootState) => s.calendarDays.loadingGet)
+    const isAuth = useAppSelector(s => s.auth.isAuth)
+    const calendarDays = useAppSelector(s => s.calendarDays.calendarDays)
+    const selectedDate = useAppSelector(s => s.calendarDays.selectedDate)
+    const loading = useAppSelector(s => s.calendarDays.loadingGet)
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -34,11 +34,14 @@ export const CalendarPage = () => {
 
     useEffect(() => {
         const fromTo = getFromTo(selectedDate);
-        dispatch(calendarDaysActions.getAsync(fromTo[0], fromTo[1]));
+        dispatch(calendarDaysActions.getAsync({
+            from: fromTo[0],
+            to: fromTo[1]
+        }));
     }, [])
 
-    const getFromTo = (date: Moment): string[] => {
-        let dateObj = new Date(date.format('YYYY-MM-DD'));
+    const getFromTo = (date: string): string[] => {
+        let dateObj = new Date(date);
         const from = new Date(dateObj.setMonth(dateObj.getMonth() - 1));
         from.setDate(15);
         const to = new Date(dateObj.setMonth(dateObj.getMonth() + 2));
@@ -47,12 +50,15 @@ export const CalendarPage = () => {
     }
 
     const onSelect = (newDate: Moment) => {
-        dispatch(calendarDaysActions.setSelectedDate(newDate));
+        dispatch(calendarDaysActions.setSelectedDate(newDate.format("YYYY-MM-DD")));
     };
 
     const onPanelChange = (newDate: Moment) => {
-        const fromTo = getFromTo(newDate);
-        dispatch(calendarDaysActions.getAsync(fromTo[0], fromTo[1]));
+        const fromTo = getFromTo(newDate.format("YYYY-MM-DD"));
+        dispatch(calendarDaysActions.getAsync({
+            from: fromTo[0],
+            to: fromTo[1]
+        }));
     };
 
     const dateCellRender = (current: Moment) => {
@@ -112,7 +118,7 @@ export const CalendarPage = () => {
                 </Space>
             }
             <Calendar
-                value={selectedDate}
+                value={moment(selectedDate)}
                 onSelect={onSelect}
                 onPanelChange={onPanelChange}
                 // validRange={[moment('2021-01-25'), moment('2023-01-25')]}

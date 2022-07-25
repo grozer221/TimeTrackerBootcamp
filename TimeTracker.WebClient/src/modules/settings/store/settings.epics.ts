@@ -2,7 +2,6 @@ import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
 import {catchError, endWith, from, map, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
-import {settingsActions} from "./settings.actions";
 import {
     SETTINGS_GET_FOR_ADMINISTRATOR_OR_HAVE_PERMISSION_UPDATE_QUERY,
     SETTINGS_GET_FOR_EMPLOYEE_QUERY,
@@ -10,7 +9,6 @@ import {
     SettingsGetData,
     SettingsGetVars
 } from "../graphQL/settings.queries";
-import {notificationsActions} from "../../notifications/store/notifications.actions";
 import {
     SETTINGS_APPLICATION_UPDATE_MUTATION, SETTINGS_EMAIL_UPDATE_MUTATION,
     SETTINGS_EMPLOYMENT_UPDATE_MUTATION,
@@ -22,10 +20,12 @@ import {
     SettingsTasksUpdateData,
     SettingsTasksUpdateVars
 } from "../graphQL/settings.mutations";
+import { notificationsActions } from "../../notifications/store/notifications.slice";
+import {settingsActions} from "./settings.slice";
 
 export const getForAdministratorOrHavePermissionUpdateEpic: Epic<ReturnType<typeof settingsActions.getForAdministratorOrHavePermissionUpdateAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('SETTINGS_GET_FOR_ADMINISTRATOR_OR_HAVE_PERMISSION_UPDATE'),
+        ofType(settingsActions.getForAdministratorOrHavePermissionUpdateAsync.type),
         mergeMap(action =>
             from(client.query<SettingsGetData, SettingsGetVars>({
                 query: SETTINGS_GET_FOR_ADMINISTRATOR_OR_HAVE_PERMISSION_UPDATE_QUERY,
@@ -40,7 +40,7 @@ export const getForAdministratorOrHavePermissionUpdateEpic: Epic<ReturnType<type
 
 export const getSettingsForUnAuthenticatedEpic: Epic<ReturnType<typeof settingsActions.getForUnAuthenticatedAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('SETTINGS_GET_FOR_UN_AUTHENTICATED_ASYNC'),
+        ofType(settingsActions.getForUnAuthenticatedAsync.type),
         mergeMap(action =>
             from(client.query<SettingsGetData, SettingsGetVars>({
                 query: SETTINGS_GET_FOR_UN_AUTHENTICATED_QUERY,
@@ -55,7 +55,7 @@ export const getSettingsForUnAuthenticatedEpic: Epic<ReturnType<typeof settingsA
 
 export const getSettingsForEmployeeEpic: Epic<ReturnType<typeof settingsActions.getForEmployee>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('SETTINGS_GET_FOR_EMPLOYEE_ASYNC'),
+        ofType(settingsActions.getForEmployee.type),
         mergeMap(action =>
             from(client.query<SettingsGetData, SettingsGetVars>({
                 query: SETTINGS_GET_FOR_EMPLOYEE_QUERY,
@@ -70,7 +70,7 @@ export const getSettingsForEmployeeEpic: Epic<ReturnType<typeof settingsActions.
 
 export const settingsEmploymentUpdateEpic: Epic<ReturnType<typeof settingsActions.updateEmploymentAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('SETTINGS_UPDATE_EMPLOYMENT_ASYNC'),
+        ofType(settingsActions.updateEmploymentAsync.type),
         mergeMap(action =>
             from(client.mutate<SettingsEmploymentUpdateData, SettingsEmploymentUpdateVars>({
                 mutation: SETTINGS_EMPLOYMENT_UPDATE_MUTATION,
@@ -90,7 +90,7 @@ export const settingsEmploymentUpdateEpic: Epic<ReturnType<typeof settingsAction
 
 export const settingsApplicationUpdateEpic: Epic<ReturnType<typeof settingsActions.updateApplicationAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('SETTINGS_UPDATE_APPLICATION_ASYNC'),
+        ofType(settingsActions.updateApplicationAsync.type),
         mergeMap(action =>
             from(client.mutate<SettingsApplicationUpdateData, SettingsApplicationUpdateVars>({
                 mutation: SETTINGS_APPLICATION_UPDATE_MUTATION,
@@ -110,7 +110,7 @@ export const settingsApplicationUpdateEpic: Epic<ReturnType<typeof settingsActio
 
 export const settingsTasksUpdateEpic: Epic<ReturnType<typeof settingsActions.updateTasksAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('SETTINGS_UPDATE_TASKS_ASYNC'),
+        ofType(settingsActions.updateTasksAsync.type),
         mergeMap(action =>
             from(client.mutate<SettingsTasksUpdateData, SettingsTasksUpdateVars>({
                 mutation: SETTINGS_TASKS_UPDATE_MUTATION,
@@ -134,7 +134,7 @@ export const settingsTasksUpdateEpic: Epic<ReturnType<typeof settingsActions.upd
 
 export const settingsEmailUpdateEpic: Epic<ReturnType<typeof settingsActions.updateEmailAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('SETTINGS_UPDATE_EMAIL_ASYNC'),
+        ofType(settingsActions.updateEmailAsync.type),
         mergeMap(action =>
             from(client.mutate<SettingsEmailUpdateData, SettingsEmailUpdateVars>({
                 mutation: SETTINGS_EMAIL_UPDATE_MUTATION,
@@ -158,9 +158,9 @@ export const settingsEmailUpdateEpic: Epic<ReturnType<typeof settingsActions.upd
 
 export const settingsEpics = combineEpics(
     getForAdministratorOrHavePermissionUpdateEpic,
-    // @ts-ignore
     getSettingsForUnAuthenticatedEpic,
     getSettingsForEmployeeEpic,
+    // @ts-ignore
     settingsEmploymentUpdateEpic,
     settingsApplicationUpdateEpic,
     settingsTasksUpdateEpic,
