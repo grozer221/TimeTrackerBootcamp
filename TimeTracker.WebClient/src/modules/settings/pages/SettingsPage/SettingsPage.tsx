@@ -33,7 +33,7 @@ export const SettingsPage: FC = () => {
     return (
         <Row>
             <Tabs
-                defaultActiveKey={tab || 'common'}
+                defaultActiveKey={tab || 'application'}
                 onChange={onChangeTabHandler}
                 style={{width: '100%'}}
             >

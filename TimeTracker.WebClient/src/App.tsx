@@ -25,6 +25,7 @@ import {FileManagerCreateFolder} from "./modules/fileManager/components/FileMana
 import {FileManagerUploadFile} from "./modules/fileManager/components/FileManagerUploadFile/FileManagerUploadFile";
 import {AuthRequestResetPasswordPage} from "./modules/auth/pages/AuthRequestResetPasswordPage";
 import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
+import {MySettingsPage} from "./modules/settings/pages/MySettingsPage/MySettingsPage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -55,6 +56,7 @@ export const App = () => {
                             <Route path={'*'} element={<Error/>}/>
                         </Route>
                         <Route path={'settings/:tab'} element={<SettingsPage/>}/>
+                        <Route path={'my-settings/:tab'} element={<MySettingsPage/>}/>
                         <Route path={"auth/*"}>
                             <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
                             <Route path="reset-password/:token" element={<Navigate to={'/time-tracker'}/>}/>

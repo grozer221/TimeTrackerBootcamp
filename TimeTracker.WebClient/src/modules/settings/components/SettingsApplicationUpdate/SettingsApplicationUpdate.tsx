@@ -1,5 +1,5 @@
 import {Col, Form, Image, Input, Row, Typography} from 'antd';
-import React, {FC, useEffect, useState} from 'react';
+import React, {FC, useState} from 'react';
 import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
 import {SettingsApplicationUpdateInputType} from "../../graphQL/settings.mutations";
@@ -23,13 +23,10 @@ export const SettingsApplicationUpdate: FC = ({}) => {
     const dispatch = useDispatch();
     const settingsLoadingUpdate = useSelector((s: RootState) => s.settings.loadingUpdate)
     const settings = useSelector((s: RootState) => s.settings.settings)
+    const [selectFaviconFileManagerVisible, setSelectFaviconFileManagerVisible] = useState(false);
     const [faviconUrl, setFaviconUrl] = useState<string | undefined>(settings?.application?.faviconUrl);
+    const [selectLogoFileManagerVisible, setSelectLogoFileManagerVisible] = useState(false);
     const [logoUrl, setLogoUrl] = useState<string | undefined>(settings?.application?.logoUrl);
-    const [fileManagerVisible, setFileManagerVisible] = useState(false);
-
-    useEffect(() => {
-
-    }, [])
 
     const onFinish = (values: FormValues) => {
         const settingsApplicationUpdateInputType: SettingsApplicationUpdateInputType = {
@@ -47,12 +44,12 @@ export const SettingsApplicationUpdate: FC = ({}) => {
     }
 
     const onSelectFaviconUrl = (item: FileManagerItem) => {
-        setFileManagerVisible(false)
+        setSelectFaviconFileManagerVisible(false)
         setFaviconUrl(item.path);
     }
 
     const onSelectLogoUrl = (item: FileManagerItem) => {
-        setFileManagerVisible(false)
+        setSelectLogoFileManagerVisible(false)
         setLogoUrl(item.path);
     }
 
@@ -99,8 +96,8 @@ export const SettingsApplicationUpdate: FC = ({}) => {
                                 onChange={e => setFaviconUrl(e.target.value)}
                             />
                             <FileManagerOpenButton
-                                visible={fileManagerVisible}
-                                setVisible={setFileManagerVisible}
+                                visible={selectFaviconFileManagerVisible}
+                                setVisible={setSelectFaviconFileManagerVisible}
                                 onSelectFile={onSelectFaviconUrl}
                             />
                         </Input.Group>
@@ -133,8 +130,8 @@ export const SettingsApplicationUpdate: FC = ({}) => {
                                 onChange={e => setLogoUrl(e.target.value)}
                             />
                             <FileManagerOpenButton
-                                visible={fileManagerVisible}
-                                setVisible={setFileManagerVisible}
+                                visible={selectLogoFileManagerVisible}
+                                setVisible={setSelectLogoFileManagerVisible}
                                 onSelectFile={onSelectLogoUrl}
                             />
                         </Input.Group>

@@ -48,10 +48,21 @@ export const AppLayout: FC<Props> = ({children}) => {
                 {
                     key: 'Profile',
                     label: (
-                        <Link to={'#'}>
+                        <Link to={`/users/${authedUser?.email}`}>
                             <Space>
                                 <ProfileOutlined/>
                                 <span>Profile</span>
+                            </Space>
+                        </Link>
+                    ),
+                },
+                {
+                    key: 'My settings',
+                    label: (
+                        <Link to={'/my-settings/security'}>
+                            <Space>
+                                <SettingOutlined/>
+                                <span>My settings</span>
                             </Space>
                         </Link>
                     ),

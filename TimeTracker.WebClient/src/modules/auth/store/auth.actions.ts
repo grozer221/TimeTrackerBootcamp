@@ -1,37 +1,49 @@
 import {User} from "../../users/graphQL/users.types";
 import {ValueOf} from "../../../store/store";
 import {
+    AuthChangePasswordInputType,
     AuthLoginInputType,
     AuthRequestResetPasswordInputType,
     AuthResetPasswordInputType
 } from "../graphQL/auth.mutations";
 
+export const prefix = 'AUTH_';
+
 export const authActions = {
     userLoginAsync: (credentials: AuthLoginInputType) => ({
-        type: 'LOGIN_USER_ASYNC',
+        type: `${prefix}LOGIN_USER_ASYNC`,
         payload: {credentials},
     } as const),
     meAsync: () => ({
-        type: 'ME_ASYNC',
+        type: `${prefix}ME_ASYNC`,
     } as const),
     setLoadingMe: (loading: boolean) => ({
-        type: 'SET_LOADING_ME',
+        type: `${prefix}SET_LOADING_ME`,
         payload: loading,
     } as const),
     setAuthedUser: (user?: User | null, token?: string | null) => ({
-        type: 'SET_AUTHED_USER',
+        type: `${prefix}SET_AUTHED_USER`,
         payload: {user, token},
     } as const),
     logoutAsync: () => ({
-        type: 'LOG_OUT_ASYNC'
+        type: `${prefix}LOG_OUT_ASYNC`
     } as const),
     requestResetPasswordAsync: (authRequestResetPasswordInputType: AuthRequestResetPasswordInputType) => ({
-        type: 'REQUEST_RESET_PASSWORD_ASYNC',
+        type: `${prefix}REQUEST_RESET_PASSWORD_ASYNC`,
         payload: authRequestResetPasswordInputType
     } as const),
     resetPasswordAsync: (authResetPasswordInputType: AuthResetPasswordInputType) => ({
-        type: 'RESET_PASSWORD_ASYNC',
+        type: `${prefix}RESET_PASSWORD_ASYNC`,
         payload: authResetPasswordInputType
+    } as const),
+
+    changePasswordAsync: (authChangePasswordInputType: AuthChangePasswordInputType) => ({
+        type: `${prefix}CHANGE_PASSWORD_ASYNC`,
+        payload: authChangePasswordInputType
+    } as const),
+    setLoadingChangePassword: (loading: boolean) => ({
+        type: `${prefix}SET_LOADING_CHANGE_PASSWORD`,
+        payload: loading
     } as const),
 };
 
