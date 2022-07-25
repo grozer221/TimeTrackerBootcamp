@@ -1,7 +1,7 @@
 import React, {FC, useState} from 'react';
 import {Button, Dropdown, Layout, Menu, Row, Space} from 'antd';
 import {Link} from "react-router-dom";
-import {useDispatch, useSelector} from "react-redux";
+import {useDispatch} from "react-redux";
 import {authActions} from "../../modules/auth/store/auth.slice";
 import s from './AppLayout.module.css';
 import {AppBreadcrumb} from "../AppBreadcrumb";
@@ -20,7 +20,7 @@ import {
     ToolOutlined,
     UsergroupAddOutlined
 } from "@ant-design/icons";
-import {RootState} from "../../store/store";
+import {useAppSelector} from "../../store/store";
 import Logo from '../../assets/images/clockify-logo-with-title.png';
 import {ItemType} from "antd/lib/menu/hooks/useItems";
 import {cacheActions} from "../../modules/cache/store/cache.slice";
@@ -38,9 +38,9 @@ export const getHeaderExtraButtonsElement = (): HTMLDivElement => document.getEl
 export const AppLayout: FC<Props> = ({children}) => {
     const [collapsed, setCollapsed] = useState(false);
     const dispatch = useDispatch()
-    const authedUser = useSelector((s: RootState) => s.auth.authedUser);
-    const settings = useSelector((s: RootState) => s.settings.settings);
-    const loadingRefreshApp = useSelector((s: RootState) => s.cache.loadingRefreshApp);
+    const authedUser = useAppSelector(s => s.auth.authedUser);
+    const settings = useAppSelector(s => s.settings.settings);
+    const loadingRefreshApp = useAppSelector(s => s.cache.loadingRefreshApp);
 
     const headerMenu = (
         <Menu

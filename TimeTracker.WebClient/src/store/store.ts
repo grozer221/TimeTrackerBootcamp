@@ -15,7 +15,7 @@ import {usersPageEpics} from "../modules/users/store/usersPage.epics";
 import {cacheEpics} from "../modules/cache/store/cache.epics";
 import {cacheReducer} from "../modules/cache/store/cache.slice";
 import {fileManagerReducer} from "../modules/fileManager/store/fileManager.slice";
-import {usersActions, usersReducer} from "../modules/users/store/users.slice";
+import {usersReducer} from "../modules/users/store/users.slice";
 
 const epicMiddleware = createEpicMiddleware();
 
@@ -31,7 +31,8 @@ export const store = configureStore({
         fileManager: fileManagerReducer,
         users: usersReducer,
     },
-    middleware: getDefaultMiddleware => getDefaultMiddleware({thunk: false}).concat(epicMiddleware)
+    middleware: getDefaultMiddleware => getDefaultMiddleware({thunk: false}).concat(epicMiddleware),
+    devTools: true,
 })
 
 const rootEpic = combineEpics(
