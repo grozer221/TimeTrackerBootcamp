@@ -5,7 +5,7 @@ import {formStyles} from "../../../../assets/form";
 import {useDispatch} from "react-redux";
 import Title from "antd/lib/typography/Title";
 import {nameof} from "../../../../utils/stringUtils";
-import {authActions} from "../../../auth/store/auth.actions";
+import {authActions} from "../../../auth/store/auth.slice";
 
 type ChangePasswordFormValues = {
     oldPassword: string,

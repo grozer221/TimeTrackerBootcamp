@@ -5,7 +5,7 @@ import {Button, Form, FormInstance, Input, InputRef, message, Modal, Popconfirm,
 import Title from "antd/lib/typography/Title";
 import {DeleteOutlined, UploadOutlined} from "@ant-design/icons";
 import s from './FileManagerUploadFile.module.css';
-import {fileManagerActions} from "../../store/fileManager.actions";
+import {fileManagerActions} from "../../store/fileManager.slice";
 
 type EditableTableProps = Parameters<typeof Table>[0];
 
@@ -97,7 +97,7 @@ export const FileManagerUploadFile: FC = () => {
             message.error('Choose a files')
             return;
         }
-        dispatch(fileManagerActions.uploadFilesAsync(folderPath, uploadFiles))
+        dispatch(fileManagerActions.uploadFilesAsync({folderPath, files: uploadFiles}))
     }
 
     const handleChange = (e: ChangeEvent<HTMLInputElement>) => {

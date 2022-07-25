@@ -1,7 +1,7 @@
 import React, {FC} from "react";
 import {Button, Form, Input} from "antd";
 import {useDispatch} from "react-redux";
-import {authActions} from "../store/auth.actions";
+import {authActions} from "../store/auth.slice";
 import {Link, useParams} from "react-router-dom";
 
 type FormValues = {

@@ -2,7 +2,7 @@ import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
 import {catchError, endWith, from, map, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
-import {calendarDaysActions} from "./calendarDays.actions";
+import {calendarDaysActions} from "./calendarDays.slice";
 import {CALENDAR_DAYS_GET_QUERY, CalendarDaysGetData, CalendarDaysGetVars} from "../graphQL/calendarDays.queries";
 import {
     CALENDAR_DAYS_CREATE_MUTATION,
@@ -21,12 +21,12 @@ import {
     CalendarDaysUpdateData,
     CalendarDaysUpdateVars
 } from "../graphQL/calendarDays.mutations";
-import {notificationsActions} from "../../notifications/store/notifications.actions";
-import {navigateActions} from "../../navigate/store/navigate.actions";
+import {notificationsActions} from "../../notifications/store/notifications.slice";
+import { navigateActions } from "../../navigate/store/navigate.slice";
 
 export const calendarDaysGetEpic: Epic<ReturnType<typeof calendarDaysActions.getAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('CALENDAR_DAYS_GET_ASYNC'),
+        ofType(calendarDaysActions.getAsync.type),
         mergeMap(action =>
             from(client.query<CalendarDaysGetData, CalendarDaysGetVars>({
                 query: CALENDAR_DAYS_GET_QUERY,
@@ -42,7 +42,7 @@ export const calendarDaysGetEpic: Epic<ReturnType<typeof calendarDaysActions.get
 
 export const calendarDaysCreateEpic: Epic<ReturnType<typeof calendarDaysActions.createAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('CALENDAR_DAYS_CREATE_ASYNC'),
+        ofType(calendarDaysActions.createAsync.type),
         mergeMap(action =>
             from(client.mutate<CalendarDaysCreateData, CalendarDaysCreateVars>({
                 mutation: CALENDAR_DAYS_CREATE_MUTATION,
@@ -66,7 +66,7 @@ export const calendarDaysCreateEpic: Epic<ReturnType<typeof calendarDaysActions.
 
 export const calendarDaysCreateRangeEpic: Epic<ReturnType<typeof calendarDaysActions.createRangeAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('CALENDAR_DAYS_CREATE_RANGE_ASYNC'),
+        ofType(calendarDaysActions.createRangeAsync.type),
         mergeMap(action =>
             from(client.mutate<CalendarDaysCreateRangeData, CalendarDaysCreateRangeVars>({
                 mutation: CALENDAR_DAYS_CREATE_RANGE_MUTATION,
@@ -90,7 +90,7 @@ export const calendarDaysCreateRangeEpic: Epic<ReturnType<typeof calendarDaysAct
 
 export const calendarDaysUpdateEpic: Epic<ReturnType<typeof calendarDaysActions.updateAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('CALENDAR_DAYS_UPDATE_ASYNC'),
+        ofType(calendarDaysActions.updateAsync.type),
         mergeMap(action =>
             from(client.mutate<CalendarDaysUpdateData, CalendarDaysUpdateVars>({
                 mutation: CALENDAR_DAYS_UPDATE_MUTATION,
@@ -113,7 +113,7 @@ export const calendarDaysUpdateEpic: Epic<ReturnType<typeof calendarDaysActions.
 
 export const calendarDaysRemoveEpic: Epic<ReturnType<typeof calendarDaysActions.removeAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('CALENDAR_DAYS_REMOVE_ASYNC'),
+        ofType(calendarDaysActions.removeAsync.type),
         mergeMap(action =>
             from(client.mutate<CalendarDaysRemoveData, CalendarDaysRemoveVars>({
                 mutation: CALENDAR_DAYS_REMOVE_MUTATION,
@@ -136,7 +136,7 @@ export const calendarDaysRemoveEpic: Epic<ReturnType<typeof calendarDaysActions.
 
 export const calendarDaysRemoveRangeEpic: Epic<ReturnType<typeof calendarDaysActions.removeRangeAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('CALENDAR_DAYS_REMOVE_RANGE_ASYNC'),
+        ofType(calendarDaysActions.removeRangeAsync.type),
         mergeMap(action =>
             from(client.mutate<CalendarDaysRemoveRangeData, CalendarDaysRemoveRangeVars>({
                 mutation: CALENDAR_DAYS_REMOVE_RANGE_MUTATION,
