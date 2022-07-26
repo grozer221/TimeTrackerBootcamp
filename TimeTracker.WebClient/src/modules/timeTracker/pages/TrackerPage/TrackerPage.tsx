@@ -41,7 +41,27 @@ export const TrackerPage: React.FC = () => {
 
     return (
             <Form name="dynamic_form_nest_item">
-
+                <Form.Item
+                    label="Track List"
+                    shouldUpdate={(prevValues, curValues) => prevValues.tracks !== curValues.tracks}
+                >
+                    {() => {
+                    return tracks.length ? (
+                        <ul>
+                            {tracks.map((track, index) => (
+                                <li key={index} style={{listStyleType: 'none'}}>
+                                    <Avatar icon={<UserOutlined />} />
+                                    {track.title} - {track.description}
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <Typography.Text className="ant-form-text" type="secondary">
+                            ( <SmileOutlined /> No user yet. )
+                        </Typography.Text>
+                    );
+                }}
+                </Form.Item>
                 <Form.Item>
                     <Link to={'create'} state={{popup: location}}>
                         <Button type={'dashed'} icon={<PlusOutlined />} size={'large'} style={{width: '100%'}}>Add Track</Button>
