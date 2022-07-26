@@ -11,7 +11,7 @@ export type CreateTrackInputType = { TrackData: CreateTrackInput}
 
 export const TRACK_CREATE_MUTATION = gql`
     ${TRACK_FRAGMENT}
-    mutation CreateTask ( $trackInput: TrackInputType!)  {
+    mutation CreateTask ( $TrackData: TrackInputType!)  {
         tracks{
             create(trackInput: $TrackData) {
                 ...TrackFragment    
