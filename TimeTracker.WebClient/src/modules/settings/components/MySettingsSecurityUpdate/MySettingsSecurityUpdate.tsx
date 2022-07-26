@@ -38,13 +38,19 @@ export const MySettingsSecurityUpdate: FC = () => {
                             <Form.Item
                                 label="Old password"
                                 name={nameof<ChangePasswordFormValues>('oldPassword')}
+                                rules={[
+                                    {required: true, message: 'Old password is required'},
+                                ]}
                             >
                                 <Input.Password placeholder={'Old password'}/>
                             </Form.Item>
                             <Form.Item
                                 label="New password"
                                 name={nameof<ChangePasswordFormValues>('newPassword')}
-                                rules={[{min: 5, message: 'Min length for new password is 5 symbols'}]}
+                                rules={[
+                                    {required: true, message: 'New password is required'},
+                                    {min: 5, message: 'Min length for new password is 5 symbols'},
+                                ]}
                             >
                                 <Input.Password placeholder={'New password'}/>
                             </Form.Item>
