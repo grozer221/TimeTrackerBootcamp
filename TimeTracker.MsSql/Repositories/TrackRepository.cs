@@ -32,6 +32,8 @@ namespace TimeTracker.MsSql.Repositories
             like = "%" + like + "%";
 
             int total;
+            skip--;
+            skip *= take;
             string query = "SELECT * FROM Tracks WHERE Title LIKE @like ORDER BY Id OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
 
             using (IDbConnection db = dapperContext.CreateConnection())
