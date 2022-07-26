@@ -18,7 +18,7 @@ export  const  tracksSlice = createSlice({
     name: 'tracks',
     initialState,
     reducers: {
-        getAsync: (state, action: PayloadAction<{ like: string, take: number, skip: number }>) => state,
+        getAsync: (state, action: PayloadAction<{ like: string, pageSize: number, pageNumber: number }>) => state,
         addTracks: (state, action: PayloadAction<Track[]>) =>{
             state.tracks = action.payload
         },

@@ -1,74 +1,167 @@
 import React, {useEffect, useState} from 'react';
-import {Link, useLocation, useNavigate} from "react-router-dom";
-import {PlusOutlined, SmileOutlined, UserOutlined} from '@ant-design/icons';
-import {Avatar, Button, Form, Typography} from 'antd';
+import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
+import {CalendarOutlined, EditOutlined, FormOutlined, SmileOutlined, UserOutlined} from '@ant-design/icons';
+import {Avatar, Button, Card, Col, Divider, Form, Input, Pagination, PaginationProps, Row, Typography} from 'antd';
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useAppSelector} from "../../../../store/store";
 import {isAuthenticated} from "../../../../utils/permissions";
+import {nameof} from "../../../../utils/stringUtils";
+import {useForm} from "antd/es/form/Form";
+import {CreateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
+import s from './TrackerPage.module.css'
+import './TrackerPage.module.css'
 
-type DataIndex = keyof Track
+type FormValues = {
+    title: string,
+    description: string | null
+}
 
 export const TrackerPage: React.FC = () => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
     const navigate = useNavigate()
-    const location = useLocation();
     const dispatch = useDispatch()
-    const like = ""
+    const [form] = useForm()
 
     let totalPages = useAppSelector(s => s.tracks.total)
-    let pageSize = useAppSelector(s => s.tracks.pageSize)
     let tracks = useAppSelector(s => s.tracks.tracks)
 
     let [currentPage, setCurrentPage] = useState<number>(0)
+    const [searchParams, setSearchParams] = useSearchParams({});
+    const like = searchParams.get('like') || ''
+    const pageSize = searchParams.get('pageSize') || '10'
+    const pageNumber = searchParams.get('pageNumber') || '1'
+    const time = new Date();
+    time.setSeconds(time.getSeconds() + 600);
+
+    const onFinish = async (values: FormValues) => {
+        let newTrack: CreateTrackInput = {
+            title: values.title,
+            description: values.description
+        }
+
+        dispatch(tracksAction.createTrack(newTrack))
+        dispatch(tracksAction.getAsync({
+            like: like,
+            pageSize: parseInt(pageSize),
+            pageNumber: parseInt(pageNumber)
+        }))
+        form.resetFields()
+    };
+
 
     useEffect(() => {
         if (!isAuthenticated())
             navigate('/auth/login');
     }, [isAuth])
 
-    useEffect(()=>{
+    useEffect(() => {
         dispatch(tracksAction.getAsync({
-            like: "",
-            take: 10,
-            skip: 1
+            like: like,
+            pageSize: parseInt(pageSize),
+            pageNumber: parseInt(pageNumber)
         }))
-    }, [like])
+    }, [setSearchParams])
 
+    const onChange: PaginationProps['onChange'] = (pageNumber, pageSize) => {
+        navigate(`/time-tracker?pageNumber=${pageNumber}&pageSize=${pageSize}`)
+        dispatch(tracksAction.getAsync({
+            like: like,
+            pageSize: pageSize,
+            pageNumber: pageNumber
+        }));
+    };
 
     console.log(tracks)
 
-    return (
-            <Form name="dynamic_form_nest_item">
+    function GetDate(sqlDate: string) {
+        let date = new Date(sqlDate)
+        return date.toDateString() + " " + date.toLocaleTimeString()
 
-                <Form.Item>
-                    <Link to={'create'} state={{popup: location}}>
-                        <Button type={'dashed'} icon={<PlusOutlined />} size={'large'} style={{width: '100%'}}>Add Track</Button>
-                    </Link>
-                </Form.Item>
-                <Form.Item
-                    label="Track List"
-                    shouldUpdate={(prevValues, curValues) => prevValues.tracks !== curValues.tracks}
-                >
-                    {() => {
-                        return tracks.length ? (
-                            <ul>
-                                {tracks.map((track, index) => (
-                                    <li key={index} style={{listStyleType: 'none'}}>
-                                        <Avatar icon={<UserOutlined />} />
-                                        {track.title} - {track.description}
-                                    </li>
-                                ))}
-                            </ul>
-                        ) : (
-                            <Typography.Text className="ant-form-text" type="secondary">
-                                ( <SmileOutlined /> No user yet. )
-                            </Typography.Text>
-                        );
-                    }}
-                </Form.Item>
+    }
+
+    // @ts-ignore
+    return (
+        <>
+            <Form
+                className={s.font}
+                form={form}
+                name="trackForm"
+                onFinish={onFinish}>
+                <Card>
+                    <Row gutter={16}>
+                        <Col span={10}>
+                            <Form.Item name={nameof<FormValues>('title')} rules={[{required: true}]}>
+                                <Input placeholder={'Title'}/>
+                            </Form.Item>
+                        </Col>
+                        <Col span={10}>
+                            <Form.Item name={nameof<FormValues>('description')} rules={[{required: false}]}>
+                                <Input placeholder={'Description'}/>
+                            </Form.Item>
+                        </Col>
+                        <Col span={4}>
+                            <Button htmlType={'submit'}>Start </Button>
+                        </Col>
+                    </Row>
+                </Card>
             </Form>
+            {tracks.length ? (
+                <div className={s.container}>
+                    <div className = {s.table_header}>
+                        <div className={s.cell} style={{width: '20%'}}>
+                            Title
+                        </div>
+                        <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
+                        <div className={s.cell} style={{width: '40%'}}>
+                            Description
+                        </div>
+                        <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
+                        <div className={s.cell} style={{width: '20%'}}>
+                            Start Time
+                        </div>
+                        <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
+                        <div className={s.cell} style={{width: '20%'}}>
+                            End Time
+                        </div>
+
+                    </div>
+                    {tracks.map((track, index) => (
+                        <div className={s.table_row} key={index}>
+                            <div className={s.cell} style={{width: '20%'}}>
+                                <EditOutlined className={s.icons}/>{track.title}
+                            </div>
+                            <div className={s.divider}/>
+                            <div className={s.cell} style={{width: '40%'}}>
+                                <FormOutlined className={s.icons}/>{track.description}
+                            </div>
+                            <div className={s.divider}/>
+                            <div className={s.cell} style={{width: '20%'}}>
+                                <CalendarOutlined  className={s.icons}/>{GetDate(track.startTime)}
+                            </div>
+                            <div className={s.divider}/>
+                            <div className={s.cell} style={{width: '20%'}}>
+
+                                <CalendarOutlined className={s.icons}/>
+                            </div>
+                        </div>
+                    ))}
+                    <Pagination
+                        showQuickJumper
+                        showSizeChanger
+                        defaultCurrent={parseInt(pageNumber)}
+                        total={totalPages}
+                        onChange={onChange}
+                        style={{margin: '2px'}}
+                    />
+                </div>
+            ) : (
+                <Typography.Text className="ant-form-text" type="secondary">
+                    ( <SmileOutlined/> No tracks yet. )
+                </Typography.Text>
+            )}
+        </>
     );
 };
 

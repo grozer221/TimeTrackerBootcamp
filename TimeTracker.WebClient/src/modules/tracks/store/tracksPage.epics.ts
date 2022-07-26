@@ -20,8 +20,8 @@ export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, 
                 query: TRACKS_GET_QUERY,
                 variables: {
                     like: action.payload.like,
-                    skip: action.payload.skip,
-                    take: action.payload.take
+                    pageNumber: action.payload.pageNumber,
+                    pageSize: action.payload.pageSize
                 }
             })).pipe(
                 mergeMap(response => [
