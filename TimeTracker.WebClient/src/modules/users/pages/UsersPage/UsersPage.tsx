@@ -189,8 +189,7 @@ export const UsersPage = () => {
             pagination={{
                 total: totalPages,
                 pageSize: pageSize,
-                defaultPageSize: pageSize,
-                showSizeChanger: true,
+                defaultPageSize: pageSize, showSizeChanger: true,
                 onChange: (page, pageSize1) => {
                     setCurrentPage(page - 1)
                     dispatch(usersActions.getAsync({
