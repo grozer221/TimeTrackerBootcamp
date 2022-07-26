@@ -23,7 +23,6 @@ const initialState: InitialState = {
 export const userPageReducer: Reducer<InitialState, UserPageActionTypes> = (state = initialState, action): InitialState => {
     switch (action.type) {
         case "USER_PAGE_ADD_USERS":
-            console.log("USERS ADDED")
             return {...state, users: action.payload.users}
         case "USER_PAGE_UPDATE_USERS_METRICS":
             return {...state, total: action.payload.total, pageSize: action.payload.pageSize}

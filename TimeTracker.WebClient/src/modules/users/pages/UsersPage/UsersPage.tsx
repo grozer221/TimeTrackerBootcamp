@@ -70,9 +70,7 @@ export const UsersPage = () => {
 
     // handle functions for filter dropdowns
     const handleChange: TableProps<User>['onChange'] = (pagination, filters, sorter) => {
-
         setFilter(prevState => {
-            if (prevState === filter) return prevState
             return {
                 ...prevState,
                 ["roles"]: filters["role"] as Role[] ?? [],
@@ -86,17 +84,16 @@ export const UsersPage = () => {
         confirm: (param?: FilterConfirmProps) => void,
         dataIndex: DataIndex
     ) => {
-        confirm()
         if (dataIndex != 'permissions' && dataIndex != 'role') {
             setFilter(prevState => {
                 return {...prevState, [dataIndex]: selectedKeys[0]}
             })
         }
+
     };
 
     const handleReset = (confirm: (param?: FilterConfirmProps | undefined) => void,
                          selectedKeys: React.Key[], dataIndex: DataIndex) => {
-        confirm()
         setFilter(prevState => ({...prevState, [dataIndex]: ""}))
     };
 
@@ -194,7 +191,7 @@ export const UsersPage = () => {
         <Table
             columns={columns}
             dataSource={users}
-            rowKey={"id"}
+            rowKey={record => record.id}
             onChange={handleChange}
             pagination={{
                 total: totalPages,
