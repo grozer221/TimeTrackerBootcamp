@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
-import {CalendarOutlined, EditOutlined, FormOutlined, SmileOutlined, UserOutlined} from '@ant-design/icons';
-import {Avatar, Button, Card, Col, Divider, Form, Input, Pagination, PaginationProps, Row, Typography} from 'antd';
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {useNavigate, useSearchParams} from "react-router-dom";
+import {CalendarOutlined, EditOutlined, FormOutlined, SmileOutlined} from '@ant-design/icons';
+import {Button, Card, Col, Form, Input, Pagination, PaginationProps, Row, Typography} from 'antd';
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useAppSelector} from "../../../../store/store";
