@@ -18,6 +18,8 @@ import {fileManagerReducer} from "../modules/fileManager/store/fileManager.slice
 import {usersReducer} from "../modules/users/store/users.slice";
 import {vacationRequestsEpics} from "../modules/vacationRequests/store/vacationRequests.epics";
 import {vacationRequestsReducer} from "../modules/vacationRequests/store/vacationRequests.slice";
+import {tracksReducer} from "../modules/tracks/store/tracks.slice";
+import {tracksPageEpics} from "../modules/tracks/store/tracksPage.epics";
 
 const epicMiddleware = createEpicMiddleware();
 
@@ -33,6 +35,7 @@ export const store = configureStore({
         fileManager: fileManagerReducer,
         users: usersReducer,
         vacationRequests: vacationRequestsReducer,
+        tracks: tracksReducer
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware({thunk: false}).concat(epicMiddleware),
     devTools: true,
@@ -47,6 +50,7 @@ const rootEpic = combineEpics(
     usersPageEpics,
     fileManagerEpics,
     vacationRequestsEpics,
+    tracksPageEpics
 );
 // @ts-ignore
 epicMiddleware.run(rootEpic);

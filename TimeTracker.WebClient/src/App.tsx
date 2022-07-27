@@ -20,9 +20,7 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
-import {
-    FileManagerGetInFolderPage
-} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
+import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
 import {
     FileManagerCreateFolder
 } from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
@@ -41,6 +39,8 @@ import {
 import {
     VacationRequestsUpdatePage
 } from "./modules/vacationRequests/pages/VacationRequestsUpdatePage/VacationRequestsUpdatePage";
+import {TrackerPage} from "./modules/timeTracker/pages/TrackerPage/TrackerPage";
+import {TrackCreatePage} from "./modules/tracks/pages/TracksCreatePage/TrackCreatePage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -84,6 +84,7 @@ export const App = () => {
                                 <Route index element={<FileManagerGetInFolderPage/>}/>
                             </Route>
                         </Route>
+                        <Route path={'time-tracker/*'} element={<TrackerPage/>}/>
                         <Route path={"vocation-requests/*"} element={<VacationRequestsIndexPage/>}/>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>
@@ -112,6 +113,9 @@ export const App = () => {
                             <Route path={"vocation-requests/*"}>
                                 <Route path={'create'} element={<VacationRequestsCreatePage/>}/>
                                 <Route path={'update/:id'} element={<VacationRequestsUpdatePage/>}/>
+                            </Route>
+                            <Route path={'time-tracker/*'}>
+                                <Route path={'create'} element={<TrackCreatePage/>}/>
                             </Route>
 
                         </Routes>
