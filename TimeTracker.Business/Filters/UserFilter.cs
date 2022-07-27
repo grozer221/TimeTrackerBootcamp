@@ -1,8 +1,6 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using TimeTracker.Business.Enums;
+﻿using TimeTracker.Business.Enums;
 
-namespace TimeTracker.Business.Models.UserFilter
+namespace TimeTracker.Business.Models.Filters
 {
     public class UserFilter
     {

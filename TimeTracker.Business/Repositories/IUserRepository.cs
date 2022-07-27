@@ -1,6 +1,6 @@
 ﻿using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
-using TimeTracker.Business.Models.UserFilter;
+using TimeTracker.Business.Models.Filters;
 
 namespace TimeTracker.Business.Repositories
 {
