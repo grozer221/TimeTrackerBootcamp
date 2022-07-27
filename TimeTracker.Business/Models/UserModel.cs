@@ -28,5 +28,16 @@ namespace TimeTracker.Business.Models
         public Employment Employment { get; set; }
 
         public IEnumerable<UserModel> UsersWhichCanApproveVacationRequest { get; set; } = new List<UserModel>();
+
+        public ExcelModel ToExcelModel()
+        {
+            ExcelModel excelModel = new ExcelModel()
+            {
+                UserInitials = $"{this.LastName} {this.FirstName} {this.MiddleName}",
+                Employment = this.Employment
+            };
+
+            return excelModel;
+        }
     }
 }
