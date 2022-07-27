@@ -22,7 +22,7 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests
             )
         {
             Field<NonNullGraphType<IntGraphType>, int>()
-               .Name("GetAvaliableDays")
+               .Name("GetAvailableDays")
                .ResolveAsync(async context =>
                {
                    var currentUserId = httpContextAccessor.HttpContext.GetUserId();

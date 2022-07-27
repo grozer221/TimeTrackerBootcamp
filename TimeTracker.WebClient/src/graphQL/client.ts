@@ -1,8 +1,9 @@
-import {ApolloClient, InMemoryCache} from '@apollo/client';
+import {ApolloClient, from, InMemoryCache} from '@apollo/client';
 import {schema} from './schema';
 import {setContext} from '@apollo/client/link/context';
 import {getJwtToken} from "../utils/localStorageUtils";
 import {createUploadLink} from 'apollo-upload-client';
+import {onError} from "@apollo/client/link/error";
 
 const authLink = setContext((_, {headers}) => ({
     headers: {
@@ -16,7 +17,7 @@ const httpLink = createUploadLink({
 });
 
 export const client = new ApolloClient({
-    link: authLink.concat(httpLink),
+    link: from([authLink, httpLink]),
     cache: new InMemoryCache(),
     defaultOptions: {
         watchQuery: {

@@ -21,7 +21,7 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests.DTO
                 .Must((input, to) =>
                 {
                     var result = DateTime.Compare(input.DateStart, input.DateEnd);
-                    return result < 1;
+                    return result < 0;
                 }).WithMessage("Date end must be greater than date start");
 
             RuleFor(l => l.Comment);

@@ -34,7 +34,7 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests.DTO
                .Resolve(context => context.Source.DateEnd);
 
             Field<StringGraphType, string?>()
-               .Name("Note")
+               .Name("Comment")
                .Resolve(context => context.Source.Comment);
         }
     }

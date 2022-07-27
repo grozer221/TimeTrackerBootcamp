@@ -32,6 +32,15 @@ import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
 import {UsersPage} from "./modules/users/pages/UsersPage/UsersPage";
 import {CreateUserModal} from "./modules/users/components/CreateUserModal/CreateUserModal";
 import {MySettingsPage} from "./modules/settings/pages/MySettingsPage/MySettingsPage";
+import {
+    VacationRequestsIndexPage
+} from "./modules/vacationRequests/pages/VacationRequestsIndexPage/VacationRequestsIndexPage";
+import {
+    VacationRequestsCreatePage
+} from "./modules/vacationRequests/pages/VacationRequestsCreatePage/VacationRequestsCreatePage";
+import {
+    VacationRequestsUpdatePage
+} from "./modules/vacationRequests/pages/VacationRequestsUpdatePage/VacationRequestsUpdatePage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -75,6 +84,7 @@ export const App = () => {
                                 <Route index element={<FileManagerGetInFolderPage/>}/>
                             </Route>
                         </Route>
+                        <Route path={"vocation-requests/*"} element={<VacationRequestsIndexPage/>}/>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>
                         <Route path={'*'} element={<Error/>}/>
@@ -99,6 +109,11 @@ export const App = () => {
                                     <Route path="upload-files" element={<FileManagerUploadFile/>}/>
                                 </Route>
                             </Route>
+                            <Route path={"vocation-requests/*"}>
+                                <Route path={'create'} element={<VacationRequestsCreatePage/>}/>
+                                <Route path={'update/:id'} element={<VacationRequestsUpdatePage/>}/>
+                            </Route>
+
                         </Routes>
                     )}
                 </AppLayout>

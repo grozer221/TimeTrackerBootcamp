@@ -39,7 +39,7 @@ namespace TimeTracker.MsSql.Repositories
             string getCountQuery = @"select count(*) from VacationRequests";
 
             string getEntitiesQuery = @"select * from VacationRequests
-                                        ORDER BY Id
+                                        ORDER BY DateStart desc
                                         OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
 
             int skip = (pageNumber - 1) * pageSize;
@@ -93,7 +93,7 @@ namespace TimeTracker.MsSql.Repositories
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, new { id, status, updateAt = DateTime.Now });
+                await connection.ExecuteAsync(query, new { id, status, updatedAt = DateTime.Now });
             }
         }
 

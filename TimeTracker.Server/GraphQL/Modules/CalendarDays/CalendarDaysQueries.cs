@@ -13,7 +13,8 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
     {
         public CalendarDaysQueries(
             ICalendarDayManager calendarDayManager,
-            IValidator<CalendarDaysGetInput> calendarDaysGetInputValidation)
+            IValidator<CalendarDaysGetInput> calendarDaysGetInputValidation
+            )
         {
             Field<NonNullGraphType<ListGraphType<CalendarDayType>>, IEnumerable<CalendarDayModel>>()
                .Name("Get")
