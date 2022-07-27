@@ -17,7 +17,7 @@ namespace TimeTracker.Business.Models
         [DisplayName("Worker Hours")]
         public double WorkerHours { get; set; }
         [DisplayName("Month Hours")]
-        public double MonthHours { get; set; } = 160;
+        public int MonthHours { get; set; } = 160;
         [DisplayName("Persent of Work")]
         public double PersentOfWork { get; } = 0;
         [DisplayName("Sick Leave Hours")]

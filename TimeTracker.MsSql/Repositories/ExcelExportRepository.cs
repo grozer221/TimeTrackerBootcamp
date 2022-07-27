@@ -19,27 +19,17 @@ namespace TimeTracker.MsSql.Repositories
             this.dapperContext = dapperContext;
         }
 
-        public async Task<IEnumerable<ExcelModel>> GetAsync(string like, DateTime date)
+        public async Task<IEnumerable<UserModel>> GetAsync(string like, DateTime date)
         {
             IEnumerable<UserModel> users;
-            List<ExcelModel> models = new List<ExcelModel>();
             like = "%" + like + "%";
-
 
             string query = "SELECT * FROM Users WHERE LastName LIKE @like ORDER BY LastName";
 
             using IDbConnection db = dapperContext.CreateConnection();
             users = await db.QueryAsync<UserModel>(query, new { like });
 
-            foreach (var user in users)
-            {
-                var model = new ExcelModel();
-                model = user.ToExcelModel();
-                model.WorkerHours = await this.GetUserHours(user.Id, date);
-                models.Add(model);
-            }
-
-            return models;
+            return users;
         }
 
         public async Task<double> GetUserHours(Guid userId, DateTime date)
