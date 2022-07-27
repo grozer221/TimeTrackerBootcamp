@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Models;
-using TimeTracker.Business.Models.UserFilter;
+using TimeTracker.Business.Models.Filters;
 using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.MsSql.Repositories

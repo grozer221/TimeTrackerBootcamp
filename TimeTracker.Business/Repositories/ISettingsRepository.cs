@@ -11,5 +11,6 @@ namespace TimeTracker.Business.Repositories
         Task<SettingsModel> UpdateApplicationAsync(SettingsApplication settingsApplication);
         Task<SettingsModel> UpdateTasksAsync(SettingsTasks settingsTasks);
         Task<SettingsModel> UpdateEmailAsync(SettingsEmail settingsEmail);
+        Task<SettingsModel> UpdateVacationRequestsAsync(SettingsVacationRequests settingsVacationRequests);
     }
 }

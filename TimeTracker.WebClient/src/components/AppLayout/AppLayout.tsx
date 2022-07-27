@@ -24,7 +24,7 @@ import {useAppSelector} from "../../store/store";
 import Logo from '../../assets/images/clockify-logo-with-title.png';
 import {ItemType} from "antd/lib/menu/hooks/useItems";
 import {cacheActions} from "../../modules/cache/store/cache.slice";
-import {isAdministratorOrHavePermissions} from "../../utils/permissions";
+import {isAdministrator, isAdministratorOrHavePermissions} from "../../utils/permissions";
 import {Permission} from "../../graphQL/enums/Permission";
 
 const {Header, Content, Sider} = Layout;
@@ -148,7 +148,7 @@ export const AppLayout: FC<Props> = ({children}) => {
                         <div id={'headerExtraButtons'}>
 
                         </div>
-                        {isAdministratorOrHavePermissions([Permission.ClearCache]) &&
+                        {isAdministrator() &&
                             <Button
                                 icon={<ReloadOutlined/>}
                                 loading={loadingRefreshApp}

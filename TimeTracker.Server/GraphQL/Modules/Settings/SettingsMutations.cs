@@ -21,6 +21,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
             IValidator<SettingsEmploymentUpdateInput> settingsCommonUpdateInputValidator,
             IValidator<SettingsApplicationUpdateInput> settingsApplicationUpdateInputValidator, 
             IValidator<SettingsEmailUpdateInput> settingsEmailUpdateInputValidator, 
+            IValidator<SettingsVacationRequestsUpdateInput> settingsVacationRequestsUpdateInputValidator, 
             ISchedulerFactory schedulerFactory,
             AutoCreateDaysOffTask autoCreateDaysOffTask)
         {
@@ -79,11 +80,25 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                .ResolveAsync(async context =>
                {
                    if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateSettings))
-                       throw new ExecutionError("You do not have permissions for update tasks settings");
+                       throw new ExecutionError("You do not have permissions for update email settings");
                    var settingsEmailUpdateInput = context.GetArgument<SettingsEmailUpdateInput>("SettingsEmailUpdateInputType");
                    settingsEmailUpdateInputValidator.ValidateAndThrow(settingsEmailUpdateInput);
                    var settingsEmail = settingsEmailUpdateInput.ToModel();
                    return await settingsManager.UpdateEmailAsync(settingsEmail);
+               })
+               .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<SettingsType>, SettingsModel>()
+               .Name("UpdateVacationRequests")
+               .Argument<NonNullGraphType<SettingsVacationRequestsUpdateInputType>, SettingsVacationRequestsUpdateInput>("SettingsVacationRequestsUpdateInputType", "Argument for update tasks settings")
+               .ResolveAsync(async context =>
+               {
+                   if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateSettings))
+                       throw new ExecutionError("You do not have permissions for update vacation requests settings");
+                   var settingsVacationRequestsUpdateInput = context.GetArgument<SettingsVacationRequestsUpdateInput>("SettingsVacationRequestsUpdateInputType");
+                   settingsVacationRequestsUpdateInputValidator.ValidateAndThrow(settingsVacationRequestsUpdateInput);
+                   var settingsVacationRequests = settingsVacationRequestsUpdateInput.ToModel();
+                   return await settingsManager.UpdateVacationRequestsAsync(settingsVacationRequests);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
         }
