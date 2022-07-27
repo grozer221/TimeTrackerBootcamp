@@ -116,8 +116,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                 .Argument<NonNullGraphType<GuidGraphType>, Guid>("UserId", "Argument for Impersonate User")
                 .ResolveAsync(async context =>
                 {
-                    if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.Impersonate))
-                        throw new ExecutionError("You do not have permissions for impersonate");
+                    //if (!httpContextAccessor.HttpContext.IsAdministrator())
+                    //    throw new ExecutionError("You do not have permissions for impersonate");
                     var impersonateUserId = context.GetArgument<Guid>("UserId");
                     var impersonateUser = await userRepository.GetByIdAsync(impersonateUserId);
                     if (impersonateUser == null)
@@ -134,7 +134,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         User = impersonateUser,
                     };
                 })
-                .AuthorizeWith(AuthPolicies.Authenticated);
+                .AuthorizeWith(AuthPolicies.Administrator);
 
             Field<NonNullGraphType<BooleanGraphType>, bool>()
                 .Name("RequestResetPassword")

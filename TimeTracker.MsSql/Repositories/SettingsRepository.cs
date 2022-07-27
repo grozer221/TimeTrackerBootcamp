@@ -98,5 +98,20 @@ namespace TimeTracker.MsSql.Repositories
             }
             return settings;
         }
+
+        public async Task<SettingsModel> UpdateVacationRequestsAsync(SettingsVacationRequests settingsVacationRequests)
+        {
+            var settings = await GetAsync();
+            settings.VacationRequests = settingsVacationRequests;
+            settings.UpdatedAt = DateTime.Now;
+            string query = @"update Settings
+                            SET VacationRequestsString = @VacationRequestsString, UpdatedAt = @UpdatedAt
+                            WHERE Id = @Id";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, settings);
+            }
+            return settings;
+        }
     }
 }

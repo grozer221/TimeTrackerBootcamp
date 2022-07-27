@@ -51,6 +51,12 @@ namespace TimeTracker.Caching.Managers
             ResetCache();
             return await settingsRepository.UpdateEmailAsync(settingsEmail);
         }
+        
+        public async Task<SettingsModel> UpdateVacationRequestsAsync(SettingsVacationRequests settingsVacationRequests)
+        {
+            ResetCache();
+            return await settingsRepository.UpdateVacationRequestsAsync(settingsVacationRequests);
+        }
 
         public void ResetCache()
         {

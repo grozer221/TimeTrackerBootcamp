@@ -1,7 +1,5 @@
-using Quartz;
 using TimeTracker.Caching.Extensions;
 using TimeTracker.MsSql.Extensions;
-using TimeTracker.Server;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL;
 
@@ -24,7 +22,6 @@ builder.Services.AddJwtAuthorization();
 builder.Services.AddMsSql();
 builder.Services.AddCaching();
 builder.Services.AddTasks();
-
 
 
 var app = builder.Build();

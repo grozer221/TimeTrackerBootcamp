@@ -10,17 +10,23 @@ import {
     SettingsGetVars
 } from "../graphQL/settings.queries";
 import {
-    SETTINGS_APPLICATION_UPDATE_MUTATION, SETTINGS_EMAIL_UPDATE_MUTATION,
+    SETTINGS_APPLICATION_UPDATE_MUTATION,
+    SETTINGS_EMAIL_UPDATE_MUTATION,
     SETTINGS_EMPLOYMENT_UPDATE_MUTATION,
     SETTINGS_TASKS_UPDATE_MUTATION,
+    SETTINGS_VACATION_REQUESTS_UPDATE_MUTATION,
     SettingsApplicationUpdateData,
-    SettingsApplicationUpdateVars, SettingsEmailUpdateData, SettingsEmailUpdateVars,
+    SettingsApplicationUpdateVars,
+    SettingsEmailUpdateData,
+    SettingsEmailUpdateVars,
     SettingsEmploymentUpdateData,
     SettingsEmploymentUpdateVars,
     SettingsTasksUpdateData,
-    SettingsTasksUpdateVars
+    SettingsTasksUpdateVars,
+    SettingsVacationRequestsUpdateData,
+    SettingsVacationRequestsUpdateVars
 } from "../graphQL/settings.mutations";
-import { notificationsActions } from "../../notifications/store/notifications.slice";
+import {notificationsActions} from "../../notifications/store/notifications.slice";
 import {settingsActions} from "./settings.slice";
 
 export const getForAdministratorOrHavePermissionUpdateEpic: Epic<ReturnType<typeof settingsActions.getForAdministratorOrHavePermissionUpdateAsync>, any, RootState> = (action$, state$) =>
@@ -156,6 +162,30 @@ export const settingsEmailUpdateEpic: Epic<ReturnType<typeof settingsActions.upd
     );
 
 
+export const updateVacationRequestsEpic: Epic<ReturnType<typeof settingsActions.updateVacationRequestsAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType(settingsActions.updateVacationRequestsAsync.type),
+        mergeMap(action =>
+            from(client.mutate<SettingsVacationRequestsUpdateData, SettingsVacationRequestsUpdateVars>({
+                mutation: SETTINGS_VACATION_REQUESTS_UPDATE_MUTATION,
+                variables: {settingsVacationRequestsUpdateInputType: action.payload},
+            })).pipe(
+                mergeMap(response =>
+                    response.data
+                        ? [
+                            settingsActions.setSettings(response.data.settings.updateVacationRequests),
+                            notificationsActions.addSuccess('Settings vacation requests successfully saved')
+                        ]
+                        : [notificationsActions.addError('Response is empty')]
+                ),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(settingsActions.setLoadingUpdate(true)),
+                endWith(settingsActions.setLoadingUpdate(false)),
+            )
+        )
+    );
+
+
 export const settingsEpics = combineEpics(
     getForAdministratorOrHavePermissionUpdateEpic,
     getSettingsForUnAuthenticatedEpic,
@@ -165,4 +195,5 @@ export const settingsEpics = combineEpics(
     settingsApplicationUpdateEpic,
     settingsTasksUpdateEpic,
     settingsEmailUpdateEpic,
+    updateVacationRequestsEpic,
 )

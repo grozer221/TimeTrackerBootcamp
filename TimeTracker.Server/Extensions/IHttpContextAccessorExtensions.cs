@@ -29,6 +29,11 @@ namespace TimeTracker.Server.Extensions
             return httpContext.User.Claims.IsHavePermissions(requestPermissions);
         }
 
+        public static bool IsAdministrator(this HttpContext httpContext)
+        {
+            return httpContext.User.Claims.IsAdministrator();
+        }
+        
         public static bool IsAdministratorOrHavePermissions(this HttpContext httpContext, params Permission[] requestPermissions)
         {
             return httpContext.User.Claims.IsAdministratOrHavePermissions(requestPermissions);
