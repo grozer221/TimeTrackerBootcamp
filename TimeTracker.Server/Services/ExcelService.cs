@@ -1,18 +1,22 @@
 ﻿using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
+using System.Globalization;
 using TimeTracker.Business.Models;
 
 namespace TimeTracker.Server.Services
 {
-    public class ExcelService
+    public static class ExcelService
     {
-        public async void CreateReport(string month, IEnumerable<ExcelModel> models)
+        public static async Task<byte[]> CreateReport(DateTime Date, IEnumerable<ExcelModel> models)
         {
-            using var packege = new ExcelPackage(new FileInfo(@"C:\Users\lutsk\Desktop\Excel\Report.xlsx"));
+            using var packege = new ExcelPackage();
 
-            var ws = packege.Workbook.Worksheets.Add($"{month}Report");
-            ws.Cells["A1"].Value = $"{month} Work Hours Report";
+            var culture = new CultureInfo("en-US");
+            CultureInfo.CurrentCulture = culture;
+
+            var ws = packege.Workbook.Worksheets.Add($"{Date.ToString("yyyy MMMM")}Report");
+            ws.Cells["A1"].Value = $"{Date.ToString("yyyy MMMM")} Work Hours Report";
             ws.Cells["A1:G1"].Merge = true;
             ws.Column(1).Style.HorizontalAlignment = ExcelHorizontalAlignment.Center;
             ws.Row(1).Style.Font.Size = 24;
@@ -29,8 +33,8 @@ namespace TimeTracker.Server.Services
                 ws.Cells[$"E{i+3}"].Style.Numberformat.Format = "0%";
                 ws.Cells[$"C{i+3}"].Style.Numberformat.Format = "0.0";
             }
-            
-            await packege.SaveAsync();
+
+            return await packege.GetAsByteArrayAsync();
         }
         
     }

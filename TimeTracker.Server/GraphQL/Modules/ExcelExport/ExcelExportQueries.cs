@@ -13,17 +13,15 @@ namespace TimeTracker.Server.GraphQL.Modules.ExcelExport
     {
         public ExcelExportQueries(IExcelExportRepository excelExportRepository)
         {
-            Field<BooleanGraphType, bool>()
+            Field<ListGraphType<ByteGraphType>, byte[]>()
                 .Name("CreateReport")
                 .Argument<NonNullGraphType<ExcelExportInputType>, ExcelExportInput>("ExcelExportInputType", "Argument for create exel report")
                 .ResolveAsync(async context =>
                 {
                     var excelExportInputType = context.GetArgument<ExcelExportInput>("ExcelExportInputType");
-                    var models = await excelExportRepository.GetAsync(excelExportInputType.Like);
-                    ExcelService excel = new ExcelService();
-                    excel.CreateReport(excelExportInputType.Month, models);
-                    return true;
+                    var models = await excelExportRepository.GetAsync(excelExportInputType.Like, excelExportInputType.Date);
                     
+                    return await ExcelService.CreateReport(excelExportInputType.Date, models);
                 }).AuthorizeWith(AuthPolicies.Authenticated);
         }
     }

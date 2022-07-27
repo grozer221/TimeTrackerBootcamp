@@ -9,7 +9,7 @@ namespace TimeTracker.Business.Repositories
 {
     public interface IExcelExportRepository
     {
-        Task<IEnumerable<ExcelModel>> GetAsync(string like);
-        Task<double> GetUserHours(Guid userId);
+        Task<IEnumerable<ExcelModel>> GetAsync(string like, DateTime date);
+        Task<double> GetUserHours(Guid userId, DateTime date);
     }
 }

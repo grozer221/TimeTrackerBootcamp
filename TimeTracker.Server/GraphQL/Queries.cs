@@ -38,7 +38,7 @@ namespace TimeTracker.Server.GraphQL
                 .Resolve(_ => new { });
 
             Field<NonNullGraphType<ExcelExportQueries>>()
-                .Name("ExelExport")
+                .Name("ExcelExport")
                 .Resolve(_ => new { });
         }
     }

@@ -19,7 +19,7 @@ namespace TimeTracker.MsSql.Repositories
             this.dapperContext = dapperContext;
         }
 
-        public async Task<IEnumerable<ExcelModel>> GetAsync(string like)
+        public async Task<IEnumerable<ExcelModel>> GetAsync(string like, DateTime date)
         {
             IEnumerable<UserModel> users;
             List<ExcelModel> models = new List<ExcelModel>();
@@ -35,21 +35,23 @@ namespace TimeTracker.MsSql.Repositories
             {
                 var model = new ExcelModel();
                 model = user.ToExcelModel();
-                model.WorkerHours = await this.GetUserHours(user.Id);
+                model.WorkerHours = await this.GetUserHours(user.Id, date);
                 models.Add(model);
             }
 
             return models;
         }
 
-        public async Task<double> GetUserHours(Guid userId)
+        public async Task<double> GetUserHours(Guid userId, DateTime date)
         {
             double hours = 0;
             IEnumerable<TrackModel> tracks;
+            var month = date.Month;
+            var year = date.Year;
 
             using (var connection = dapperContext.CreateConnection())
             {
-                tracks = await connection.QueryAsync<TrackModel>("SELECT * FROM Tracks WHERE UserId = @UserId", new { userId });
+                tracks = await connection.QueryAsync<TrackModel>("SELECT * FROM Tracks WHERE UserId = @UserId AND MONTH(StartTime) = @month AND YEAR(StartTime) = @year", new { userId, month, year });
             }
 
             foreach (var track in tracks)

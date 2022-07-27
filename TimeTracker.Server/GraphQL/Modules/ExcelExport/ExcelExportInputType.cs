@@ -9,10 +9,10 @@ namespace TimeTracker.Server.GraphQL.Modules.ExcelExport
     public class ExcelExportInput
     {
         public string Like { get; set; } = "";
-        public string Month { get; set; } = "";
+        public DateTime Date { get; set; }
     }
 
-    public class ExcelExportInputType : ObjectGraphType<ExcelExportInput>
+    public class ExcelExportInputType : InputObjectGraphType<ExcelExportInput>
     {
         public ExcelExportInputType()
         {
@@ -20,9 +20,9 @@ namespace TimeTracker.Server.GraphQL.Modules.ExcelExport
                .Name("Like")
                .Resolve(context => context.Source.Like);
 
-            Field<NonNullGraphType<StringGraphType>, string>()
-               .Name("Month")
-               .Resolve(context => context.Source.Month);
+            Field<NonNullGraphType<DateTimeGraphType>, DateTime>()
+               .Name("Date")
+               .Resolve(context => context.Source.Date);
         }
     }
 }
