@@ -10,7 +10,7 @@ export type CalendarDaysCreateInputType = {
     date: string,
     title: string,
     kind: DayKind,
-    percentageWorkHours: number,
+    workHours: number,
     override: boolean,
 }
 export const CALENDAR_DAYS_CREATE_MUTATION = gql`
@@ -32,7 +32,7 @@ export type CalendarDaysCreateRangeInputType = {
     title: string,
     daysOfWeek: DayOfWeek[],
     kind: DayKind,
-    percentageWorkHours: number,
+    workHours: number,
     override: boolean,
 }
 export const CALENDAR_DAYS_CREATE_RANGE_MUTATION = gql`
@@ -53,7 +53,7 @@ export type CalendarDaysUpdateInputType = {
     date: string,
     title: string,
     kind: DayKind,
-    percentageWorkHours: number,
+    workHours: number,
 }
 export const CALENDAR_DAYS_UPDATE_MUTATION = gql`
     ${CALENDAR_DAY_FRAGMENT}

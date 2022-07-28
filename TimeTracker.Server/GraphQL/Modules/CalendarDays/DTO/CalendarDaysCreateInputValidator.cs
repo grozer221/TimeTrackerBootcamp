@@ -7,13 +7,13 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
     public class CalendarDaysCreateInputValidator : AbstractValidator<CalendarDaysCreateInput>
     {
-        public CalendarDaysCreateInputValidator(ICalendarDayManager calendarDayManager)
+        public CalendarDaysCreateInputValidator(ICalendarDayManager calendarDayManager, ISettingsManager settingsManager)
         {
             RuleFor(l => l.Title);
 
             RuleFor(l => l.Date)
                 .NotNull()
-                .MustAsync(async (input, date, cancellationToken) =>
+                .MustAsync(async (input, date, _) =>
                 {
                     var exists = await calendarDayManager.GetByDateAsync(date) != null;
                     if (input.Override && exists)
@@ -26,14 +26,18 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                 .Must((input, kind) =>
                 {
                     if (kind == DayKind.DayOff)
-                        return input.PercentageWorkHours == 0;
+                        return input.WorkHours == 0;
                     return true;
-                }).WithMessage("In day off or holiday - percentage work hours must be 0");
+                }).WithMessage("In day off - work hours must be 0");
 
-            RuleFor(l => l.PercentageWorkHours)
+            RuleFor(l => l.WorkHours)
                 .NotNull()
                 .GreaterThanOrEqualTo(0)
-                .LessThanOrEqualTo(100);
+                .MustAsync(async (input, workHours, _) =>
+                {
+                    var settings = await settingsManager.GetAsync();
+                    return workHours <= settings.Employment.HoursInWorkday;
+                }).WithMessage("Work hours must be less then hours in workday");
         }
     }
 }

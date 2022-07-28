@@ -11,6 +11,8 @@ import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
 
 type InitialState = {
     selectedDate: string,
+    calendarDayByDate: CalendarDay | null,
+    loadingGetByDate: boolean,
     calendarDays: CalendarDay[],
     loadingGet: boolean,
     loadingCreate: boolean,
@@ -20,6 +22,8 @@ type InitialState = {
 
 const initialState: InitialState = {
     selectedDate: getDateNow(),
+    calendarDayByDate: null,
+    loadingGetByDate: false,
     calendarDays: [],
     loadingGet: false,
     loadingCreate: false,
@@ -31,6 +35,14 @@ export const calendarDaysSlice = createSlice({
     name: 'calendarDays',
     initialState,
     reducers: {
+        getByDateAsync: (state, action: PayloadAction<{date: string}>) => state,
+        setLoadingGetByDate: (state, action: PayloadAction<boolean>) => {
+            state.loadingGetByDate = action.payload;
+        },
+        setCalendarDayByDate: (state, action: PayloadAction<CalendarDay>) => {
+            state.calendarDayByDate = action.payload;
+        },
+
         setSelectedDate: (state, action: PayloadAction<string>) => {
             state.selectedDate = action.payload;
         },

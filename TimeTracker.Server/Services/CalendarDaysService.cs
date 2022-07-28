@@ -29,7 +29,7 @@ namespace TimeTracker.Server.Services
                 {
                     return settings.Employment.HoursInWorkday;
                 }
-                return settings.Employment.HoursInWorkday * calendarDayInMonth.PercentageWorkHours / 100;
+                return calendarDayInMonth.WorkHours;
             });
         }
     }

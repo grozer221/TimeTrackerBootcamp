@@ -3,7 +3,13 @@ import {RootState} from "../../../store/store";
 import {catchError, endWith, from, map, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
 import {calendarDaysActions} from "./calendarDays.slice";
-import {CALENDAR_DAYS_GET_QUERY, CalendarDaysGetData, CalendarDaysGetVars} from "../graphQL/calendarDays.queries";
+import {
+    CALENDAR_DAYS_GET_BY_DATE_QUERY,
+    CALENDAR_DAYS_GET_QUERY,
+    CalendarDaysGetByDateData, CalendarDaysGetByDateVars,
+    CalendarDaysGetData,
+    CalendarDaysGetVars
+} from "../graphQL/calendarDays.queries";
 import {
     CALENDAR_DAYS_CREATE_MUTATION,
     CALENDAR_DAYS_CREATE_RANGE_MUTATION,
@@ -36,6 +42,22 @@ export const calendarDaysGetEpic: Epic<ReturnType<typeof calendarDaysActions.get
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(calendarDaysActions.setLoadingGet(true)),
                 endWith(calendarDaysActions.setLoadingGet(false)),
+            )
+        )
+    );
+
+export const getByDateAsyncEpic: Epic<ReturnType<typeof calendarDaysActions.getByDateAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType(calendarDaysActions.getByDateAsync.type),
+        mergeMap(action =>
+            from(client.query<CalendarDaysGetByDateData, CalendarDaysGetByDateVars>({
+                query: CALENDAR_DAYS_GET_BY_DATE_QUERY,
+                variables: {date: action.payload.date}
+            })).pipe(
+                map(response => calendarDaysActions.setCalendarDayByDate(response.data?.calendarDays.getByDate)),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(calendarDaysActions.setLoadingGetByDate(true)),
+                endWith(calendarDaysActions.setLoadingGetByDate(false)),
             )
         )
     );
@@ -160,6 +182,7 @@ export const calendarDaysRemoveRangeEpic: Epic<ReturnType<typeof calendarDaysAct
 export const calendarDaysEpics = combineEpics(
     calendarDaysGetEpic,
     // @ts-ignore
+    getByDateAsyncEpic,
     calendarDaysCreateEpic,
     calendarDaysCreateRangeEpic,
     calendarDaysUpdateEpic,

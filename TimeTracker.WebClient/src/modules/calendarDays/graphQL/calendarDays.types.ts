@@ -5,7 +5,7 @@ export type CalendarDay = {
     date: string,
     title?: string | null,
     kind: DayKind,
-    percentageWorkHours: number,
+    workHours: number,
     createdAt: string,
     updatedAt: string,
 }
