@@ -31,6 +31,8 @@ import {AuthRequestResetPasswordPage} from "./modules/auth/pages/AuthRequestRese
 import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
 import {UsersPage} from "./modules/users/pages/UsersPage/UsersPage";
 import {CreateUserModal} from "./modules/users/components/CreateUserModal/CreateUserModal";
+import {RemoveUserModal} from "./modules/users/components/RemoveUserModal/RemoveUserModal";
+import {UpdateUserModal} from "./modules/users/components/UpdateUserModal/UpdateUserModal";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -90,6 +92,8 @@ export const App = () => {
                             </Route>
                             <Route path={'users/*'}>
                                 <Route path="create" element={<CreateUserModal/>}/>
+                                <Route path="remove/:email" element={<RemoveUserModal/>}/>
+                                <Route path="update/:id" element={<UpdateUserModal/>}/>
                             </Route>
                             <Route path={"tools/*"}>
                                 <Route path={"file-manager/*"}>

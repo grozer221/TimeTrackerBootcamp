@@ -6,20 +6,7 @@ import {Link, useLocation, useNavigate} from "react-router-dom";
 import {Role} from "../../../../graphQL/enums/Role";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {User, UserFilter} from "../../graphQL/users.types";
-import {
-    Button,
-    Dropdown,
-    Input,
-    Menu,
-    Space,
-    Table,
-    TableProps,
-    DatePicker,
-    Divider,
-    Row,
-    Col,
-    PaginationProps
-} from "antd";
+import {Button, Dropdown, Input, Menu, Space, Table, TableProps, Divider, Row, Col, Tag} from "antd";
 import {ColumnsType, ColumnType} from "antd/es/table";
 import {DownCircleFilled, UserAddOutlined} from '@ant-design/icons';
 import {SearchOutlined} from "@ant-design/icons";
@@ -28,16 +15,6 @@ import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {usersPageActions} from "../../store/usersPage.actions";
 
 type DataIndex = keyof User
-
-const menu = (
-    <Menu
-        items={[
-            {key: '1', label: 'Edit'},
-            {key: '2', label: 'Delete'},
-            {key: '3', label: 'View'}
-        ]}
-    />
-)
 
 export const UsersPage = () => {
     const isAuth = useSelector((s: RootState) => s.auth.isAuth)
@@ -130,6 +107,18 @@ export const UsersPage = () => {
         )
     })
 
+
+    //menu on every user row
+    const menu = (userEmail: string, userId: string) => (
+        <Menu
+            items={[
+                {key: '1', label: (<Link to={"update/" + userId} state={{popup: location}}>Update</Link>)},
+                {key: '2', label: (<Link to={"remove/" + userEmail} state={{popup: location}}>Remove</Link>)},
+                {key: '3', label: 'View'}
+            ]}
+        />
+    )
+
     // columns structure for table
     const columns: ColumnsType<User> = [
         {
@@ -154,7 +143,7 @@ export const UsersPage = () => {
                 return {text: uppercaseToWords(value), value: value}
             }),
             render: (role, user) => {
-                return uppercaseToWords(role)
+                return <Tag key={role} color={'gold'}>{uppercaseToWords(role)}</Tag>
             }
         },
         {
@@ -162,17 +151,18 @@ export const UsersPage = () => {
             filters: Object.values(Permission).map(value => {
                 return {text: uppercaseToWords(value), value: value}
             }),
+
             render: (permissions: Permission[], user) => {
-                return permissions.map(p => <div>{uppercaseToWords(p)}</div>)
+                return permissions.map(p => <Tag key={p} color={'blue'}>{uppercaseToWords(p)}</Tag>)
             }
         },
         {title: 'CreatedAt', dataIndex: 'createdAt', key: 'createdAt'},
         {title: 'UpdatedAt', dataIndex: 'updatedAt', key: 'updatedAt'},
         {
             title: 'Action', dataIndex: 'operation', key: 'operation',
-            render: () => (
+            render: (text, record, index) => (
                 <Space size="middle">
-                    <Dropdown overlay={menu}>
+                    <Dropdown overlay={menu(record.email, record.id)}>
                         <DownCircleFilled/>
                     </Dropdown>
                 </Space>

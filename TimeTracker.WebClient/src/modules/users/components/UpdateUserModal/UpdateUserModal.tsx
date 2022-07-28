@@ -1,20 +1,16 @@
 import * as React from 'react';
-import {Button, Divider, Form, Input, Modal, Select, Space, Typography} from "antd";
-import {FC, KeyboardEventHandler, memo, useCallback, useEffect, useState} from "react";
-import {UserAddOutlined} from "@ant-design/icons";
-import './CreateUserModal.css'
+import {Form, Input, Modal, Select} from "antd";
+import {FC, useEffect,} from "react";
 import Title from "antd/lib/typography/Title";
 import {useNavigate} from "react-router-dom";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
-import {CalendarDaysCreateRangeInputType} from "../../../calendarDays/graphQL/calendarDays.mutations";
-import {DayOfWeek} from "../../../../graphQL/enums/DayOfWeek";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
 import {useDispatch, useSelector} from "react-redux";
-import {User, UserFilter} from "../../graphQL/users.types";
+import {User} from "../../graphQL/users.types";
 import {usersPageActions} from "../../store/usersPage.actions";
 import {RootState} from "../../../../store/store";
-import {CreateUserInput} from "../../graphQL/users.mutations";
+import {UpdateUserInput} from "../../graphQL/users.mutations";
 
 
 type FormValues = {
@@ -29,17 +25,18 @@ type FormValues = {
 }
 
 type Props = {};
-export const CreateUserModal: FC<Props> = () => {
+export const UpdateUserModal: FC<Props> = () => {
     const navigate = useNavigate();
     const [form] = useForm()
     const dispatch = useDispatch()
-    let [searchUrl, setSearchUrl] = useState("")
 
-    let users = useSelector((s: RootState) => s.usersPage.usersForVocation)
+    // dispatch(actions.searchSmtngUserByEmail(Email))
+    let user = useSelector((s: RootState) => s.usersPage.users[0])
+    let usersForVocation = useSelector((s: RootState) => s.usersPage.usersForVocation)
 
-    useEffect(()=>{
+    useEffect(() => {
         dispatch(usersPageActions.fetchUsersForVocationsSelect(""))
-    },[])
+    }, [])
 
     const handleOk = async () => {
         try {
@@ -48,40 +45,48 @@ export const CreateUserModal: FC<Props> = () => {
             const lastName = form.getFieldValue(nameof<FormValues>("lastName"))
             const middleName = form.getFieldValue(nameof<FormValues>("middleName"))
             const email = form.getFieldValue(nameof<FormValues>("email"))
-            const password = form.getFieldValue(nameof<FormValues>("password"))
             const permissions = form.getFieldValue(nameof<FormValues>("permissions")) ?? []
             const usersWhichCanApproveVacationRequest =
                 form.getFieldValue(nameof<FormValues>("usersWhichCanApproveVacationRequest")) ?? []
 
-            let newUser: CreateUserInput = {
-                firstName, lastName, middleName, email, permissions, password,
+            let updatedUser: UpdateUserInput = {
+                id: user.id,
+                firstName, lastName, middleName, email, permissions,
                 usersWhichCanApproveVocationRequestIds: usersWhichCanApproveVacationRequest
-            } as CreateUserInput
+            } as UpdateUserInput
 
-            dispatch(usersPageActions.createUser(newUser))
+            //dispatch(usersPageActions.updateUser(updatedUser))
             navigate(-1)
         } catch (e) {
             console.log(e)
         }
     }
 
-    console.log(users)
-
     return (
         <Modal
-            title={<Title level={4}>Create new User</Title>}
+            title={<Title level={4}>{"Update User " + user.firstName}</Title>}
             // confirmLoading={loading}
             visible={true}
             onOk={handleOk}
-            okText={'Create'}
+            okText={'Update'}
             onCancel={() => navigate(-1)}
         >
             <Form
                 form={form}
-                labelCol={{span: 24}}>
+                labelCol={{span: 24}}
+                initialValues={{
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    middleName: user.middleName,
+                    email: user.email,
+                    permissions: user.permissions,
+                    usersWhichCanApproveVacationRequest: user.usersWhichCanApproveVacationRequest
+                } as FormValues}
+            >
                 <Form.Item name={nameof<FormValues>("firstName")}
                            label={"Firstname:"}
-                           rules={[{required: true, message: 'Please input user Firstname!'}]}>
+                           rules={[{required: true, message: 'Please input user Firstname!'}]}
+                >
                     <Input placeholder="Input user firstname"/>
                 </Form.Item>
 
@@ -101,37 +106,6 @@ export const CreateUserModal: FC<Props> = () => {
                            label={"Email:"}
                            rules={[{required: true, message: 'Please input user Email!'}]}>
                     <Input placeholder="example@gmail.com"/>
-                </Form.Item>
-
-                <Form.Item name={nameof<FormValues>("password")}
-                           label={"Password:"}
-                           rules={[{required: true, message: 'Please input user Password!'}]}>
-                    <Input.Password
-                        placeholder="Input user password"
-                    />
-                </Form.Item>
-
-                <Form.Item name={nameof<FormValues>("repeatPassword")}
-                           label={"Repeat password:"}
-                           dependencies={['password']}
-                           hasFeedback
-                           rules={[
-                               {
-                                   required: true,
-                                   message: 'Please confirm password!',
-                               },
-                               ({getFieldValue}) => ({
-                                   validator(_, value) {
-                                       if (!value || getFieldValue('password') === value) {
-                                           return Promise.resolve();
-                                       }
-                                       return Promise.reject(new Error('The two passwords that you entered do not match!'));
-                                   },
-                               }),
-                           ]}>
-                    <Input.Password
-                        placeholder="Repeat password"
-                    />
                 </Form.Item>
 
                 <Form.Item
@@ -166,7 +140,7 @@ export const CreateUserModal: FC<Props> = () => {
                             dispatch(usersPageActions.fetchUsersForVocationsSelect(e))
                         }}
                     >
-                        {users.map((user) => (
+                        {usersForVocation.map((user) => (
                             <Select.Option key={user.id} value={user.id}>
                                 {user.email}
                             </Select.Option>
