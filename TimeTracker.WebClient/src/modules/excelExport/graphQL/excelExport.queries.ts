@@ -1,6 +1,6 @@
 import {gql} from "@apollo/client";
 
-export type ExcelExportData = { excelExport: {createReport: Uint8Array} }
+export type ExcelExportData = { excelExport: {createReport: number[]} }
 export type ExcelExportInputType = {like: string, date: string}
 export type ExcelExportVars = {excelExportInputType: ExcelExportInputType}
 

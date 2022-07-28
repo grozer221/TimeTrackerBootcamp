@@ -6,11 +6,11 @@ import {
 
 
 type InitialState = {
-    file: Uint8Array
+    file: number[]
 }
 
 const initialState: InitialState = {
-    file: new Uint8Array()
+    file: []
 }
 
 export const excelExportSlice = createSlice({
