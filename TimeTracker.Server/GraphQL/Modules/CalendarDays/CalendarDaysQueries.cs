@@ -3,9 +3,9 @@ using GraphQL;
 using GraphQL.Types;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
-using TimeTracker.Business.Repositories;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO;
+using TimeTracker.Server.Services;
 
 namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
 {
@@ -13,7 +13,9 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
     {
         public CalendarDaysQueries(
             ICalendarDayManager calendarDayManager,
-            IValidator<CalendarDaysGetInput> calendarDaysGetInputValidation)
+            IValidator<CalendarDaysGetInput> calendarDaysGetInputValidation,
+            CalendarDaysService calendarDaysService
+            )
         {
             Field<NonNullGraphType<ListGraphType<CalendarDayType>>, IEnumerable<CalendarDayModel>>()
                .Name("Get")
@@ -36,6 +38,14 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                     if (calendarDay == null)
                         throw new ExecutionError("Calendar day not found");
                     return calendarDay;
+                })
+                .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<IntGraphType>, int>()
+                .Name("GetWorkingHoursInThisMonth")
+                .ResolveAsync(async context =>
+                {
+                    return await calendarDaysService.GetAmountWorkingHoursInMonth(DateTime.Now);
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
         }

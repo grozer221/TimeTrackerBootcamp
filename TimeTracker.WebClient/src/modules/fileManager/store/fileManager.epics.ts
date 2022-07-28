@@ -2,13 +2,11 @@ import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
 import {catchError, endWith, from, map, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
-import {fileManagerActions} from "./fileManager.actions";
 import {
     FILE_MANAGER_GET_IN_FOLDER_QUERY,
     FileManagerGetInFolderData,
     FileManagerGetInFolderVars
 } from "../graphQL/fileManager.queries";
-import {notificationsActions} from "../../notifications/store/notifications.actions";
 import {
     FILE_MANAGER_CREATE_FOLDER_MUTATION,
     FILE_MANAGER_REMOVE_MUTATION, FILE_MANAGER_RENAME_FILE_MUTATION,
@@ -22,10 +20,12 @@ import {
     FileManagerUploadFilesData,
     FileManagerUploadFilesVars
 } from "../graphQL/fileManager.mutations";
+import {fileManagerActions} from "./fileManager.slice";
+import {notificationsActions} from "../../notifications/store/notifications.slice";
 
 export const getInFolderEpic: Epic<ReturnType<typeof fileManagerActions.getInFolderAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('FILE_MANAGER_GET_IN_FOLDER_ASYNC'),
+        ofType(fileManagerActions.getInFolderAsync.type),
         mergeMap(action =>
             from(client.query<FileManagerGetInFolderData, FileManagerGetInFolderVars>({
                 query: FILE_MANAGER_GET_IN_FOLDER_QUERY,
@@ -41,7 +41,7 @@ export const getInFolderEpic: Epic<ReturnType<typeof fileManagerActions.getInFol
 
 export const createFolderEpic: Epic<ReturnType<typeof fileManagerActions.createFolderAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('FILE_MANAGER_CREATE_FOLDER_ASYNC'),
+        ofType(fileManagerActions.createFolderAsync.type),
         mergeMap(action =>
             from(client.mutate<FileManagerCreateFolderData, FileManagerCreateFolderVars>({
                 mutation: FILE_MANAGER_CREATE_FOLDER_MUTATION,
@@ -60,7 +60,7 @@ export const createFolderEpic: Epic<ReturnType<typeof fileManagerActions.createF
 
 export const uploadFilesEpic: Epic<ReturnType<typeof fileManagerActions.uploadFilesAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('FILE_MANAGER_UPLOAD_FILES_ASYNC'),
+        ofType(fileManagerActions.uploadFilesAsync.type),
         mergeMap(action =>
             from(client.mutate<FileManagerUploadFilesData, FileManagerUploadFilesVars>({
                 mutation: FILE_MANAGER_UPLOAD_FILES_MUTATION,
@@ -79,7 +79,7 @@ export const uploadFilesEpic: Epic<ReturnType<typeof fileManagerActions.uploadFi
 
 export const renameFileEpic: Epic<ReturnType<typeof fileManagerActions.renameFileAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('FILE_MANAGER_RENAME_FILE_ASYNC'),
+        ofType(fileManagerActions.renameFileAsync.type),
         mergeMap(action =>
             from(client.mutate<FileManagerRenameFileData, FileManagerRenameFileVars>({
                 mutation: FILE_MANAGER_RENAME_FILE_MUTATION,
@@ -98,7 +98,7 @@ export const renameFileEpic: Epic<ReturnType<typeof fileManagerActions.renameFil
 
 export const removeEpic: Epic<ReturnType<typeof fileManagerActions.removeAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
-        ofType('FILE_MANAGER_REMOVE_ASYNC'),
+        ofType(fileManagerActions.removeAsync.type),
         mergeMap(action =>
             from(client.mutate<FileManagerRemoveData, FileManagerRemoveVars>({
                 mutation: FILE_MANAGER_REMOVE_MUTATION,

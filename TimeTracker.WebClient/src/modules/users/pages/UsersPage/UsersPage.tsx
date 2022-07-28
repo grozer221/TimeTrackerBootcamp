@@ -1,30 +1,29 @@
 import React, {useEffect, useState} from 'react';
 import {isAuthenticated} from "../../../../utils/permissions";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../../../store/store";
+import {useDispatch} from "react-redux";
+import {useAppSelector} from "../../../../store/store";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {Role} from "../../../../graphQL/enums/Role";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {User, UserFilter} from "../../graphQL/users.types";
 import {Button, Dropdown, Input, Menu, Space, Table, TableProps, Divider, Row, Col, Tag} from "antd";
 import {ColumnsType, ColumnType} from "antd/es/table";
-import {DownCircleFilled, UserAddOutlined} from '@ant-design/icons';
-import {SearchOutlined} from "@ant-design/icons";
+import {DownCircleFilled, SearchOutlined, UserAddOutlined} from '@ant-design/icons';
 import {FilterConfirmProps} from "antd/es/table/interface";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
-import {usersPageActions} from "../../store/usersPage.actions";
+import {usersActions} from "../../store/users.slice";
 
 type DataIndex = keyof User
 
 export const UsersPage = () => {
-    const isAuth = useSelector((s: RootState) => s.auth.isAuth)
+    const isAuth = useAppSelector(s => s.auth.isAuth)
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const location = useLocation()
 
-    let totalPages = useSelector((s: RootState) => s.usersPage.total)
-    let pageSize = useSelector((s: RootState) => s.usersPage.pageSize)
-    let users = useSelector((s: RootState) => s.usersPage.users)
+    let totalPages = useAppSelector(s => s.users.total)
+    let pageSize = useAppSelector(s => s.users.pageSize)
+    let users = useAppSelector(s => s.users.users)
 
     let [currentPage, setCurrentPage] = useState<number>(0)
     let [filter, setFilter] = useState<UserFilter>({
@@ -42,7 +41,11 @@ export const UsersPage = () => {
     }, [isAuth])
 
     useEffect(() => {
-        dispatch(usersPageActions.getAsync(filter, pageSize, currentPage));
+        dispatch(usersActions.getAsync({
+            filter,
+            take: pageSize,
+            skip: currentPage,
+        }));
     }, [filter])
 
     // handle functions for filter dropdowns
@@ -186,11 +189,14 @@ export const UsersPage = () => {
             pagination={{
                 total: totalPages,
                 pageSize: pageSize,
-                defaultPageSize: pageSize,
-                showSizeChanger: true,
+                defaultPageSize: pageSize, showSizeChanger: true,
                 onChange: (page, pageSize1) => {
                     setCurrentPage(page - 1)
-                    dispatch(usersPageActions.getAsync(filter, pageSize1, page - 1));
+                    dispatch(usersActions.getAsync({
+                        filter,
+                        take: pageSize1,
+                        skip: page - 1,
+                    }));
                 }
             }}
         />

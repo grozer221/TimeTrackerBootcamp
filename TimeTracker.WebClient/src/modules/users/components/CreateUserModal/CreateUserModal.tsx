@@ -1,20 +1,17 @@
 import * as React from 'react';
-import {Button, Divider, Form, Input, Modal, Select, Space, Typography} from "antd";
-import {FC, KeyboardEventHandler, memo, useCallback, useEffect, useState} from "react";
-import {UserAddOutlined} from "@ant-design/icons";
+import {FC, useEffect, useState} from 'react';
+import {Form, Input, Modal, Select} from "antd";
 import './CreateUserModal.css'
 import Title from "antd/lib/typography/Title";
 import {useNavigate} from "react-router-dom";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
-import {CalendarDaysCreateRangeInputType} from "../../../calendarDays/graphQL/calendarDays.mutations";
-import {DayOfWeek} from "../../../../graphQL/enums/DayOfWeek";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
-import {useDispatch, useSelector} from "react-redux";
-import {User, UserFilter} from "../../graphQL/users.types";
-import {usersPageActions} from "../../store/usersPage.actions";
-import {RootState} from "../../../../store/store";
+import {useDispatch} from "react-redux";
+import {User} from "../../graphQL/users.types";
+import {useAppSelector} from "../../../../store/store";
 import {CreateUserInput} from "../../graphQL/users.mutations";
+import {usersActions} from "../../store/users.slice";
 
 
 type FormValues = {
@@ -35,11 +32,15 @@ export const CreateUserModal: FC<Props> = () => {
     const dispatch = useDispatch()
     let [searchUrl, setSearchUrl] = useState("")
 
-    let users = useSelector((s: RootState) => s.usersPage.usersForVocation)
+    let users = useAppSelector(s => s.users.usersForVocation)
 
-    useEffect(()=>{
-        dispatch(usersPageActions.fetchUsersForVocationsSelect(""))
-    },[])
+    useEffect(() => {
+        dispatch(usersActions.fetchUsersForVocationsSelect({
+            filter: {email: '', permissions: [], roles: []},
+            take: 100,
+            skip: 0,
+        }))
+    }, [])
 
     const handleOk = async () => {
         try {
@@ -162,8 +163,12 @@ export const CreateUserModal: FC<Props> = () => {
                         allowClear
                         placeholder="Users"
                         filterOption={false}
-                        onSearch={(e) => {
-                            dispatch(usersPageActions.fetchUsersForVocationsSelect(e))
+                        onSearch={(email) => {
+                            dispatch(usersActions.fetchUsersForVocationsSelect({
+                                filter: {email, permissions: [], roles: []},
+                                take: 100,
+                                skip: 0,
+                            }))
                         }}
                     >
                         {users.map((user) => (

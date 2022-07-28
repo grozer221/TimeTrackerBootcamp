@@ -12,6 +12,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth.DTO
                 .NotNull();
 
             RuleFor(l => l.NewPassword)
+                .MinimumLength(5)
                 .NotEmpty()
                 .NotNull();
         }

@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Navigate, Route, Routes, useLocation} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
-import {authActions} from "./modules/auth/store/auth.actions";
+import {authActions} from "./modules/auth/store/auth.slice";
 import {RootState} from "./store/store";
 import {Notifications} from "./modules/notifications/components/Notifications/Notifications";
 import {NavigateTo} from "./modules/navigate/components/NavigateTo/NavigateTo";
@@ -20,9 +20,7 @@ import 'antd/dist/antd.css';
 import './App.css';
 import './assets/Table.css';
 import './assets/AntDesignOverride.css';
-import {
-    FileManagerGetInFolderPage
-} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
+import {FileManagerGetInFolderPage} from "./modules/fileManager/pages/FileManagerGetInFolderPage/FileManagerGetInFolderPage";
 import {
     FileManagerCreateFolder
 } from "./modules/fileManager/components/FileManagerCreateFolder/FileManagerCreateFolder";
@@ -31,6 +29,18 @@ import {AuthRequestResetPasswordPage} from "./modules/auth/pages/AuthRequestRese
 import {AuthResetPasswordPage} from "./modules/auth/pages/AuthResetPaswordPage";
 import {UsersPage} from "./modules/users/pages/UsersPage/UsersPage";
 import {CreateUserModal} from "./modules/users/components/CreateUserModal/CreateUserModal";
+import {MySettingsPage} from "./modules/settings/pages/MySettingsPage/MySettingsPage";
+import {
+    VacationRequestsIndexPage
+} from "./modules/vacationRequests/pages/VacationRequestsIndexPage/VacationRequestsIndexPage";
+import {
+    VacationRequestsCreatePage
+} from "./modules/vacationRequests/pages/VacationRequestsCreatePage/VacationRequestsCreatePage";
+import {
+    VacationRequestsUpdatePage
+} from "./modules/vacationRequests/pages/VacationRequestsUpdatePage/VacationRequestsUpdatePage";
+import {TrackerPage} from "./modules/timeTracker/pages/TrackerPage/TrackerPage";
+import {TrackCreatePage} from "./modules/tracks/pages/TracksCreatePage/TrackCreatePage";
 import {RemoveUserModal} from "./modules/users/components/RemoveUserModal/RemoveUserModal";
 import {UpdateUserModal} from "./modules/users/components/UpdateUserModal/UpdateUserModal";
 
@@ -66,6 +76,7 @@ export const App = () => {
                             <Route path={'*'} element={<Error/>}/>
                         </Route>
                         <Route path={'settings/:tab'} element={<SettingsPage/>}/>
+                        <Route path={'my-settings/:tab'} element={<MySettingsPage/>}/>
                         <Route path={"auth/*"}>
                             <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
                             <Route path="reset-password/:token" element={<Navigate to={'/time-tracker'}/>}/>
@@ -75,6 +86,8 @@ export const App = () => {
                                 <Route index element={<FileManagerGetInFolderPage/>}/>
                             </Route>
                         </Route>
+                        <Route path={'time-tracker/*'} element={<TrackerPage/>}/>
+                        <Route path={"vocation-requests/*"} element={<VacationRequestsIndexPage/>}/>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>
                         <Route path={'*'} element={<Error/>}/>
@@ -101,6 +114,14 @@ export const App = () => {
                                     <Route path="upload-files" element={<FileManagerUploadFile/>}/>
                                 </Route>
                             </Route>
+                            <Route path={"vocation-requests/*"}>
+                                <Route path={'create'} element={<VacationRequestsCreatePage/>}/>
+                                <Route path={'update/:id'} element={<VacationRequestsUpdatePage/>}/>
+                            </Route>
+                            <Route path={'time-tracker/*'}>
+                                <Route path={'create'} element={<TrackCreatePage/>}/>
+                            </Route>
+
                         </Routes>
                     )}
                 </AppLayout>

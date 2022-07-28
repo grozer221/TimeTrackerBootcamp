@@ -37,11 +37,18 @@ export const SETTINGS_EMAIL_FRAGMENT = gql`
     }
 `
 
+export const SETTINGS_VACATION_REQUESTS_FRAGMENT = gql`
+    fragment SettingsVacationRequestsFragment on SettingsVacationRequestsType {
+        amountDaysPerYear
+    }
+`
+
 export const SETTINGS_FRAGMENT = gql`
     ${SETTINGS_EMPLOYMENT_FRAGMENT}
     ${SETTINGS_APPLICATION_FRAGMENT}
     ${SETTINGS_TASKS_FRAGMENT}
     ${SETTINGS_EMAIL_FRAGMENT}
+    ${SETTINGS_VACATION_REQUESTS_FRAGMENT}
     fragment SettingsFragment on SettingsType {
         id
         employment {
@@ -55,6 +62,9 @@ export const SETTINGS_FRAGMENT = gql`
         }
         email {
             ...SettingsEmailFragment
+        }
+        vacationRequests {
+            ...SettingsVacationRequestsFragment
         }
         createdAt
         updatedAt
