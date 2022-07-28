@@ -2,23 +2,26 @@
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
+using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.Tasks
 {
-    public class AutoCreateDaysOffTask : IJob
+    public class AutoCreateDaysOffTask : ITask
     {
-        public static string JobName => "AutoCreateDaysOffTask";
-        public static JobKey JobKey => new JobKey(JobName);
-        public static string TriggerName => JobName + "-Trigger";
-        public static TriggerKey TriggerKey => new TriggerKey(TriggerName);
+        public string JobName => GetType().Name;
+        public JobKey JobKey => new JobKey(JobName);
+        public string TriggerName => JobName + "-Trigger";
+        public TriggerKey TriggerKey => new TriggerKey(TriggerName);
 
         private readonly ISettingsManager settingsManager;
         private readonly ICalendarDayManager calendarDayManager;
+        private readonly IServiceProvider serviceProvider;
 
-        public AutoCreateDaysOffTask(ISettingsManager settingsManager, ICalendarDayManager calendarDayManager)
+        public AutoCreateDaysOffTask(ISettingsManager settingsManager, ICalendarDayManager calendarDayManager, IServiceProvider serviceProvider)
         {
             this.settingsManager = settingsManager;
             this.calendarDayManager = calendarDayManager;
+            this.serviceProvider = serviceProvider;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -47,12 +50,26 @@ namespace TimeTracker.Server.Tasks
                     });
                 }
             }
-            Console.WriteLine($"[{DateTime.Now}] -- AutoCreateDaysOffTask");
+            Console.WriteLine($"[{DateTime.Now}] -- {JobName}");
+        }
+
+        public async Task RescheduleAsync()
+        {
+            using var scope = serviceProvider.CreateScope();
+            var schedulerFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
+            var scheduler = await schedulerFactory.GetScheduler();
+            await scheduler.RescheduleJob(TriggerKey, await CreateTriggerAsync());
+
+            var settings = await settingsManager.GetAsync();
+            if (settings.Tasks.AutoCreateDaysOff.IsEnabled)
+                await scheduler.ResumeJob(JobKey);
+            else
+                await scheduler.PauseJob(JobKey);
         }
 
         public async Task<ITrigger> CreateTriggerAsync()
         {
-            var cron = await GetCron();
+            var cron = await GetCronAsync();
             return TriggerBuilder.Create()
                 .ForJob(JobKey)
                 .WithIdentity(TriggerKey)
@@ -62,14 +79,14 @@ namespace TimeTracker.Server.Tasks
 
         public async Task<ITriggerConfigurator> ConfigureTriggerConfiguratorAsync(ITriggerConfigurator configurator)
         {
-            var cron = await GetCron();
+            var cron = await GetCronAsync();
             return configurator
                 .ForJob(JobKey)
                 .WithIdentity(TriggerKey)
                 .WithCronSchedule(cron);
         }
 
-        private async Task<string> GetCron()
+        public async Task<string> GetCronAsync()
         {
             SettingsModel settings;
             try

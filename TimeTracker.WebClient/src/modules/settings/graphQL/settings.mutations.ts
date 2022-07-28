@@ -42,7 +42,7 @@ export const SETTINGS_APPLICATION_UPDATE_MUTATION = gql`
 export type SettingsTasksUpdateData = { settings: { updateTasks: Settings } }
 export type SettingsTasksUpdateVars = { settingsTasksUpdateInputType: SettingsTasksUpdateInputType }
 export type SettingsTasksUpdateInputType = {
-    autoSetWorkingHoursForFullTimers: SettingsTasksUpdateInputType_AutoSetWorkingHoursForFullTimers,
+    autoCreateTracks: SettingsTasksUpdateInputType_AutoCreateTracks,
     autoCreateDaysOff: SettingsTasksUpdateInputType_AutoCreateDaysOff
 }
 export type SettingsTasksUpdateInputType_AutoCreateDaysOff = {
@@ -51,7 +51,7 @@ export type SettingsTasksUpdateInputType_AutoCreateDaysOff = {
     timeWhenCreate?: string,
     daysOfWeek?: DayOfWeek[],
 }
-export type SettingsTasksUpdateInputType_AutoSetWorkingHoursForFullTimers = {
+export type SettingsTasksUpdateInputType_AutoCreateTracks = {
     isEnabled: boolean,
     timeWhenCreate?: string,
 }
