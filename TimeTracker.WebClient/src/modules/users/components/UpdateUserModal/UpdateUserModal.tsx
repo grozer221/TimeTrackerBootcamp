@@ -8,7 +8,7 @@ import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
 import {useDispatch, useSelector} from "react-redux";
 import {User} from "../../graphQL/users.types";
-import {usersPageActions} from "../../store/usersPage.actions";
+import {usersActions} from "../../store/users.slice";
 import {RootState} from "../../../../store/store";
 import {UpdateUserInput} from "../../graphQL/users.mutations";
 
@@ -31,11 +31,11 @@ export const UpdateUserModal: FC<Props> = () => {
     const dispatch = useDispatch()
 
     // dispatch(actions.searchSmtngUserByEmail(Email))
-    let user = useSelector((s: RootState) => s.usersPage.users[0])
-    let usersForVocation = useSelector((s: RootState) => s.usersPage.usersForVocation)
+    let user = useSelector((s: RootState) => s.users.users[0])
+    let usersForVocation = useSelector((s: RootState) => s.users.usersForVocation)
 
     useEffect(() => {
-        dispatch(usersPageActions.fetchUsersForVocationsSelect(""))
+        dispatch(usersActions.fetchUsersForVocationsSelect({filter: {email: ""}, skip: 0, take: 1000}))
     }, [])
 
     const handleOk = async () => {
@@ -137,7 +137,7 @@ export const UpdateUserModal: FC<Props> = () => {
                         placeholder="Users"
                         filterOption={false}
                         onSearch={(e) => {
-                            dispatch(usersPageActions.fetchUsersForVocationsSelect(e))
+                            dispatch(usersActions.fetchUsersForVocationsSelect({filter: {email: e}, skip: 0, take: 1000}))
                         }}
                     >
                         {usersForVocation.map((user) => (

@@ -59,7 +59,7 @@ export const CreateUserModal: FC<Props> = () => {
                 usersWhichCanApproveVocationRequestIds: usersWhichCanApproveVacationRequest
             } as CreateUserInput
 
-            dispatch(usersPageActions.createUser(newUser))
+            dispatch(usersActions.createUser(newUser))
             navigate(-1)
         } catch (e) {
             console.log(e)

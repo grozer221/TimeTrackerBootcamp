@@ -156,7 +156,7 @@ export const UsersPage = () => {
             }),
 
             render: (permissions: Permission[], user) => {
-                return permissions.map(p => <Tag key={p} color={'blue'}>{uppercaseToWords(p)}</Tag>)
+                return user.permissions.map(p => <Tag key={p} color={'blue'}>{uppercaseToWords(p)}</Tag>)
             }
         },
         {title: 'CreatedAt', dataIndex: 'createdAt', key: 'createdAt'},
@@ -184,7 +184,7 @@ export const UsersPage = () => {
         <Table
             columns={columns}
             dataSource={users}
-            rowKey={record => record.id}
+            rowKey={"id"}
             onChange={handleChange}
             pagination={{
                 total: totalPages,
