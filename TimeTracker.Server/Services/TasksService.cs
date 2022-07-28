@@ -25,12 +25,12 @@ namespace TimeTracker.Server.Services
             if (!settings.Tasks.AutoCreateDaysOff.IsEnabled)
             {
                 var autoCreateDaysOffTask = scope.ServiceProvider.GetRequiredService<AutoCreateDaysOffTask>();
-                await scheduler.PauseJob(autoCreateDaysOffTask.JobKey);
+                await autoCreateDaysOffTask.PauseAsync();
             }
             if (!settings.Tasks.AutoCreateTracks.IsEnabled)
             {
                 var autoCreateTracks = scope.ServiceProvider.GetRequiredService<AutoCreateTracks>();
-                await scheduler.PauseJob(autoCreateTracks.JobKey);
+                await autoCreateTracks.PauseAsync();
             }
         }
 

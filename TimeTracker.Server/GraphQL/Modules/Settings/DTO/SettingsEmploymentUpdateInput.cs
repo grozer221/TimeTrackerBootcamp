@@ -6,15 +6,17 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
 {
     public class SettingsEmploymentUpdateInput : IModelable<SettingsEmployment>
     {
-        public int FullTimeHoursInWorkday { get; set; }
-        public IEnumerable<int> PartTimeHoursInWorkday { get; set; }
+        public TimeOnly WorkdayStartAt { get; set; }
+        public int HoursInWorkday { get; set; }
 
         public SettingsEmployment ToModel()
         {
+            var workdayStartAtDateTime = new DateTime();
+            workdayStartAtDateTime += WorkdayStartAt.ToTimeSpan();
             return new SettingsEmployment
             {
-                FullTimeHoursInWorkday = this.FullTimeHoursInWorkday,
-                PartTimeHoursInWorkday = this.PartTimeHoursInWorkday,
+                WorkdayStartAt = workdayStartAtDateTime,
+                HoursInWorkday = this.HoursInWorkday,
             };
         }
     }
@@ -23,13 +25,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO
     {
         public SettingsEmploymentUpdateInputType()
         {
+            Field<TimeOnlyGraphType, TimeOnly>()
+                 .Name("WorkdayStartAt")
+                 .Resolve(context => context.Source.WorkdayStartAt);
+
             Field<NonNullGraphType<IntGraphType>, int>()
-                 .Name("FullTimeHoursInWorkday")
-                 .Resolve(context => context.Source.FullTimeHoursInWorkday);
-            
-            Field<NonNullGraphType<ListGraphType<IntGraphType>>, IEnumerable<int>>()
-                 .Name("PartTimeHoursInWorkday")
-                 .Resolve(context => context.Source.PartTimeHoursInWorkday);
+                 .Name("HoursInWorkday")
+                 .Resolve(context => context.Source.HoursInWorkday);
         }
     }
 }

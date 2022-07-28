@@ -27,9 +27,9 @@ namespace TimeTracker.Server.Services
                 var calendarDayInMonth = calendarDaysInMonth.FirstOrDefault(calendarDay => calendarDay.Date == day);
                 if (calendarDayInMonth == null)
                 {
-                    return settings.Employment.FullTimeHoursInWorkday;
+                    return settings.Employment.HoursInWorkday;
                 }
-                return settings.Employment.FullTimeHoursInWorkday * calendarDayInMonth.PercentageWorkHours / 100;
+                return settings.Employment.HoursInWorkday * calendarDayInMonth.PercentageWorkHours / 100;
             });
         }
     }

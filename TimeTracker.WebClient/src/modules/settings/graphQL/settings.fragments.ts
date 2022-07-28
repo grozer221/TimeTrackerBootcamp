@@ -2,8 +2,8 @@ import {gql} from "@apollo/client";
 
 export const SETTINGS_EMPLOYMENT_FRAGMENT = gql`
     fragment SettingsEmploymentFragment on SettingsEmploymentType {
-        fullTimeHoursInWorkday
-        partTimeHoursInWorkday
+        workdayStartAt
+        hoursInWorkday
     }
 `
 

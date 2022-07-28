@@ -8,6 +8,8 @@ namespace TimeTracker.Server.Abstractions
         JobKey JobKey { get; }
         string TriggerName { get; }
         TriggerKey TriggerKey { get; }
+        Task ResumeAsync();
+        Task PauseAsync();
         Task RescheduleAsync();
         Task<ITrigger> CreateTriggerAsync();
         Task<ITriggerConfigurator> ConfigureTriggerConfiguratorAsync(ITriggerConfigurator configurator);

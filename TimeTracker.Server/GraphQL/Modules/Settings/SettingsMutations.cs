@@ -70,13 +70,6 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                    {
                        await task.RescheduleAsync();
                    }
-                   //var scheduler = await schedulerFactory.GetScheduler();
-
-                   //await scheduler.RescheduleJob(AutoCreateDaysOffTask.TriggerKey, await autoCreateDaysOffTask.CreateTriggerAsync());
-                   // if (newSettings.Tasks.AutoCreateDaysOff.IsEnabled)
-                   //     await scheduler.ResumeJob(AutoCreateDaysOffTask.JobKey);
-                   // else
-                   //     await scheduler.PauseJob(AutoCreateDaysOffTask.JobKey);
 
                    return newSettings;
                })

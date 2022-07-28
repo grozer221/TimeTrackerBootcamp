@@ -53,6 +53,22 @@ namespace TimeTracker.Server.Tasks
             Console.WriteLine($"[{DateTime.Now}] -- {JobName}");
         }
 
+        public async Task ResumeAsync()
+        {
+            using var scope = serviceProvider.CreateScope();
+            var schedulerFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
+            var scheduler = await schedulerFactory.GetScheduler();
+            await scheduler.ResumeJob(JobKey);
+        }
+
+        public async Task PauseAsync()
+        {
+            using var scope = serviceProvider.CreateScope();
+            var schedulerFactory = scope.ServiceProvider.GetRequiredService<ISchedulerFactory>();
+            var scheduler = await schedulerFactory.GetScheduler();
+            await scheduler.PauseJob(JobKey);
+        }
+
         public async Task RescheduleAsync()
         {
             using var scope = serviceProvider.CreateScope();
@@ -62,9 +78,9 @@ namespace TimeTracker.Server.Tasks
 
             var settings = await settingsManager.GetAsync();
             if (settings.Tasks.AutoCreateDaysOff.IsEnabled)
-                await scheduler.ResumeJob(JobKey);
+                await ResumeAsync();
             else
-                await scheduler.PauseJob(JobKey);
+                await PauseAsync();
         }
 
         public async Task<ITrigger> CreateTriggerAsync()

@@ -16,8 +16,8 @@ export type SettingsVacationRequests = {
 }
 
 export type SettingsEmployment = {
-    fullTimeHoursInWorkday: number,
-    partTimeHoursInWorkday: number[],
+    workdayStartAt: string,
+    hoursInWorkday: number,
 }
 
 export type SettingsApplication = {

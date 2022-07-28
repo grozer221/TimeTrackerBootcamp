@@ -6,8 +6,8 @@ import {DayOfWeek} from "../../../graphQL/enums/DayOfWeek";
 export type SettingsEmploymentUpdateData = { settings: { updateEmployment: Settings } }
 export type SettingsEmploymentUpdateVars = { settingsEmploymentUpdateInputType: SettingsEmploymentUpdateInputType }
 export type SettingsEmploymentUpdateInputType = {
-    fullTimeHoursInWorkday: number,
-    partTimeHoursInWorkday: number[]
+    workdayStartAt: string,
+    hoursInWorkday: number,
 }
 export const SETTINGS_EMPLOYMENT_UPDATE_MUTATION = gql`
     ${SETTINGS_FRAGMENT}
