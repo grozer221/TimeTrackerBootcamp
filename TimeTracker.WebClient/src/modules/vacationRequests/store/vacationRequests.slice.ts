@@ -30,6 +30,10 @@ const initialState: InitialState = {
     vacationRequestsGetInputType: {
         pageSize: 10,
         pageNumber: 1,
+        filter: {
+            statuses: [],
+            userIds: [],
+        }
     },
     loadingGetById: false,
     loadingGet: false,

@@ -1,5 +1,6 @@
 ﻿using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business.Filters;
 using TimeTracker.Business.Models;
 
 namespace TimeTracker.Business.Repositories
@@ -8,7 +9,7 @@ namespace TimeTracker.Business.Repositories
     {
         Task<VacationRequestModel> GetByIdAsync(Guid id);
         Task<IEnumerable<VacationRequestModel>> GetAsync(Guid userId, DateTime from, DateTime to);
-        Task<GetEntitiesResponse<VacationRequestModel>> GetAsync(int pageNumber, int pageSize);
+        Task<GetEntitiesResponse<VacationRequestModel>> GetAsync(int pageNumber, int pageSize, VacationRequestsFilter vacationRequestsFilter);
         Task<VacationRequestModel> CreateAsync(VacationRequestModel model);
         Task<VacationRequestModel> UpdateAsync(VacationRequestModel model);
         Task UpdateStatusAsync(Guid id, VacationRequestStatus status);
