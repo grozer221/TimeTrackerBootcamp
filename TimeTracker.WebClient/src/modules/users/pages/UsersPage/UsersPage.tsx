@@ -12,6 +12,7 @@ import {DownCircleFilled, SearchOutlined, UserAddOutlined} from '@ant-design/ico
 import {FilterConfirmProps} from "antd/es/table/interface";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {usersActions} from "../../store/users.slice";
+import {ExcelExportButton} from "../../../../components/ExcelExportButton";
 
 type DataIndex = keyof User
 
@@ -166,6 +167,9 @@ export const UsersPage = () => {
                 <Link to={"create"} state={{popup: location}}>
                     <Button type="primary" icon={<UserAddOutlined/>}> Add User</Button>
                 </Link>
+            </Col>
+            <Col span={4}>
+                <ExcelExportButton date={"2022-07-27T16:11:04Z"} like={""}/>
             </Col>
         </Row>
         <Divider/>
