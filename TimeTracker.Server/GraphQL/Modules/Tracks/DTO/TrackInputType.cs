@@ -8,7 +8,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
 {
     public class TrackInput
     {
-        public string Title { get; set; }
+        public string? Title { get; set; }
         public TrackKind Kind { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
@@ -29,7 +29,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
     {
         public TrackInputType()
         {
-            Field<NonNullGraphType<StringGraphType>, string>()
+            Field<StringGraphType, string?>()
                  .Name("Title")
                  .Resolve(context => context.Source.Title);
 

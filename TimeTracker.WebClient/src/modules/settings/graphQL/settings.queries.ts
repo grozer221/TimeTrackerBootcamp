@@ -1,5 +1,10 @@
 import {gql} from '@apollo/client';
-import {SETTINGS_APPLICATION_FRAGMENT, SETTINGS_EMPLOYMENT_FRAGMENT, SETTINGS_FRAGMENT} from "./settings.fragments";
+import {
+    SETTINGS_APPLICATION_FRAGMENT,
+    SETTINGS_EMPLOYMENT_FRAGMENT,
+    SETTINGS_FRAGMENT,
+    SETTINGS_VACATION_REQUESTS_FRAGMENT
+} from "./settings.fragments";
 import {Settings} from "./settings.types";
 
 export type SettingsGetData = { settings: { get: Settings } }
@@ -31,6 +36,7 @@ export const SETTINGS_GET_FOR_UN_AUTHENTICATED_QUERY = gql`
 export const SETTINGS_GET_FOR_EMPLOYEE_QUERY = gql`
     ${SETTINGS_APPLICATION_FRAGMENT}
     ${SETTINGS_EMPLOYMENT_FRAGMENT}
+    ${SETTINGS_VACATION_REQUESTS_FRAGMENT}
     query SettingsGet {
         settings {
             get {
@@ -39,6 +45,9 @@ export const SETTINGS_GET_FOR_EMPLOYEE_QUERY = gql`
                 }
                 employment {
                     ...SettingsEmploymentFragment
+                }
+                vacationRequests {
+                    ...SettingsVacationRequestsFragment
                 }
             }
         }

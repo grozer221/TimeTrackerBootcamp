@@ -11,6 +11,7 @@ import {
 } from "../graphQL/tracks.mutations";
 import {tracksAction} from "./tracks.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
+import {navigateActions} from "../../navigate/store/navigate.slice";
 
 export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, RootState> = (action$, state$) => {
     return action$.pipe(
@@ -26,6 +27,7 @@ export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, 
             })).pipe(
                 mergeMap(response => [
                     tracksAction.addTracks(response.data.tracks.get.entities),
+                    tracksAction.setGetTracksInputData(action.payload),
                     tracksAction.updateTracksMetrics({
                         total: response.data.tracks.get.total,
                         pageSize: response.data.tracks.get.pageSize
@@ -47,12 +49,17 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
                     TrackData: action.payload
                 }
             })).pipe(
-                mergeMap(response=>[
+                mergeMap(response=>{
+                    const tracksInputData = state$.value.tracks.getTracksInputData
+                    return [
+                        tracksInputData && tracksAction.getAsync(tracksInputData),
                     notificationsActions.addSuccess("Track created!")
-            ])
+                    ]
+                })
             )
         ),
         catchError(error => of(notificationsActions.addError(error.message))),
+
     )
 }
 

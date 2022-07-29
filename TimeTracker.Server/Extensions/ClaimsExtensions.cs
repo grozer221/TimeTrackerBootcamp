@@ -38,11 +38,16 @@ namespace TimeTracker.Server.Extensions
             return permissions.Intersect(requestPermissions).Count() > 0;
         }
         
-        public static bool IsAdministratOrHavePermissions(this IEnumerable<Claim> claims, params Permission[] requestPermissions)
+        public static bool IsAdministrator(this IEnumerable<Claim> claims)
         {
             var role = claims.GetRole();
+            return role == Role.Administrator;
+        }
+        
+        public static bool IsAdministratOrHavePermissions(this IEnumerable<Claim> claims, params Permission[] requestPermissions)
+        {
             var isHavePermissions = claims.IsHavePermissions(requestPermissions);
-            return role == Role.Administrator || isHavePermissions;
+            return claims.IsAdministrator() || isHavePermissions;
         }
     }
 }

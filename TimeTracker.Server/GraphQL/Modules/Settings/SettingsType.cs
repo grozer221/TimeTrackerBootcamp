@@ -45,6 +45,11 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                    return context.Source.Email;
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<SettingsVacationRequestsType>, SettingsVacationRequests>()
+               .Name("VacationRequests")
+               .Resolve(context => context.Source.VacationRequests)
+               .AuthorizeWith(AuthPolicies.Authenticated);
         }
     }
 }

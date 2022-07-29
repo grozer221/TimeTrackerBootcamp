@@ -9,22 +9,11 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
     public class TrackUpdateInput
     {
         public Guid Id { get; set; }
-        public string Title { get; set; }
-        public TrackKind Kind { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
 
-        public TrackModel ToModel()
-        {
-            return new TrackModel
-            {
-                Id = this.Id,
-                Title = this.Title,
-                Kind = this.Kind,
-                StartTime = this.StartTime,
-                EndTime = this.EndTime
-            };
-        }
     }
 
     public class TrackUpdateInputType : InputObjectGraphType<TrackUpdateInput>
@@ -35,7 +24,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
                .Name("Id")
                .Resolve(context => context.Source.Id);
 
-            Field<NonNullGraphType<StringGraphType>, string>()
+            Field<StringGraphType, string?>()
                  .Name("Title")
                  .Resolve(context => context.Source.Title);
 

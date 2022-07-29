@@ -61,6 +61,8 @@ namespace TimeTracker.Server.Extensions
             services.AddSingleton<IAuthService, AuthService>();
             services.AddSingleton<FileManagerService>();
             services.AddSingleton<INotificationService, EmailNotificationService>();
+            services.AddScoped<VacationRequestsService>();
+            services.AddScoped<CalendarDaysService>();
             return services;
         }
 

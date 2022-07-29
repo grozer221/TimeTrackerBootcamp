@@ -14,7 +14,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                 .Name("UserId")
                 .Resolve(context => context.Source.UserId);
 
-            Field <NonNullGraphType<StringGraphType>, string>()
+            Field <StringGraphType, string?>()
                 .Name("Title")
                 .Resolve(context => context.Source.Title);
 

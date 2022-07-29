@@ -11,10 +11,11 @@ import {useForm} from "antd/es/form/Form";
 import {CreateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
 import s from './TrackerPage.module.css'
 import './TrackerPage.module.css'
+import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 
 type FormValues = {
     title: string,
-    description: string | null
+    kind: TrackKind | TrackKind.Default
 }
 
 export const TrackerPage: React.FC = () => {
@@ -37,7 +38,7 @@ export const TrackerPage: React.FC = () => {
     const onFinish = async (values: FormValues) => {
         let newTrack: CreateTrackInput = {
             title: values.title,
-            description: values.description
+            kind: TrackKind.Default
         }
 
         dispatch(tracksAction.createTrack(newTrack))
@@ -87,19 +88,21 @@ export const TrackerPage: React.FC = () => {
                 className={s.font}
                 form={form}
                 name="trackForm"
-                onFinish={onFinish}>
+                onFinish={onFinish}
+                size={'large'}
+            >
                 <Card>
                     <Row gutter={16}>
-                        <Col span={10}>
+                        <Col span={20}>
                             <Form.Item name={nameof<FormValues>('title')} rules={[{required: true}]}>
                                 <Input placeholder={'Title'}/>
                             </Form.Item>
                         </Col>
-                        <Col span={10}>
-                            <Form.Item name={nameof<FormValues>('description')} rules={[{required: false}]}>
+                        {/*<Col span={10}>
+                            <Form.Item name={nameof<FormValues>('kind')} rules={[{required: false}]}>
                                 <Input placeholder={'Description'}/>
                             </Form.Item>
-                        </Col>
+                        </Col>*/}
                         <Col span={4}>
                             <Button htmlType={'submit'}>Start </Button>
                         </Col>
@@ -109,12 +112,12 @@ export const TrackerPage: React.FC = () => {
             {tracks.length ? (
                 <div className={s.container}>
                     <div className = {s.table_header}>
-                        <div className={s.cell} style={{width: '20%'}}>
+                        <div className={s.cell} style={{width: '40%'}}>
                             Title
                         </div>
                         <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
-                        <div className={s.cell} style={{width: '40%'}}>
-                            Description
+                        <div className={s.cell} style={{width: '20%'}}>
+                            Hours kind
                         </div>
                         <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
                         <div className={s.cell} style={{width: '20%'}}>
@@ -128,12 +131,12 @@ export const TrackerPage: React.FC = () => {
                     </div>
                     {tracks.map((track, index) => (
                         <div className={s.table_row} key={index}>
-                            <div className={s.cell} style={{width: '20%'}}>
+                            <div className={s.cell} style={{width: '40%'}}>
                                 <EditOutlined className={s.icons}/>{track.title}
                             </div>
                             <div className={s.divider}/>
-                            <div className={s.cell} style={{width: '40%'}}>
-                                <FormOutlined className={s.icons}/>{track.description}
+                            <div className={s.cell} style={{width: '20%'}}>
+                                <FormOutlined className={s.icons}/>{track.kind}
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '20%'}}>

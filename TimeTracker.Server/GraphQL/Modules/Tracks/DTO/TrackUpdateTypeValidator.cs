@@ -7,10 +7,6 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
     {
         public TrackUpdateInputTypeValidation(ITrackRepository trackRepository)
         {
-            RuleFor(l => l.Title)
-                .NotEmpty()
-                .NotNull();
-
             RuleFor(l => l.EndTime)
                 .Must((input, to) =>
                 {

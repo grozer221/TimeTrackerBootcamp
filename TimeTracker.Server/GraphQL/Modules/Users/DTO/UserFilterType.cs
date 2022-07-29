@@ -1,6 +1,6 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Business.Enums;
-using TimeTracker.Business.Models.UserFilter;
+using TimeTracker.Business.Models.Filters;
 using TimeTracker.Server.GraphQL.EnumTypes;
 
 namespace TimeTracker.Server.GraphQL.Modules.Users.DTO

@@ -4,7 +4,7 @@ import {
     SettingsApplicationUpdateInputType,
     SettingsEmailUpdateInputType,
     SettingsEmploymentUpdateInputType,
-    SettingsTasksUpdateInputType
+    SettingsTasksUpdateInputType, SettingsVacationRequestsUpdateInputType
 } from "../graphQL/settings.mutations";
 
 type InitialState = {
@@ -37,6 +37,7 @@ export const settingsSlice = createSlice({
         updateApplicationAsync: (state, action: PayloadAction<SettingsApplicationUpdateInputType>) => state,
         updateTasksAsync: (state, action: PayloadAction<SettingsTasksUpdateInputType>) => state,
         updateEmailAsync: (state, action: PayloadAction<SettingsEmailUpdateInputType>) => state,
+        updateVacationRequestsAsync: (state, action: PayloadAction<SettingsVacationRequestsUpdateInputType>) => state,
         setLoadingUpdate: (state, action: PayloadAction<boolean>) => {
             state.loadingUpdate = action.payload;
         },
