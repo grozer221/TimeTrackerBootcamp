@@ -2,8 +2,8 @@
 
 namespace TimeTracker.MsSql.Migrations
 {
-    [Migration(202227070914)]
-    public class _202227070914_AddedSettingsVacationRequestsCategory : Migration
+    [Migration(202207270914)]
+    public class _202207270914_AddedSettingsVacationRequestsCategory : Migration
     {
         public override void Up()
         {

@@ -2,8 +2,8 @@
 
 namespace TimeTracker.MsSql.Migrations
 {
-    [Migration(202223071948)]
-    public class _202223071948_UpdatedTablesNamesWithTokens : Migration
+    [Migration(202207231948)]
+    public class _202207231948_UpdatedTablesNamesWithTokens : Migration
     {
         public override void Up()
         {
