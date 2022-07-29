@@ -162,13 +162,13 @@ export const UsersPage = () => {
         }];
 
     return <>
-        <Row justify="space-between">
-            <Col span={4}>
+        <Row justify="space-between" align={'middle'}>
+            <Col >
                 <Link to={"create"} state={{popup: location}}>
                     <Button type="primary" icon={<UserAddOutlined/>}> Add User</Button>
                 </Link>
             </Col>
-            <Col span={4}>
+            <Col >
                 <ExcelExportButton date={"2022-07-27T16:11:04Z"} like={""}/>
             </Col>
         </Row>
