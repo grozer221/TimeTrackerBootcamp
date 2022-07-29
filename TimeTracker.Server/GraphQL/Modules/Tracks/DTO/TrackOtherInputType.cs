@@ -7,8 +7,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
     public class TrackOtherInput
     {
         public Guid UserId { get; set; }
-        public string Title { get; set; }
-        public string? Description { get; set; }
+        public string? Title { get; set; }
+        public TrackKind Kind { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 
@@ -33,7 +33,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
                .Name("UserId")
                .Resolve(context => context.Source.UserId);
 
-            Field<NonNullGraphType<StringGraphType>, string>()
+            Field<StringGraphType, string?>()
                  .Name("Title")
                  .Resolve(context => context.Source.Title);
 
