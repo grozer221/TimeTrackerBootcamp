@@ -5,12 +5,12 @@ import {SizeType} from "antd/es/config-provider/SizeContext";
 import {ReloadOutlined} from "@ant-design/icons";
 
 type Props = {
-    onClick: () => void,
+    onClick?: React.MouseEventHandler<HTMLElement>;
     popup?: Location,
     size?: SizeType,
 };
 export const ButtonReload: FC<Props> = ({onClick, size = 'small'}) => {
     return (
-        <Button onClick={() => onClick()} shape="circle" type="default" icon={<ReloadOutlined/>} size={size}/>
+        <Button onClick={onClick} shape="circle" type="default" icon={<ReloadOutlined/>} size={size}/>
     );
 };

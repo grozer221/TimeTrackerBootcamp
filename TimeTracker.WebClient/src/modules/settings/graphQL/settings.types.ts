@@ -6,8 +6,13 @@ export type Settings = {
     application: SettingsApplication,
     tasks: SettingsTasks,
     email: SettingsEmail,
+    vacationRequests: SettingsVacationRequests,
     createdAt: string,
     updatedAt: string,
+}
+
+export type SettingsVacationRequests = {
+    amountDaysPerYear: number,
 }
 
 export type SettingsEmployment = {

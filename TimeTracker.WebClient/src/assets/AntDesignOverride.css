@@ -22,3 +22,7 @@
 .ant-message {
     margin-top: 40px !important;
 }
+
+.ant-tag {
+    margin: 0 !important;
+}

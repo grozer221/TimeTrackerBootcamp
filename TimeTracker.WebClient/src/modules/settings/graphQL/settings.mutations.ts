@@ -83,3 +83,19 @@ export const SETTINGS_EMAIL_UPDATE_MUTATION = gql`
         }
     }
 `;
+
+export type SettingsVacationRequestsUpdateData = { settings: { updateVacationRequests: Settings } }
+export type SettingsVacationRequestsUpdateVars = { settingsVacationRequestsUpdateInputType: SettingsVacationRequestsUpdateInputType }
+export type SettingsVacationRequestsUpdateInputType = {
+    amountDaysPerYear: number,
+}
+export const SETTINGS_VACATION_REQUESTS_UPDATE_MUTATION = gql`
+    ${SETTINGS_FRAGMENT}
+    mutation SettingsUpdateEmail($settingsVacationRequestsUpdateInputType: SettingsVacationRequestsUpdateInputType!){
+        settings {
+            updateVacationRequests(settingsVacationRequestsUpdateInputType: $settingsVacationRequestsUpdateInputType) {
+                ...SettingsFragment
+            }
+        }
+    }
+`;

@@ -32,13 +32,21 @@ export const TrackerPage: React.FC = () => {
     const like = searchParams.get('like') || ''
     const pageSize = searchParams.get('pageSize') || '10'
     const pageNumber = searchParams.get('pageNumber') || '1'
+    const time = new Date();
+    time.setSeconds(time.getSeconds() + 600);
 
     const onFinish = async (values: FormValues) => {
         let newTrack: CreateTrackInput = {
             title: values.title,
             kind: TrackKind.Default
         }
+
         dispatch(tracksAction.createTrack(newTrack))
+        dispatch(tracksAction.getAsync({
+            like: like,
+            pageSize: parseInt(pageSize),
+            pageNumber: parseInt(pageNumber)
+        }))
         form.resetFields()
     };
 
@@ -70,6 +78,7 @@ export const TrackerPage: React.FC = () => {
     function GetDate(sqlDate: string) {
         let date = new Date(sqlDate)
         return date.toDateString() + " " + date.toLocaleTimeString()
+
     }
 
     // @ts-ignore

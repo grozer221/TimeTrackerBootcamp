@@ -3,7 +3,7 @@ using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
 {
-    public class TrackRemoveInputTypeValidator : AbstractValidator<TrackUpdateInput>
+    public class TrackRemoveInputTypeValidator : AbstractValidator<TrackRemoveInput>
     {
         public TrackRemoveInputTypeValidator(ITrackRepository trackRepository)
         {

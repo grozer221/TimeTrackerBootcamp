@@ -15,14 +15,14 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
             Field<GetEntitiesResponseType<TrackType, TrackModel>, GetEntitiesResponse<TrackModel>>()
                 .Name("Get")
                 .Argument<NonNullGraphType<StringGraphType>, string>("Like", "Argument for a search")
-                .Argument<NonNullGraphType<IntGraphType>, int>("Take", "Argument represent count of tracks on page")
-                .Argument<NonNullGraphType<IntGraphType>, int>("Skip", "Argument represnt page number")
+                .Argument<NonNullGraphType<IntGraphType>, int>("pageSize", "Argument represent count of tracks on page")
+                .Argument<NonNullGraphType<IntGraphType>, int>("pageNumber", "Argument represnt page number")
                 .ResolveAsync(async context =>
                 {
                     string like = context.GetArgument<string>("Like");
-                    int take = context.GetArgument<int>("Take");
-                    int skip = context.GetArgument<int>("Skip");
-                    return await trackRepository.GetAsync(like, take, skip);
+                    int pageSize = context.GetArgument<int>("pageSize");
+                    int pageNumber = context.GetArgument<int>("pageNumber");
+                    return await trackRepository.GetAsync(like, pageSize, pageNumber);
                 }).AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<TrackType, TrackModel>()

@@ -6,6 +6,7 @@ using TimeTracker.Server.GraphQL.Modules.FileManager;
 using TimeTracker.Server.GraphQL.Modules.Settings;
 using TimeTracker.Server.GraphQL.Modules.Tracks;
 using TimeTracker.Server.GraphQL.Modules.Users;
+using TimeTracker.Server.GraphQL.Modules.VacationRequests;
 
 namespace TimeTracker.Server.GraphQL
 {
@@ -39,6 +40,10 @@ namespace TimeTracker.Server.GraphQL
             
             Field<NonNullGraphType<FileManagerMutations>>()
                 .Name("FileManager")
+                .Resolve(_ => new { });
+            
+            Field<NonNullGraphType<VacationRequestsMutations>>()
+                .Name("VacationRequests")
                 .Resolve(_ => new { });
         }
     }

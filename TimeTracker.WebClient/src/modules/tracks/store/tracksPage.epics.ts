@@ -53,7 +53,7 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
                         tracksInputData && tracksAction.getAsync(tracksInputData),
-                        notificationsActions.addSuccess("Track created!")
+                    notificationsActions.addSuccess("Track created!")
                     ]
                 })
             )
