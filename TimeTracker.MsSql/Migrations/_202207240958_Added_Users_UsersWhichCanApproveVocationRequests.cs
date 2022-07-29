@@ -2,8 +2,8 @@
 
 namespace TimeTracker.MsSql.Migrations
 {
-    [Migration(202224070958)]
-    public class _202224070958_Added_Users_UsersWhichCanApproveVocationRequests : Migration
+    [Migration(202207240958)]
+    public class _202207240958_Added_Users_UsersWhichCanApproveVocationRequests : Migration
     {
         public override void Up()
         {

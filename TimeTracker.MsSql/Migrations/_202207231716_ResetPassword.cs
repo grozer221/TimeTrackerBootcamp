@@ -3,8 +3,8 @@ using System.Data;
 
 namespace TimeTracker.MsSql.Migrations
 {
-    [Migration(202223071716)]
-    public class _202223071716_ResetPassword : Migration
+    [Migration(202207231716)]
+    public class _202207231716_ResetPassword : Migration
     {
         public override void Up()
         {
