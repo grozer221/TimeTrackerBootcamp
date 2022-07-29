@@ -1,6 +1,7 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.CalendarDays;
+using TimeTracker.Server.GraphQL.Modules.ExcelExport;
 using TimeTracker.Server.GraphQL.Modules.FileManager;
 using TimeTracker.Server.GraphQL.Modules.Settings;
 using TimeTracker.Server.GraphQL.Modules.Tracks;
@@ -39,6 +40,10 @@ namespace TimeTracker.Server.GraphQL
             
             Field<NonNullGraphType<VacationRequestsQueries>>()
                 .Name("VacationRequests")
+                .Resolve(_ => new { });
+
+            Field<NonNullGraphType<ExcelExportQueries>>()
+                .Name("ExcelExport")
                 .Resolve(_ => new { });
         }
     }
