@@ -1,12 +1,11 @@
-import React, {useState, memo} from 'react';
+import React, {memo} from 'react';
 import {Modal} from "antd";
 import Title from "antd/lib/typography/Title";
 import {useNavigate, useParams} from "react-router-dom";
 import {ExclamationCircleOutlined} from "@ant-design/icons";
-import {User} from "../../graphQL/users.types";
-import {useDispatch, useSelector} from "react-redux";
-import {RootState} from "../../../../store/store";
+import {useDispatch} from "react-redux";
 import './RemoveUserModal.css'
+import {usersActions} from "../../store/users.slice";
 
 const {confirm} = Modal;
 
@@ -22,7 +21,7 @@ export const RemoveUserModal = memo(() => {
             icon: <ExclamationCircleOutlined/>,
             content: 'Do you want to delete user "' + email + '" ?',
             onOk() {
-                navigate(-1)
+                dispatch(usersActions.removeUserAsync({email: email as string}))
             },
             onCancel() {
                 navigate(-1)

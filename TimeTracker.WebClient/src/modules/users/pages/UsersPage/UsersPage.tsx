@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {isAuthenticated} from "../../../../utils/permissions";
 import {useDispatch} from "react-redux";
 import {useAppSelector} from "../../../../store/store";
 import {Link, useLocation, useNavigate} from "react-router-dom";
 import {Role} from "../../../../graphQL/enums/Role";
 import {Permission} from "../../../../graphQL/enums/Permission";
-import {User, UserFilter} from "../../graphQL/users.types";
+import {User} from "../../graphQL/users.types";
 import {Button, Dropdown, Input, Menu, Space, Table, TableProps, Divider, Row, Col, Tag} from "antd";
 import {ColumnsType, ColumnType} from "antd/es/table";
 import {DownCircleFilled, SearchOutlined, UserAddOutlined} from '@ant-design/icons';
@@ -24,16 +24,8 @@ export const UsersPage = () => {
     let totalPages = useAppSelector(s => s.users.total)
     let pageSize = useAppSelector(s => s.users.pageSize)
     let users = useAppSelector(s => s.users.users)
-
-    let [currentPage, setCurrentPage] = useState<number>(0)
-    let [filter, setFilter] = useState<UserFilter>({
-        firstName: "",
-        lastName: "",
-        middleName: "",
-        email: "",
-        permissions: [],
-        roles: []
-    })
+    let filter = useAppSelector(s => s.users.filter)
+    let currentPage = useAppSelector(s => s.users.currentPage)
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -42,7 +34,6 @@ export const UsersPage = () => {
 
     useEffect(() => {
         dispatch(usersActions.getAsync({
-            filter,
             take: pageSize,
             skip: currentPage,
         }));
@@ -50,13 +41,13 @@ export const UsersPage = () => {
 
     // handle functions for filter dropdowns
     const handleChange: TableProps<User>['onChange'] = (pagination, filters, sorter) => {
-        setFilter(prevState => {
-            return {
-                ...prevState,
+        dispatch(usersActions.setFilter(
+            {
+                ...filter,
                 ["roles"]: filters["role"] as Role[] ?? [],
                 ["permissions"]: filters["permissions"] as Permission[] ?? []
             }
-        })
+        ))
     };
 
     const handleSearch = (
@@ -65,16 +56,13 @@ export const UsersPage = () => {
         dataIndex: DataIndex
     ) => {
         if (dataIndex != 'permissions' && dataIndex != 'role') {
-            setFilter(prevState => {
-                return {...prevState, [dataIndex]: selectedKeys[0]}
-            })
+            dispatch(usersActions.setFilter({...filter, [dataIndex]: selectedKeys[0]}))
         }
-
     };
 
     const handleReset = (confirm: (param?: FilterConfirmProps | undefined) => void,
                          selectedKeys: React.Key[], dataIndex: DataIndex) => {
-        setFilter(prevState => ({...prevState, [dataIndex]: ""}))
+        dispatch(usersActions.setFilter({...filter, [dataIndex]: ""}))
     };
 
     //getColumnSearchProps - generate dropdowns for filters wit input field
@@ -115,7 +103,7 @@ export const UsersPage = () => {
     const menu = (userEmail: string, userId: string) => (
         <Menu
             items={[
-                {key: '1', label: (<Link to={"update/" + userId} state={{popup: location}}>Update</Link>)},
+                {key: '1', label: (<Link to={"update/" + userEmail} state={{popup: location}}>Update</Link>)},
                 {key: '2', label: (<Link to={"remove/" + userEmail} state={{popup: location}}>Remove</Link>)},
                 {key: '3', label: 'View'}
             ]}
@@ -191,9 +179,8 @@ export const UsersPage = () => {
                 pageSize: pageSize,
                 defaultPageSize: pageSize, showSizeChanger: true,
                 onChange: (page, pageSize1) => {
-                    setCurrentPage(page - 1)
+                    dispatch(usersActions.setCurrentPage(page - 1));
                     dispatch(usersActions.getAsync({
-                        filter,
                         take: pageSize1,
                         skip: page - 1,
                     }));

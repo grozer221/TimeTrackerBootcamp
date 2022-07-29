@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Form, Input, Modal, Select} from "antd";
 import {FC, useEffect,} from "react";
 import Title from "antd/lib/typography/Title";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
@@ -11,7 +11,6 @@ import {User} from "../../graphQL/users.types";
 import {usersActions} from "../../store/users.slice";
 import {RootState} from "../../../../store/store";
 import {UpdateUserInput} from "../../graphQL/users.mutations";
-
 
 type FormValues = {
     firstName: string,
@@ -29,9 +28,10 @@ export const UpdateUserModal: FC<Props> = () => {
     const navigate = useNavigate();
     const [form] = useForm()
     const dispatch = useDispatch()
+    const params = useParams();
+    const email = params['email']
 
-    // dispatch(actions.searchSmtngUserByEmail(Email))
-    let user = useSelector((s: RootState) => s.users.users[0])
+    let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
     let usersForVocation = useSelector((s: RootState) => s.users.usersForVocation)
 
     useEffect(() => {
@@ -55,8 +55,7 @@ export const UpdateUserModal: FC<Props> = () => {
                 usersWhichCanApproveVocationRequestIds: usersWhichCanApproveVacationRequest
             } as UpdateUserInput
 
-            //dispatch(usersPageActions.updateUser(updatedUser))
-            navigate(-1)
+            dispatch(usersActions.updateUser(updatedUser))
         } catch (e) {
             console.log(e)
         }

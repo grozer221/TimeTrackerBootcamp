@@ -106,7 +106,7 @@ export const App = () => {
                             <Route path={'users/*'}>
                                 <Route path="create" element={<CreateUserModal/>}/>
                                 <Route path="remove/:email" element={<RemoveUserModal/>}/>
-                                <Route path="update/:id" element={<UpdateUserModal/>}/>
+                                <Route path="update/:email" element={<UpdateUserModal/>}/>
                             </Route>
                             <Route path={"tools/*"}>
                                 <Route path={"file-manager/*"}>
