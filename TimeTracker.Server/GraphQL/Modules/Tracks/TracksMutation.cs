@@ -18,7 +18,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                               IUserRepository userRepository,
                               IValidator<TrackInput> trackInputTypeValidator,
                               IValidator<TrackOtherInput> trackOtherInputTypeValidator,
-                              IValidator<TrackUpdateInput> trackUpdateInputTypeValidator)
+                              IValidator<TrackUpdateInput> trackUpdateInputTypeValidator,
+                              IValidator<TrackRemoveInput> trackRemoveInputTypeValidator)
         {
 
             Field<NonNullGraphType<TrackType>, TrackModel>()
@@ -55,17 +56,18 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
 
             Field<StringGraphType>()
                 .Name("Remove")
-                .Argument<NonNullGraphType<GuidGraphType>, Guid>("Id", "Id of track")
+                .Argument<NonNullGraphType<TrackRemoveInputType>, TrackRemoveInput>("TrackInput", "Argument for delete track")
                 .ResolveAsync(async context =>
                 {
-                    var id = context.GetArgument<Guid>("Id");
+                    var trackInput = context.GetArgument<TrackRemoveInput>("TrackInput");
                     var userId = httpContextAccessor.HttpContext.GetUserId();
-                    var model = await trackRepository.GetByIdAsync(id);
+                    await trackRemoveInputTypeValidator.ValidateAndThrowAsync(trackInput);
+                    var model = await trackRepository.GetByIdAsync(trackInput.Id);
 
                     if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateOthersTimeTracker) || model.UserId != userId)
                         throw new ExecutionError("You do not have permissions for delete others tracks");
 
-                    await trackRepository.RemoveAsync(id);
+                    await trackRepository.RemoveAsync(trackInput.Id);
 
                     return "Deleted";
                 }).AuthorizeWith(AuthPolicies.Authenticated);
@@ -78,7 +80,15 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     var track = context.GetArgument<TrackUpdateInput>("TrackInput");
                     var userId = httpContextAccessor.HttpContext.GetUserId();
                     await trackUpdateInputTypeValidator.ValidateAndThrowAsync(track);
-                    var model = track.ToModel();
+                    var model = await trackRepository.GetByIdAsync(track.Id);
+                    if (track.Title != null)
+                        model.Title = track.Title;
+                    if (track.Description != null)
+                        model.Description = track.Description;
+                    if (track.StartTime != null)
+                        model.StartTime = track.StartTime;
+                    if (track.EndTime != null)
+                        model.EndTime = track.EndTime;
 
                     if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateOthersTimeTracker) || model.UserId != userId)
                         throw new ExecutionError("You do not have permissions for update others tracks");

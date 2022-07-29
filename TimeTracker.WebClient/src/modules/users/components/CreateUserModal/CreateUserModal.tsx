@@ -30,7 +30,6 @@ export const CreateUserModal: FC<Props> = () => {
     const navigate = useNavigate();
     const [form] = useForm()
     const dispatch = useDispatch()
-    let [searchUrl, setSearchUrl] = useState("")
 
     let users = useAppSelector(s => s.users.usersForVocation)
 
@@ -60,7 +59,6 @@ export const CreateUserModal: FC<Props> = () => {
             } as CreateUserInput
 
             dispatch(usersActions.createUser(newUser))
-
         } catch (e) {
             console.log(e)
         }
@@ -100,7 +98,10 @@ export const CreateUserModal: FC<Props> = () => {
 
                 <Form.Item name={nameof<FormValues>("email")}
                            label={"Email:"}
-                           rules={[{required: true, message: 'Please input user Email!'}]}>
+                           rules={[
+                               {required: true, message: 'Please input user Email!'},
+                               {type:"email" , message: "It's not email!"}
+                           ]}>
                     <Input placeholder="example@gmail.com"/>
                 </Form.Item>
 
