@@ -6,6 +6,7 @@ namespace TimeTracker.Server.GraphQL
     {
         public AppSchema(IServiceProvider provider) : base(provider)
         {
+            
             Query = provider.GetRequiredService<Queries>();
             Mutation = provider.GetRequiredService<Mutations>();
         }
