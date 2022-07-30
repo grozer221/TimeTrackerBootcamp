@@ -7,13 +7,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes
     {
         public SettingsEmploymentType()
         {
+            Field<TimeOnlyGraphType, TimeOnly>()
+               .Name("WorkdayStartAt")
+               .Resolve(context => TimeOnly.FromDateTime(context.Source.WorkdayStartAt));
+
             Field<NonNullGraphType<IntGraphType>, int>()
-               .Name("FullTimeHoursInWorkday")
-               .Resolve(context => context.Source.FullTimeHoursInWorkday);
-            
-            Field<NonNullGraphType<ListGraphType<IntGraphType>>, IEnumerable<int>>()
-               .Name("PartTimeHoursInWorkday")
-               .Resolve(context => context.Source.PartTimeHoursInWorkday);
+               .Name("HoursInWorkday")
+               .Resolve(context => context.Source.HoursInWorkday);
         }
     }
 }

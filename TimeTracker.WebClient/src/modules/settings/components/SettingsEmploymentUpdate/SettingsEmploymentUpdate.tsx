@@ -1,4 +1,4 @@
-import {Col, Form, Row, Select} from 'antd';
+import {Col, Form, Row, Select, TimePicker} from 'antd';
 import React, {FC} from 'react';
 import {useForm} from "antd/es/form/Form";
 import {formStyles} from "../../../../assets/form";
@@ -9,10 +9,11 @@ import {nameof} from "../../../../utils/stringUtils";
 import {range} from "../../../../utils/arrayUtils";
 import {ExtraHeaderButtons} from "../../../../components/ExtraHeaderButtons";
 import {settingsActions} from "../../store/settings.slice";
+import moment, {Moment} from "moment";
 
 type FormValues = {
-    fullTimeHoursInWorkday?: string,
-    partTimeHoursInWorkday?: string[],
+    workdayStartAt?: Moment,
+    hoursInWorkday?: string,
 };
 
 export const SettingsEmploymentUpdate: FC = () => {
@@ -23,22 +24,19 @@ export const SettingsEmploymentUpdate: FC = () => {
 
     const onFinish = (values: FormValues) => {
         const settingsEmploymentUpdateInputType: SettingsEmploymentUpdateInputType = {
-            fullTimeHoursInWorkday: values.fullTimeHoursInWorkday ? parseInt(values.fullTimeHoursInWorkday) : 0,
-            partTimeHoursInWorkday: values.partTimeHoursInWorkday ? values.partTimeHoursInWorkday.map(hour => parseInt(hour)) : [],
+            workdayStartAt: values.workdayStartAt?.format('HH:mm:ss') || '',
+            hoursInWorkday: values.hoursInWorkday ? parseInt(values.hoursInWorkday) : 0,
         }
         dispatch(settingsActions.updateEmploymentAsync(settingsEmploymentUpdateInputType));
     };
 
     const onDiscardChanges = () => {
         form.resetFields()
-        form.setFieldsValue({
-            partTimeHoursInWorkday: settings?.employment?.partTimeHoursInWorkday.map(h => h.toString())
-        })
     }
 
     const initialValues: FormValues = {
-        fullTimeHoursInWorkday: settings?.employment?.fullTimeHoursInWorkday.toString(),
-        partTimeHoursInWorkday: settings?.employment?.partTimeHoursInWorkday.map(h => h.toString()),
+        workdayStartAt: moment(settings?.employment.workdayStartAt, 'HH:mm:ss'),
+        hoursInWorkday: settings?.employment?.hoursInWorkday.toString(),
     }
 
     return (
@@ -50,29 +48,24 @@ export const SettingsEmploymentUpdate: FC = () => {
             initialValues={initialValues}
         >
             <Row gutter={16}>
-                <Col span={12}>
+                <Col span={8}>
                     <Form.Item
-                        label="Full time hours in workday"
-                        name={nameof<FormValues>('fullTimeHoursInWorkday')}
-                        rules={[{required: true, message: 'Full time hours in workday is required'}]}
+                        label="Workday start at"
+                        name={nameof<FormValues>('workdayStartAt')}
+                        rules={[{required: true, message: 'Workday start at is required'}]}
                     >
-                        <Select
-                            allowClear
-                            placeholder="Full time hours in workday"
-                        >
-                            {range(24, 0).map(num => <Select.Option key={num}>{num}</Select.Option>)}
-                        </Select>
+                        <TimePicker placeholder={'Workday start at'}/>
                     </Form.Item>
                 </Col>
-                <Col span={12}>
+                <Col span={8}>
                     <Form.Item
-                        label="Part time hours in workday"
-                        name={nameof<FormValues>('partTimeHoursInWorkday')}
+                        label="Hours in workday"
+                        name={nameof<FormValues>('hoursInWorkday')}
+                        rules={[{required: true, message: 'Hours in workday is required'}]}
                     >
                         <Select
-                            mode="multiple"
                             allowClear
-                            placeholder="Part time hours in workday"
+                            placeholder="Hours in workday"
                         >
                             {range(24, 0).map(num => <Select.Option key={num}>{num}</Select.Option>)}
                         </Select>

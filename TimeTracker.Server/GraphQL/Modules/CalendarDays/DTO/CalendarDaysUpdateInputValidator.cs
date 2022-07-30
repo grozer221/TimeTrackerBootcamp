@@ -1,11 +1,12 @@
 ﻿using FluentValidation;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business.Managers;
 
 namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
 {
     public class CalendarDaysUpdateInputValidator : AbstractValidator<CalendarDaysUpdateInput>
     {
-        public CalendarDaysUpdateInputValidator()
+        public CalendarDaysUpdateInputValidator(ISettingsManager settingsManager)
         {
             RuleFor(l => l.Id)
                 .NotEmpty()
@@ -19,14 +20,18 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                 .Must((input, kind) =>
                 {
                     if (kind == DayKind.DayOff)
-                        return input.PercentageWorkHours == 0;
+                        return input.WorkHours == 0;
                     return true;
-                }).WithMessage("In day off percentage work hours must be 0");
+                }).WithMessage("In day off work hours must be 0");
 
-            RuleFor(l => l.PercentageWorkHours)
-                .NotNull()
-                .GreaterThanOrEqualTo(0)
-                .LessThanOrEqualTo(100);
+            RuleFor(l => l.WorkHours)
+                  .NotNull()
+                  .GreaterThanOrEqualTo(0)
+                  .MustAsync(async (input, workHours, _) =>
+                  {
+                      var settings = await settingsManager.GetAsync();
+                      return workHours <= settings.Employment.HoursInWorkday;
+                  }).WithMessage("Work hours must be less then hours in workday");
         }
     }
 }

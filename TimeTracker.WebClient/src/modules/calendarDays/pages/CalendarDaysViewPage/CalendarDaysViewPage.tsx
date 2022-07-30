@@ -45,10 +45,10 @@ export const CalendarDaysViewPage = () => {
                     </tr>
                     <tr>
                         <td>
-                            <Text type={'secondary'}>% work hours:</Text>
+                            <Text type={'secondary'}>Work hours:</Text>
                         </td>
                         <td>
-                            <Text>{dayInView?.percentageWorkHours}</Text>
+                            <Text>{dayInView?.workHours}</Text>
                         </td>
                     </tr>
                 </table>

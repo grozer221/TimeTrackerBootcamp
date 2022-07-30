@@ -1,22 +1,25 @@
 import React, {FC, useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from "../../../../store/store";
 import {vacationRequestsActions} from "../../store/vacationRequests.slice";
-import {Button, Popconfirm, Row, Space, Table, Tag, Typography} from "antd";
+import {Button, Popconfirm, Row, Select, Space, Table, Tag, Typography} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {VacationRequest} from "../../graphQL/vacationRequests.types";
-import {nameof} from "../../../../utils/stringUtils";
+import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {Link, useLocation, useSearchParams} from "react-router-dom";
 import {vacationRequestStatusToTag} from "../../../../convertors/enumToTagConvertors";
 import {ButtonUpdate} from "../../../../components/ButtonUpdate";
 import {ButtonCreate} from "../../../../components/ButtonCreate";
 import {DeleteOutlined, ReloadOutlined} from "@ant-design/icons";
 import {WithSmallLoading} from "../../../../hocs/WithSmallLoading/WithSmallLoading";
+import {VacationRequestStatus} from "../../../../graphQL/enums/VacationRequestStatus";
+import {usersActions} from "../../../users/store/users.slice";
 
 const {Text} = Typography;
 
 export const VacationRequestsIndexPage: FC = () => {
     const location = useLocation();
     const dispatch = useAppDispatch();
+    const usersForVocation = useAppSelector(s => s.users.usersForVocation)
     const vacationRequestsGetInputType = useAppSelector(s => s.vacationRequests.vacationRequestsGetInputType)
     const vacationRequests = useAppSelector(s => s.vacationRequests.vacationRequests)
     const loadingGet = useAppSelector(s => s.vacationRequests.loadingGet)
@@ -25,6 +28,8 @@ export const VacationRequestsIndexPage: FC = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const pageNumber = parseInt(searchParams.get('pageNumber') || '') || vacationRequestsGetInputType.pageNumber;
     const pageSize = parseInt((searchParams.get('pageSize')) || '') || vacationRequestsGetInputType.pageSize;
+    const statuses = searchParams.get('statuses')?.split('|').filter(s => Object.values(VacationRequestStatus).includes(s as VacationRequestStatus)) as VacationRequestStatus[] || vacationRequestsGetInputType.filter.statuses;
+    const userIds = searchParams.get('userIds')?.split('|').filter(Boolean) as string[] || vacationRequestsGetInputType.filter.userIds;
 
     useEffect(() => {
         dispatch(vacationRequestsActions.getAvailableDaysAsync())
@@ -34,15 +39,37 @@ export const VacationRequestsIndexPage: FC = () => {
         dispatch(vacationRequestsActions.getAsync({
             pageNumber,
             pageSize,
+            filter: {
+                statuses,
+                userIds
+            }
         }))
-    }, [pageNumber, pageSize])
+    }, [searchParams])
+
+    useEffect(() => {
+        dispatch(usersActions.fetchUsersForVocationsSelect({
+            take: 10,
+            skip: 0,
+            filter: {
+                email: '',
+                roles: [],
+                permissions: [],
+            }
+        }))
+    }, [])
 
     const columns: ColumnsType<VacationRequest> = [
         {
             title: 'Status',
             dataIndex: nameof<VacationRequest>('status'),
             key: nameof<VacationRequest>('status'),
-            render: (_, vacationRequest) => <span>{vacationRequestStatusToTag(vacationRequest.status)}</span>
+            render: (_, vacationRequest) => <span>{vacationRequestStatusToTag(vacationRequest.status)}</span>,
+            filters: (Object.values(VacationRequestStatus) as Array<VacationRequestStatus>).map((value) => ({
+                value: value,
+                text: uppercaseToWords(value),
+            })),
+            defaultFilteredValue: statuses,
+            width: '20%',
         },
         {
             title: 'Start - End',
@@ -53,21 +80,45 @@ export const VacationRequestsIndexPage: FC = () => {
                     <Tag>{vacationRequest.dateStart}</Tag>
                     <Text type={'secondary'}>to</Text>
                     <Tag>{vacationRequest.dateEnd}</Tag>
-                </Space>
+                </Space>,
+            width: '20%',
         },
         {
             title: 'Comment',
             dataIndex: nameof<VacationRequest>('comment'),
             key: nameof<VacationRequest>('comment'),
+            width: '20%',
         },
         {
-            title: 'User',
+            title: <Select
+                style={{width: '100%'}}
+                mode="multiple"
+                placeholder="User"
+                defaultValue={userIds}
+                onChange={userIds => setSearchParams({userIds: userIds?.join('|') || ''})}
+                filterOption={_ => true}
+                onSearch={value => dispatch(usersActions.fetchUsersForVocationsSelect({
+                    take: 10,
+                    skip: 0,
+                    filter: {
+                        email: value,
+                        roles: [],
+                        permissions: [],
+                    }
+                }))}
+                maxTagCount={'responsive'}
+            >
+                {usersForVocation.map(user => (
+                    <Select.Option key={user.id}>{user.email}</Select.Option>
+                ))}
+            </Select>,
             dataIndex: nameof<VacationRequest>('user'),
             key: nameof<VacationRequest>('user'),
             render: (_, vacationRequest) =>
                 <Link to={`/users/${vacationRequest.user.email}`}>
                     {vacationRequest.user.firstName} {vacationRequest.user.lastName}
-                </Link>
+                </Link>,
+            width: '30%',
         },
         {
             title: 'Actions',
@@ -84,7 +135,8 @@ export const VacationRequestsIndexPage: FC = () => {
                     >
                         <Button shape="circle" type="primary" danger icon={<DeleteOutlined/>} size={'small'}/>
                     </Popconfirm>
-                </Space>
+                </Space>,
+            width: '10%',
         },
     ];
 
@@ -110,9 +162,14 @@ export const VacationRequestsIndexPage: FC = () => {
                     defaultPageSize: pageSize,
                     defaultCurrent: pageNumber,
                     showSizeChanger: true,
-                    onChange: (pageNumber, pageSize) => {
-                        setSearchParams({pageNumber: pageNumber.toString(), pageSize: pageSize.toString()})
-                    }
+                }}
+                onChange={(pagination, filters, sorter) => {
+                    console.log(pagination, filters, sorter);
+                    setSearchParams({
+                        pageNumber: pagination.current?.toString() || vacationRequestsGetInputType.pageNumber.toString(),
+                        pageSize: pagination.pageSize?.toString() || vacationRequestsGetInputType.pageSize.toString(),
+                        statuses: filters.status?.join('|') || '',
+                    })
                 }}
             />
         </div>

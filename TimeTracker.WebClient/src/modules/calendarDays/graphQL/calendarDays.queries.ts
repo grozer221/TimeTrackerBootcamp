@@ -15,3 +15,16 @@ export const CALENDAR_DAYS_GET_QUERY = gql`
         }
     }
 `;
+
+export type CalendarDaysGetByDateData = { calendarDays: { getByDate: CalendarDay } }
+export type CalendarDaysGetByDateVars = { date: string }
+export const CALENDAR_DAYS_GET_BY_DATE_QUERY = gql`
+    ${CALENDAR_DAY_FRAGMENT}
+    query CalendarDaysGetByDate($date: Date!){
+        calendarDays {
+            getByDate(date: $date) {
+                ...CalendarDayFragment
+            }
+        }
+    }
+`;

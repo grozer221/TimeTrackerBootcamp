@@ -1,4 +1,6 @@
 ﻿using GraphQL.Types;
+using TimeTracker.Business.Enums;
+using TimeTracker.Business.Filters;
 
 namespace TimeTracker.Server.GraphQL.Modules.VacationRequests.DTO
 {
@@ -6,6 +8,7 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests.DTO
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public VacationRequestsFilter Filter { get; set; }
     }
 
     public class VacationRequestsGetInputType : InputObjectGraphType<VacationRequestsGetInput>
@@ -19,6 +22,10 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests.DTO
             Field<NonNullGraphType<IntGraphType>, int>()
                  .Name("PageSize")
                  .Resolve(context => context.Source.PageSize);
+            
+            Field<NonNullGraphType<VacationRequestsFilterInputType>, VacationRequestsFilter>()
+                 .Name("Filter")
+                 .Resolve(context => context.Source.Filter);
         }
     }
 }

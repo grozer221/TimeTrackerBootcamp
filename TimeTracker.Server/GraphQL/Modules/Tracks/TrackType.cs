@@ -1,6 +1,8 @@
 ﻿using GraphQL.Types;
+using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Server.GraphQL.Abstractions;
+using TimeTracker.Server.GraphQL.EnumTypes;
 
 namespace TimeTracker.Server.GraphQL.Modules.Tracks
 {
@@ -16,9 +18,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                 .Name("Title")
                 .Resolve(context => context.Source.Title);
 
-            Field<StringGraphType, string?>()
-                .Name("Description")
-                .Resolve(context => context.Source.Description);
+            Field<NonNullGraphType<TrackKindType>,TrackKind>()
+                .Name("Kind")
+                .Resolve(context => context.Source.Kind);
 
             Field<DateTimeGraphType, DateTime?>()
                 .Name("StartTime")
@@ -27,6 +29,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
             Field<DateTimeGraphType, DateTime?>()
                 .Name("EndTime")
                 .Resolve(context => context.Source.EndTime);
+
         }
     }
 }

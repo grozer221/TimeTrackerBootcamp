@@ -37,7 +37,7 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests
                {
                    var vacationRequestsGetInput = context.GetArgument<VacationRequestsGetInput>("VacationRequestsGetInputType");
                    vacationRequestsGetInputValidator.ValidateAndThrow(vacationRequestsGetInput);
-                   return await vacationRequestRepository.GetAsync(vacationRequestsGetInput.PageNumber, vacationRequestsGetInput.PageSize);
+                   return await vacationRequestRepository.GetAsync(vacationRequestsGetInput.PageNumber, vacationRequestsGetInput.PageSize, vacationRequestsGetInput.Filter);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
 
