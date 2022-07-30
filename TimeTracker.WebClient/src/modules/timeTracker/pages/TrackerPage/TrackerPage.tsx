@@ -15,7 +15,7 @@ import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 
 type FormValues = {
     title: string,
-    kind: TrackKind | TrackKind.Default
+    kind: TrackKind
 }
 
 export const TrackerPage: React.FC = () => {
@@ -37,10 +37,9 @@ export const TrackerPage: React.FC = () => {
 
     const onFinish = async (values: FormValues) => {
         let newTrack: CreateTrackInput = {
-            title: values.title,
+            title: values.title || "",
             kind: TrackKind.Default
         }
-
         dispatch(tracksAction.createTrack(newTrack))
         dispatch(tracksAction.getAsync({
             like: like,
@@ -94,7 +93,7 @@ export const TrackerPage: React.FC = () => {
                 <Card>
                     <Row gutter={16}>
                         <Col span={20}>
-                            <Form.Item name={nameof<FormValues>('title')} rules={[{required: true}]}>
+                            <Form.Item name={nameof<FormValues>('title')}>
                                 <Input placeholder={'Title'}/>
                             </Form.Item>
                         </Col>

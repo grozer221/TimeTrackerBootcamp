@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
@@ -83,8 +82,6 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     var model = await trackRepository.GetByIdAsync(track.Id);
                     if (track.Title != null)
                         model.Title = track.Title;
-                    if (track.Description != null)
-                        model.Description = track.Description;
                     if (track.StartTime != null)
                         model.StartTime = track.StartTime;
                     if (track.EndTime != null)
