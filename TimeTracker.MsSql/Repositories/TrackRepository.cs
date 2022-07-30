@@ -61,8 +61,8 @@ namespace TimeTracker.MsSql.Repositories
             using (IDbConnection db = dapperContext.CreateConnection())
             {
                 string query = @"INSERT INTO Tracks 
-                              (Id, Title, UserId, Description, StartTime, CreatedAt, UpdatedAt)
-                              VALUES (@Id, @Title, @UserId, @Description, 
+                              (Id, Title, UserId, Kind, StartTime, CreatedAt, UpdatedAt)
+                              VALUES (@Id, @Title, @UserId, @Kind, 
                               @StartTime, @CreatedAt, @UpdatedAt)";
                 await db.QuerySingleOrDefaultAsync<Guid>(query, model);
             }
@@ -83,7 +83,7 @@ namespace TimeTracker.MsSql.Repositories
         {
             model.UpdatedAt = DateTime.Now;
             string query = @"UPDATE Tracks 
-                            SET Title = @Title, Description = @Description, StartTime = @StartTime, 
+                            SET Title = @Title, Kind = @Kind, StartTime = @StartTime, 
                             EndTime = @EndTime, UpdatedAt = @UpdatedAt WHERE Id = @Id";
 
             using (IDbConnection db = dapperContext.CreateConnection())
