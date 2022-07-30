@@ -13,10 +13,11 @@ import {FilterConfirmProps} from "antd/es/table/interface";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {usersActions} from "../../store/users.slice";
 import {ExcelExportButton} from "../../../../components/ExcelExportButton";
+import {Employment} from "../../../../graphQL/enums/Employment";
 
 type DataIndex = keyof User
 
-export const UsersPage = () => {
+export const UsersPage = React.memo(() => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -27,6 +28,8 @@ export const UsersPage = () => {
     let users = useAppSelector(s => s.users.users)
     let filter = useAppSelector(s => s.users.filter)
     let currentPage = useAppSelector(s => s.users.currentPage)
+
+    console.log(filter)
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -42,11 +45,13 @@ export const UsersPage = () => {
 
     // handle functions for filter dropdowns
     const handleChange: TableProps<User>['onChange'] = (pagination, filters, sorter) => {
+        console.log('changed')
         dispatch(usersActions.setFilter(
             {
                 ...filter,
                 ["roles"]: filters["role"] as Role[] ?? [],
-                ["permissions"]: filters["permissions"] as Permission[] ?? []
+                ["permissions"]: filters["permissions"] as Permission[] ?? [],
+                ["employments"]: filters["employment"] as Employment[] ?? []
             }
         ))
     };
@@ -56,7 +61,7 @@ export const UsersPage = () => {
         confirm: (param?: FilterConfirmProps) => void,
         dataIndex: DataIndex
     ) => {
-        if (dataIndex != 'permissions' && dataIndex != 'role') {
+        if (dataIndex != 'permissions' && dataIndex != 'role' && dataIndex != 'employment') {
             dispatch(usersActions.setFilter({...filter, [dataIndex]: selectedKeys[0]}))
         }
     };
@@ -143,9 +148,17 @@ export const UsersPage = () => {
             filters: Object.values(Permission).map(value => {
                 return {text: uppercaseToWords(value), value: value}
             }),
-
             render: (permissions: Permission[], user) => {
                 return user.permissions.map(p => <Tag key={p} color={'blue'}>{uppercaseToWords(p)}</Tag>)
+            }
+        },
+        {
+            title: 'Employments', dataIndex: 'employment', key: 'employment',
+            filters: Object.values(Employment).map(value => {
+                return {text: uppercaseToWords(value), value: value}
+            }),
+            render: (employment, user) => {
+                return <Tag key={employment} color={'green'}>{uppercaseToWords(employment)}</Tag>
             }
         },
         {title: 'CreatedAt', dataIndex: 'createdAt', key: 'createdAt'},
@@ -163,12 +176,12 @@ export const UsersPage = () => {
 
     return <>
         <Row justify="space-between" align={'middle'}>
-            <Col >
+            <Col>
                 <Link to={"create"} state={{popup: location}}>
                     <Button type="primary" icon={<UserAddOutlined/>}> Add User</Button>
                 </Link>
             </Col>
-            <Col >
+            <Col>
                 <ExcelExportButton date={"2022-07-27T16:11:04Z"} like={""}/>
             </Col>
         </Row>
@@ -184,12 +197,8 @@ export const UsersPage = () => {
                 defaultPageSize: pageSize, showSizeChanger: true,
                 onChange: (page, pageSize1) => {
                     dispatch(usersActions.setCurrentPage(page - 1));
-                    dispatch(usersActions.getAsync({
-                        take: pageSize1,
-                        skip: page - 1,
-                    }));
                 }
             }}
         />
     </>
-}
+})

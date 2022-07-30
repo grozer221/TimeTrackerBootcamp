@@ -33,6 +33,10 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
             .Name("Roles")
             .Resolve(context => context.Source.Roles);
 
+            Field<ListGraphType<EmploymentType>, IEnumerable<Employment>>()
+            .Name("Employments")
+            .Resolve(context => context.Source.Employments);
+
         }
     }
 }

@@ -7,6 +7,7 @@ export const USER_FRAGMENT = gql`
         lastName
         middleName
         email
+        employment
         role
         permissions
         createdAt
