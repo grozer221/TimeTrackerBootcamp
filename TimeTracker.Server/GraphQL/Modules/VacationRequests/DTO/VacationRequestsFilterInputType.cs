@@ -16,6 +16,14 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests.DTO
             Field<NonNullGraphType<ListGraphType<GuidGraphType>>, IEnumerable<Guid>>()
                .Name("UserIds")
                .Resolve(context => context.Source.UserIds);
+            
+            Field<NonNullGraphType<VacationRequestsFilterKindType>, VacationRequestsFilterKind>()
+               .Name("Kind")
+               .Resolve(context => context.Source.Kind);
         }
+    }
+    
+    public class VacationRequestsFilterKindType : EnumerationGraphType<VacationRequestsFilterKind>
+    {
     }
 }

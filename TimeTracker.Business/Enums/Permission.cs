@@ -4,7 +4,7 @@
     {
         UpdateUsers,
         UpdateOthersTimeTracker,
-        NoteTheAbsenceAndVocation,
+        NoteTheAbsenceAndVacation,
         UpdateCalendar,
         UpdateSettings,
         UpdateFileManager,

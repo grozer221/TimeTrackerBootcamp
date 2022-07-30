@@ -81,7 +81,7 @@ export const SettingsTasksUpdate: FC = () => {
                 <Row gutter={16}>
                     <Col span={8}>
                         <Form.Item
-                            label="Time when set"
+                            label="Time when create"
                             name={nameof<FormValues>('autoCreateTracks_TimeWhenCreate')}
                         >
                             <TimePicker

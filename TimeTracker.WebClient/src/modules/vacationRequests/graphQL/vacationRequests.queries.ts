@@ -27,6 +27,12 @@ export type VacationRequestsGetInputType = {
 export type VacationRequestsFilterInputType = {
     statuses: VacationRequestStatus[],
     userIds: string[],
+    kind: VacationRequestsFilterKind,
+}
+export enum VacationRequestsFilterKind {
+    Mine = "MINE",
+    CanApprove = 'CAN_APPROVE',
+    All = 'ALL',
 }
 export const VACATION_REQUESTS_GET_QUERY = gql`
     ${VACATION_REQUEST_FRAGMENT}

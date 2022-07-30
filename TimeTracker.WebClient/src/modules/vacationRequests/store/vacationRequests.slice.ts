@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {GetEntitiesResponse} from "../../../graphQL/types/getEntitiesResponse";
 import {VacationRequest} from "../graphQL/vacationRequests.types";
-import {VacationRequestsGetInputType} from "../graphQL/vacationRequests.queries";
+import {VacationRequestsFilterKind, VacationRequestsGetInputType} from "../graphQL/vacationRequests.queries";
 import {
     VacationRequestsCreateInputType,
     VacationRequestsUpdateStatusInputType
@@ -33,6 +33,7 @@ const initialState: InitialState = {
         filter: {
             statuses: [],
             userIds: [],
+            kind: VacationRequestsFilterKind.Mine,
         }
     },
     loadingGetById: false,

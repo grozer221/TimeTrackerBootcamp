@@ -100,7 +100,7 @@ export const AppLayout: FC<Props> = ({children}) => {
         {
             key: '/vacation-requests',
             icon: <AuditOutlined/>,
-            label: <Link to={'vacation-requests'}>Vocation requests</Link>,
+            label: <Link to={'vacation-requests'}>Vacation requests</Link>,
         },
         {
             key: '/users',

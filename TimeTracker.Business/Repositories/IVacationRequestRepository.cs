@@ -9,7 +9,7 @@ namespace TimeTracker.Business.Repositories
     {
         Task<VacationRequestModel> GetByIdAsync(Guid id);
         Task<IEnumerable<VacationRequestModel>> GetAsync(Guid userId, DateTime from, DateTime to);
-        Task<GetEntitiesResponse<VacationRequestModel>> GetAsync(int pageNumber, int pageSize, VacationRequestsFilter vacationRequestsFilter);
+        Task<GetEntitiesResponse<VacationRequestModel>> GetAsync(int pageNumber, int pageSize, VacationRequestsFilter filter, Guid currentUserId);
         Task<VacationRequestModel> CreateAsync(VacationRequestModel model);
         Task<VacationRequestModel> UpdateAsync(VacationRequestModel model);
         Task UpdateStatusAsync(Guid id, VacationRequestStatus status);

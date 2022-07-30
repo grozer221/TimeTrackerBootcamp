@@ -1,7 +1,7 @@
 import React, {FC, useEffect} from 'react';
 import {useAppDispatch, useAppSelector} from "../../../../store/store";
 import {vacationRequestsActions} from "../../store/vacationRequests.slice";
-import {Button, Popconfirm, Row, Select, Space, Table, Tag, Typography} from "antd";
+import {Button, Popconfirm, Row, Select, Space, Table, Tabs, Tag, Typography} from "antd";
 import {ColumnsType} from "antd/es/table";
 import {VacationRequest} from "../../graphQL/vacationRequests.types";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
@@ -9,17 +9,23 @@ import {Link, useLocation, useSearchParams} from "react-router-dom";
 import {vacationRequestStatusToTag} from "../../../../convertors/enumToTagConvertors";
 import {ButtonUpdate} from "../../../../components/ButtonUpdate";
 import {ButtonCreate} from "../../../../components/ButtonCreate";
-import {DeleteOutlined, ReloadOutlined} from "@ant-design/icons";
+import {DeleteOutlined, ReloadOutlined, UsergroupAddOutlined, UserOutlined} from "@ant-design/icons";
 import {WithSmallLoading} from "../../../../hocs/WithSmallLoading/WithSmallLoading";
 import {VacationRequestStatus} from "../../../../graphQL/enums/VacationRequestStatus";
 import {usersActions} from "../../../users/store/users.slice";
+import {VacationRequestsFilterKind} from "../../graphQL/vacationRequests.queries";
+import {isAdministratorOrHavePermissions} from "../../../../utils/permissions";
+import {Permission} from "../../../../graphQL/enums/Permission";
 
 const {Text} = Typography;
+const {TabPane} = Tabs;
 
 export const VacationRequestsIndexPage: FC = () => {
     const location = useLocation();
     const dispatch = useAppDispatch();
-    const usersForVocation = useAppSelector(s => s.users.usersForVocation)
+    const authedUser = useAppSelector(s => s.auth.authedUser)
+    const settings = useAppSelector(s => s.settings.settings)
+    const usersForVacation = useAppSelector(s => s.users.usersForVacation)
     const vacationRequestsGetInputType = useAppSelector(s => s.vacationRequests.vacationRequestsGetInputType)
     const vacationRequests = useAppSelector(s => s.vacationRequests.vacationRequests)
     const loadingGet = useAppSelector(s => s.vacationRequests.loadingGet)
@@ -30,9 +36,15 @@ export const VacationRequestsIndexPage: FC = () => {
     const pageSize = parseInt((searchParams.get('pageSize')) || '') || vacationRequestsGetInputType.pageSize;
     const statuses = searchParams.get('statuses')?.split('|').filter(s => Object.values(VacationRequestStatus).includes(s as VacationRequestStatus)) as VacationRequestStatus[] || vacationRequestsGetInputType.filter.statuses;
     const userIds = searchParams.get('userIds')?.split('|').filter(Boolean) as string[] || vacationRequestsGetInputType.filter.userIds;
+    const kind = searchParams.get('kind') as VacationRequestsFilterKind || vacationRequestsGetInputType.filter.kind;
 
     useEffect(() => {
         dispatch(vacationRequestsActions.getAvailableDaysAsync())
+        dispatch(usersActions.fetchUsersForVacationsSelect({
+            take: 10,
+            skip: 0,
+            filter: {email: '', roles: [], permissions: []}
+        }))
     }, [])
 
     useEffect(() => {
@@ -41,22 +53,21 @@ export const VacationRequestsIndexPage: FC = () => {
             pageSize,
             filter: {
                 statuses,
-                userIds
+                userIds,
+                kind,
             }
         }))
     }, [searchParams])
 
-    useEffect(() => {
-        dispatch(usersActions.fetchUsersForVocationsSelect({
-            take: 10,
-            skip: 0,
-            filter: {
-                email: '',
-                roles: [],
-                permissions: [],
-            }
-        }))
-    }, [])
+    const setParams = (pageNumber: number, pageSize: number, statuses: VacationRequestStatus[], userIds: string[], kind: VacationRequestsFilterKind) => {
+        setSearchParams({
+            pageNumber: pageNumber.toString(),
+            pageSize: pageSize.toString(),
+            statuses: statuses?.join('|') || '',
+            userIds: userIds?.join('|') || '',
+            kind: kind,
+        })
+    }
 
     const columns: ColumnsType<VacationRequest> = [
         {
@@ -95,20 +106,16 @@ export const VacationRequestsIndexPage: FC = () => {
                 mode="multiple"
                 placeholder="User"
                 defaultValue={userIds}
-                onChange={userIds => setSearchParams({userIds: userIds?.join('|') || ''})}
+                onChange={userIds => setParams(pageNumber, pageSize, statuses, userIds, kind)}
                 filterOption={_ => true}
-                onSearch={value => dispatch(usersActions.fetchUsersForVocationsSelect({
+                onSearch={value => dispatch(usersActions.fetchUsersForVacationsSelect({
                     take: 10,
                     skip: 0,
-                    filter: {
-                        email: value,
-                        roles: [],
-                        permissions: [],
-                    }
+                    filter: {email: value, roles: [], permissions: []}
                 }))}
                 maxTagCount={'responsive'}
             >
-                {usersForVocation.map(user => (
+                {usersForVacation.map(user => (
                     <Select.Option key={user.id}>{user.email}</Select.Option>
                 ))}
             </Select>,
@@ -124,18 +131,29 @@ export const VacationRequestsIndexPage: FC = () => {
             title: 'Actions',
             dataIndex: 'Actions',
             key: 'Actions',
-            render: (_, vacationRequest) =>
-                <Space size={5}>
-                    <ButtonUpdate to={`update/${vacationRequest.id}`} popup={location}/>
-                    <Popconfirm
-                        title={'Sure to remove?'}
-                        onConfirm={() => dispatch(vacationRequestsActions.removeAsync({id: vacationRequest.id}))}
-                        okText="Yes"
-                        cancelText="No"
-                    >
-                        <Button shape="circle" type="primary" danger icon={<DeleteOutlined/>} size={'small'}/>
-                    </Popconfirm>
-                </Space>,
+            render: (_, vacationRequest) => {
+                return (
+                    <Space size={5}>
+                        {(isAdministratorOrHavePermissions([Permission.NoteTheAbsenceAndVacation])
+                            || vacationRequest.user.usersWhichCanApproveVacationRequest.some(u => u.id === authedUser?.id)
+                        ) && <ButtonUpdate to={`update/${vacationRequest.id}`} popup={location}/>
+                        }
+                        {(isAdministratorOrHavePermissions([Permission.NoteTheAbsenceAndVacation])
+                            || (vacationRequest.status === VacationRequestStatus.New
+                                && (vacationRequest.userId === authedUser?.id || vacationRequest.user.usersWhichCanApproveVacationRequest.some(u => u.id === authedUser?.id)))
+                        ) && <Popconfirm
+                            title={'Sure to remove?'}
+                            onConfirm={() => dispatch(vacationRequestsActions.removeAsync({id: vacationRequest.id}))}
+                            okText="Yes"
+                            cancelText="No"
+                        >
+                            <Button shape="circle" type="primary" danger icon={<DeleteOutlined/>} size={'small'}/>
+                        </Popconfirm>
+                        }
+
+                    </Space>
+                )
+            },
             width: '10%',
         },
     ];
@@ -147,10 +165,19 @@ export const VacationRequestsIndexPage: FC = () => {
                 <WithSmallLoading loading={loadingGetAvailableDays}>
                     <Space>
                         <ReloadOutlined onClick={() => dispatch(vacationRequestsActions.getAvailableDaysAsync())}/>
-                        <div>Available days: {availableDays}</div>
+                        <div>Available days: {availableDays} from {settings?.vacationRequests.amountDaysPerYear}</div>
                     </Space>
                 </WithSmallLoading>
             </Row>
+            <Tabs defaultActiveKey={kind}
+                  onChange={kind => setParams(pageNumber, pageSize, statuses, userIds, kind as VacationRequestsFilterKind)}>
+                <TabPane tab={<span><UserOutlined/>Mine</span>} key={VacationRequestsFilterKind.Mine}/>
+                <TabPane tab={<span><UsergroupAddOutlined/>Can approve</span>}
+                         key={VacationRequestsFilterKind.CanApprove}/>
+                {isAdministratorOrHavePermissions([Permission.NoteTheAbsenceAndVacation]) &&
+                    <TabPane tab={<span><UsergroupAddOutlined/>All</span>} key={VacationRequestsFilterKind.All}/>
+                }
+            </Tabs>
             <Table
                 rowKey={'id'}
                 loading={loadingGet}
@@ -165,11 +192,10 @@ export const VacationRequestsIndexPage: FC = () => {
                 }}
                 onChange={(pagination, filters, sorter) => {
                     console.log(pagination, filters, sorter);
-                    setSearchParams({
-                        pageNumber: pagination.current?.toString() || vacationRequestsGetInputType.pageNumber.toString(),
-                        pageSize: pagination.pageSize?.toString() || vacationRequestsGetInputType.pageSize.toString(),
-                        statuses: filters.status?.join('|') || '',
-                    })
+                    const pageNumber: number = pagination.current || vacationRequestsGetInputType.pageNumber;
+                    const pageSize: number = pagination.pageSize || vacationRequestsGetInputType.pageSize;
+                    const statuses = filters.status as VacationRequestStatus[];
+                    setParams(pageNumber, pageSize, statuses, userIds, kind)
                 }}
             />
         </div>

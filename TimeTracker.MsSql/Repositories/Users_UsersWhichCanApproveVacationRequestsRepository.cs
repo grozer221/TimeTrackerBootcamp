@@ -9,19 +9,19 @@ using TimeTracker.MsSql;
 
 namespace TimeTracker.Business.Repositories
 {
-    public class Users_UsersWhichCanApproveVocationRequestsRepository : IUsers_UsersWhichCanApproveVocationRequestsRepository
+    public class Users_UsersWhichCanApproveVacationRequestsRepository : IUsers_UsersWhichCanApproveVacationRequestsRepository
     {
         private readonly DapperContext dapperContext;
 
-        public Users_UsersWhichCanApproveVocationRequestsRepository(DapperContext dapperContext)
+        public Users_UsersWhichCanApproveVacationRequestsRepository(DapperContext dapperContext)
         {
             this.dapperContext = dapperContext;
         }
 
         public async Task<IEnumerable<UserModel>> GetUsersWhichCanApproveVacationRequests(Guid forUserId)
         {
-            string query = @"select * from Users_UsersWhichCanApproveVocationRequests 
-                                join Users on Users_UsersWhichCanApproveVocationRequests.UserWhichCanApproveVocationRequestId = Users.Id
+            string query = @"select * from Users_UsersWhichCanApproveVacationRequests 
+                                join Users on Users_UsersWhichCanApproveVacationRequests.UserWhichCanApproveVacationRequestId = Users.Id
                                 where UserId = @UserId";
             using (var connection = dapperContext.CreateConnection())
             {
@@ -29,15 +29,15 @@ namespace TimeTracker.Business.Repositories
             }
         }
 
-        public async Task<Users_UsersWhichCanApproveVocationRequests> CreateUsersWhichCanApproveVacationRequests(Users_UsersWhichCanApproveVocationRequests model)
+        public async Task<Users_UsersWhichCanApproveVacationRequests> CreateUsersWhichCanApproveVacationRequests(Users_UsersWhichCanApproveVacationRequests model)
         {
             model.Id = Guid.NewGuid();
             DateTime dateTimeNow = DateTime.Now;
             model.CreatedAt = dateTimeNow;
             model.UpdatedAt = dateTimeNow;
-            string query = $@"insert into Users_UsersWhichCanApproveVocationRequests 
-                            (Id,   UserId,  UserWhichCanApproveVocationRequestId,   CreatedAt,  UpdatedAt) values 
-                            (@Id, @UserId, @UserWhichCanApproveVocationRequestId,  @CreatedAt, @UpdatedAt)";
+            string query = $@"insert into Users_UsersWhichCanApproveVacationRequests 
+                            (Id,   UserId,  UserWhichCanApproveVacationRequestId,   CreatedAt,  UpdatedAt) values 
+                            (@Id, @UserId, @UserWhichCanApproveVacationRequestId,  @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, model);
@@ -47,7 +47,7 @@ namespace TimeTracker.Business.Repositories
 
         public async Task RemoveUsersWhichCanApproveVacationRequests(Guid forUserId)
         {
-            string query = "delete from Users_UsersWhichCanApproveVocationRequests where userId = @userId";
+            string query = "delete from Users_UsersWhichCanApproveVacationRequests where userId = @userId";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, new { userId = forUserId });

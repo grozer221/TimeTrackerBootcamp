@@ -35,7 +35,7 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public async Task<GetEntitiesResponse<VacationRequestModel>> GetAsync(int pageNumber, int pageSize, VacationRequestsFilter filter)
+        public async Task<GetEntitiesResponse<VacationRequestModel>> GetAsync(int pageNumber, int pageSize, VacationRequestsFilter filter, Guid currentUserId)
         {
             string query = @"select {0} from VacationRequests";
 
@@ -44,6 +44,22 @@ namespace TimeTracker.MsSql.Repositories
                 wheres.Add("status in @statuses");
             if (filter.UserIds.Count() > 0)
                 wheres.Add("userId in @userIds");
+
+            switch (filter.Kind)
+            {
+                case VacationRequestsFilterKind.CanApprove:
+                    wheres.Add(@"userId in 
+	                            (select userId from Users_UsersWhichCanApproveVacationRequests 
+	                            join Users on Users_UsersWhichCanApproveVacationRequests.UserWhichCanApproveVacationRequestId = Users.Id
+	                            where userWhichCanApproveVacationRequestId = @currentUserId)");
+                    break;
+                case VacationRequestsFilterKind.Mine:
+                    wheres.Add(@"userId = @currentUserId");
+                    break;
+                case VacationRequestsFilterKind.All:
+                default:
+                    break;
+            }
 
             if(wheres.Count > 0)
                 query += @" where " + string.Join(" and ", wheres);
@@ -63,6 +79,7 @@ namespace TimeTracker.MsSql.Repositories
                     take = pageSize, 
                     statuses = filter.Statuses,
                     userIds = filter.UserIds,
+                    currentUserId,
                 });
                 int total = reader.Read<int>().FirstOrDefault();
                 var vacationRequests = reader.Read<VacationRequestModel>();

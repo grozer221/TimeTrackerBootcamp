@@ -40,13 +40,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                .Resolve(context => context.Source.Employment);
             
             Field<NonNullGraphType<ListGraphType<UserType>>, IEnumerable<UserModel>>()
-               .Name("UsersWhichCanApproveVocationRequest")
+               .Name("UsersWhichCanApproveVacationRequest")
                .ResolveAsync(async context =>
                {
                    using var scope = serviceProvider.CreateScope();
-                   var users_UsersWhichCanApproveVocationRequestsRepository = scope.ServiceProvider.GetRequiredService<IUsers_UsersWhichCanApproveVocationRequestsRepository>();
+                   var users_UsersWhichCanApproveVacationRequestsRepository = scope.ServiceProvider.GetRequiredService<IUsers_UsersWhichCanApproveVacationRequestsRepository>();
                    var userId = context.Source.Id;
-                   return await users_UsersWhichCanApproveVocationRequestsRepository.GetUsersWhichCanApproveVacationRequests(userId);
+                   return await users_UsersWhichCanApproveVacationRequestsRepository.GetUsersWhichCanApproveVacationRequests(userId);
                });
         }
     }
