@@ -19,7 +19,7 @@ const {Text} = Typography;
 export const VacationRequestsIndexPage: FC = () => {
     const location = useLocation();
     const dispatch = useAppDispatch();
-    const users = useAppSelector(s => s.users.users)
+    const usersForVocation = useAppSelector(s => s.users.usersForVocation)
     const vacationRequestsGetInputType = useAppSelector(s => s.vacationRequests.vacationRequestsGetInputType)
     const vacationRequests = useAppSelector(s => s.vacationRequests.vacationRequests)
     const loadingGet = useAppSelector(s => s.vacationRequests.loadingGet)
@@ -47,7 +47,7 @@ export const VacationRequestsIndexPage: FC = () => {
     }, [searchParams])
 
     useEffect(() => {
-        dispatch(usersActions.getAsync({
+        dispatch(usersActions.fetchUsersForVocationsSelect({
             take: 10,
             skip: 0,
             filter: {
@@ -97,7 +97,7 @@ export const VacationRequestsIndexPage: FC = () => {
                 defaultValue={userIds}
                 onChange={userIds => setSearchParams({userIds: userIds?.join('|') || ''})}
                 filterOption={_ => true}
-                onSearch={value => dispatch(usersActions.getAsync({
+                onSearch={value => dispatch(usersActions.fetchUsersForVocationsSelect({
                     take: 10,
                     skip: 0,
                     filter: {
@@ -108,7 +108,7 @@ export const VacationRequestsIndexPage: FC = () => {
                 }))}
                 maxTagCount={'responsive'}
             >
-                {users.map(user => (
+                {usersForVocation.map(user => (
                     <Select.Option key={user.id}>{user.email}</Select.Option>
                 ))}
             </Select>,

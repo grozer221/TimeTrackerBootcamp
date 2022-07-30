@@ -2,8 +2,8 @@
 
 namespace TimeTracker.MsSql.Migrations
 {
-    [Migration(202228071429)]
-    public class _202228071429_UpdatedPersentageToHoursInCalendarDays : Migration
+    [Migration(202207281429)]
+    public class _202207281429_UpdatedPersentageToHoursInCalendarDays : Migration
     {
         public override void Up()
         {
