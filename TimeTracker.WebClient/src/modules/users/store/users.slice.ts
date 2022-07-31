@@ -23,7 +23,8 @@ const initialState: InitialState = {
         middleName: "",
         email: "",
         permissions: [],
-        roles: []
+        roles: [],
+        employments: []
     }
 }
 

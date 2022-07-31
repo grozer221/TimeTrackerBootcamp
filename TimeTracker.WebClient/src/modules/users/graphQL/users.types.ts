@@ -1,5 +1,6 @@
 import {Permission} from "../../../graphQL/enums/Permission";
 import {Role} from "../../../graphQL/enums/Role";
+import {Employment} from "../../../graphQL/enums/Employment";
 
 export type User = {
     id: string,
@@ -7,6 +8,7 @@ export type User = {
     lastName: string,
     middleName: string,
     email: string,
+    employment: Employment,
     role: Role,
     permissions: Permission[],
     createdAt: string,
@@ -19,6 +21,7 @@ export type UserFilter = {
     lastName?: string,
     middleName?: string,
     email?: string,
-    permissions?: Permission[]
+    employments?: Employment[],
+    permissions?: Permission[],
     roles?: Role[]
 }
