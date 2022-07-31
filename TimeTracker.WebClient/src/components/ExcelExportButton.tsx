@@ -5,9 +5,6 @@ import {useDispatch} from "react-redux";
 import {excelExportActions} from "../modules/excelExport/store/excelExport.slice";
 import {useAppSelector} from "../store/store";
 
-
-
-
 type props = {
     like: string
     date: string
@@ -20,23 +17,21 @@ export const ExcelExportButton: FC<props> = ({like, date}) => {
         if (byteArr.length){
             let a = new Uint8Array(byteArr)
             downloadData(a)
+            dispatch(excelExportActions.clearReport)
         }
     },[byteArr])
 
     const downloadData = (byteArr: Uint8Array) => {
-        var a = window.document.createElement('a');
+        let a = window.document.createElement('a');
         a.href = window.URL.createObjectURL(new Blob([byteArr], { type: 'application/octet-stream' }));
         a.download = "tst.xlsx";
-// Append anchor to body.
         document.body.appendChild(a)
         a.click();
-// Remove anchor from body
         document.body.removeChild(a)
     }
 
     const onClick = (like: string, date: string) => {
         dispatch(excelExportActions.createReportAsync({like, date}))
-
     }
 
     return(

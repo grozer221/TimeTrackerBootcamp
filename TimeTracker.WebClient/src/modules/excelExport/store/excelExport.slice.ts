@@ -20,6 +20,9 @@ export const excelExportSlice = createSlice({
         createReportAsync: (state, action: PayloadAction<ExcelExportInputType>) => state,
         saveReport: (state, action: PayloadAction<ExcelExportData>) => {
             state.file = action.payload.excelExport.createReport
+        },
+        clearReport: (state) => {
+            state.file = []
         }
     },
 })
