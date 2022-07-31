@@ -43,6 +43,11 @@
     border-left: 1px solid lightgrey;
 }
 
+.header_divider{
+    color: white;
+    border-color: white;
+}
+
 .icons{
     position: relative;
     margin-top: 4px;

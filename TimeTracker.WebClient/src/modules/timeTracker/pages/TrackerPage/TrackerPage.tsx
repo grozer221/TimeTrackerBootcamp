@@ -22,6 +22,7 @@ import s from './TrackerPage.module.css'
 import './TrackerPage.module.css'
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {ButtonRemove} from "../../../../components/ButtonRemove";
+import {Track} from "../../../tracks/graphQL/tracks.types";
 
 type FormValues = {
     title: string,
@@ -37,8 +38,14 @@ export const TrackerPage: React.FC = () => {
     const inputRef = useRef<InputRef>(null);
 
     let totalPages = useAppSelector(s => s.tracks.total)
-    let tracks = useAppSelector(s => s.tracks.tracks)
-
+    let tracksNotSort = useAppSelector(s => s.tracks.tracks)
+            .map((obj) => {
+            return { ...obj, startTime: new Date(obj.startTime), endTime: new Date(obj.endTime)};
+        });
+    let tracks = tracksNotSort.sort(
+        (objA, objB) => objB.startTime.getTime() - objA.startTime.getTime(),
+    );
+    
     let trackKindIcon: { [id: string]: JSX.Element; } = {
         "DEFAULT": <CodeSandboxOutlined className={s.icons}/>,
         "VACATION": <CarOutlined className={s.icons}/>,
@@ -93,12 +100,6 @@ export const TrackerPage: React.FC = () => {
     };
     console.log(tracks)
 
-    function GetDate(sqlDate: string) {
-        let date = new Date(sqlDate)
-        return date.toDateString() + " " + date.toLocaleTimeString()
-
-    }
-
     const Processing = () => {
         return (
             <Tag icon={<SyncOutlined spin/>} color="processing" style={{padding: '6px'}}>
@@ -107,6 +108,11 @@ export const TrackerPage: React.FC = () => {
         )
 
     }
+    function sortByDateFunction(a: Track,b: Track){
+        let dateA = new Date(a.startTime).getTime();
+        let dateB = new Date(b.startTime).getTime();
+        return dateA > dateB ? 1 : -1;
+    };
 
     // @ts-ignore
     return (
@@ -162,7 +168,7 @@ export const TrackerPage: React.FC = () => {
                     {tracks.map((track, index) => (
                         <div className={s.table_row} key={index}>
                             <div className={s.cell} style={{width: '30%'}}>
-                                <EditOutlined className={s.icons}/><Input ref={inputRef} bordered={false} value={track.title == "" ? ". . ." : track.title}/>
+                                <EditOutlined className={s.icons}/><Input ref={inputRef} bordered={false}  value={track.title == "" ? ". . ." : track.title}/>
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '20%'}}>
@@ -172,12 +178,12 @@ export const TrackerPage: React.FC = () => {
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '20%'}}>
-                                <CalendarOutlined className={s.icons}/>{GetDate(track.startTime)}
+                                <CalendarOutlined className={s.icons}/>{track.startTime.toLocaleString()}
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '20%'}}>
-                                {track.endTime == null ? <>{Processing()}</> : <><CalendarOutlined
-                                    className={s.icons}/>{GetDate(track.endTime)}</>}
+                                {track.endTime.getTime() == 0 ? <>{Processing()}</> : <><CalendarOutlined
+                                    className={s.icons}/>{track.endTime.toLocaleString()}</>}
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '10%'}}>
