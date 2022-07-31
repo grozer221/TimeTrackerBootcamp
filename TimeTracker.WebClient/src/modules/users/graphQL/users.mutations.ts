@@ -2,6 +2,7 @@ import {gql} from '@apollo/client';
 import {User, UserFilter} from "./users.types";
 import {USER_WITH_USERS_WHICH_CAN_APPROVE_VOCATION_REQUESTS_FRAGMENT} from "./users.fragments";
 import {Permission} from "../../../graphQL/enums/Permission";
+import {Employment} from "../../../graphQL/enums/Employment";
 
 // Create user types and mutation
 export type CreateUserData = { users: { create: User } }
@@ -12,7 +13,8 @@ export type CreateUserInput = {
     email: string,
     permissions: Permission[],
     password: string,
-    usersWhichCanApproveVocationRequestIds: [string]
+    usersWhichCanApproveVocationRequestIds: [string],
+    employment: Employment,
 }
 export type CreateUserInputType = { UserData: CreateUserInput }
 
@@ -35,6 +37,7 @@ export type UpdateUserInput = {
     middleName: string,
     email: string,
     permissions: Permission[],
+    employment: Employment[],
     usersWhichCanApproveVocationRequestIds: [string]
 }
 export type UpdateUserInputType = { UpdateData: UpdateUserInput }

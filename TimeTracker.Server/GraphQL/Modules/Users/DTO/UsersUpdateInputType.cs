@@ -14,6 +14,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
         public string LastName { get; set; }
         public string MiddleName { get; set; }
         public IEnumerable<Permission> Permissions { get; set; }
+        public Employment Employment { get; set; }
         public IEnumerable<Guid> UsersWhichCanApproveVocationRequestIds { get; set; }
 
         public UserModel ToModel()
@@ -26,6 +27,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
                 LastName = this.LastName,
                 MiddleName = this.MiddleName,
                 Permissions = this.Permissions,
+                Employment = this.Employment,
             };
         }
     }
@@ -53,6 +55,10 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
             Field<NonNullGraphType<StringGraphType>, string>()
                  .Name("MiddleName")
                  .Resolve(context => context.Source.MiddleName);
+
+            Field<NonNullGraphType<EmploymentType>, Employment>()
+                 .Name("Employment")
+                 .Resolve(context => context.Source.Employment);
 
             Field<NonNullGraphType<ListGraphType<PermissionType>>, IEnumerable<Permission>>()
                 .Name("Permissions")
