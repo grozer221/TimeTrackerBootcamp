@@ -17,12 +17,14 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                 .Argument<NonNullGraphType<StringGraphType>, string>("Like", "Argument for a search")
                 .Argument<NonNullGraphType<IntGraphType>, int>("pageSize", "Argument represent count of tracks on page")
                 .Argument<NonNullGraphType<IntGraphType>, int>("pageNumber", "Argument represnt page number")
+                .Argument<NonNullGraphType<StringGraphType>, string>("kind", "Argument for kind filter")
                 .ResolveAsync(async context =>
                 {
                     string like = context.GetArgument<string>("Like");
                     int pageSize = context.GetArgument<int>("pageSize");
                     int pageNumber = context.GetArgument<int>("pageNumber");
-                    return await trackRepository.GetAsync(like, pageSize, pageNumber);
+                    string kind = context.GetArgument<string>("kind");
+                    return await trackRepository.GetAsync(like, pageSize, pageNumber, kind);
                 }).AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<TrackType, TrackModel>()

@@ -25,7 +25,8 @@ export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, 
                 variables: {
                     like: action.payload.like,
                     pageNumber: action.payload.pageNumber,
-                    pageSize: action.payload.pageSize
+                    pageSize: action.payload.pageSize,
+                    kind: action.payload.kind
                 }
             })).pipe(
                 mergeMap(response => [
@@ -33,7 +34,8 @@ export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, 
                     tracksAction.setGetTracksInputData(action.payload),
                     tracksAction.updateTracksMetrics({
                         total: response.data.tracks.get.total,
-                        pageSize: response.data.tracks.get.pageSize
+                        pageSize: response.data.tracks.get.pageSize,
+                        trackKind: response.data.tracks.get.trackKind
                     })
                 ])
             )

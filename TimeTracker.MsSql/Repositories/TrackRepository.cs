@@ -26,19 +26,20 @@ namespace TimeTracker.MsSql.Repositories
             return track;
         }
 
-        public async Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int pageSize, int pageNumber)
+        public async Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int pageSize, int pageNumber, string kind)
         {
             IEnumerable<TrackModel> tracks;
             like = "%" + like + "%";
+            string kindReg = "%" + kind + "%";
 
             int total;
             int skip = (pageNumber - 1) * pageSize;
             
-            string query = "SELECT * FROM Tracks WHERE Title LIKE @like ORDER BY Id OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+            string query = "SELECT * FROM Tracks WHERE Title LIKE @like and Kind LIKE @trackKind ORDER BY StartTime DESC OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                tracks = await db.QueryAsync<TrackModel>(query, new {like, skip, take = pageSize});
+                tracks = await db.QueryAsync<TrackModel>(query, new {like, skip, take = pageSize, trackKind = kindReg});
                 total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like", new { like });
             }
 
@@ -46,7 +47,8 @@ namespace TimeTracker.MsSql.Repositories
             {
                 Entities = tracks,
                 PageSize = pageSize,
-                Total = total
+                Total = total,
+                TrackKind = kind
             };
         }
 

@@ -23,6 +23,7 @@ import './TrackerPage.module.css'
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {ButtonRemove} from "../../../../components/ButtonRemove";
 import {Track} from "../../../tracks/graphQL/tracks.types";
+import Stopwatch from "../../components/TrackerStopwatch";
 
 type FormValues = {
     title: string,
@@ -55,21 +56,20 @@ export const TrackerPage: React.FC = () => {
     const like = searchParams.get('like') || ''
     const pageSize = searchParams.get('pageSize') || '10'
     const pageNumber = searchParams.get('pageNumber') || '1'
-    const removeId = searchParams.get('removeId') || ''
+    const trackKind = searchParams.get('kind') || ''
     const time = new Date();
     time.setSeconds(time.getSeconds() + 600);
 
     const onCreate = async (values: FormValues) => {
         let newTrack: CreateTrackInput = {
             title: values.title || "",
-            kind: TrackKind.Default
+            kind: TrackKind.Sick
         }
         dispatch(tracksAction.createTrack(newTrack))
         form.resetFields()
     };
 
     const onRemove = async (id: string) => {
-        navigate(`/time-tracker?removeId=${id}`)
         let removeTrackId: RemoveTrackInput = {
             id: id
         }
@@ -86,16 +86,18 @@ export const TrackerPage: React.FC = () => {
         dispatch(tracksAction.getAsync({
             like: like,
             pageSize: parseInt(pageSize),
-            pageNumber: parseInt(pageNumber)
+            pageNumber: parseInt(pageNumber),
+            kind: trackKind
         }))
     }, [setSearchParams])
 
     const onChange: PaginationProps['onChange'] = (pageNumber, pageSize) => {
-        navigate(`/time-tracker?pageNumber=${pageNumber}&pageSize=${pageSize}`)
+        navigate(`/time-tracker?pageNumber=${pageNumber}&pageSize=${pageSize}&kind=${trackKind}`)
         dispatch(tracksAction.getAsync({
             like: like,
             pageSize: pageSize,
-            pageNumber: pageNumber
+            pageNumber: pageNumber,
+            kind: trackKind
         }));
     };
     console.log(tracks)
@@ -141,25 +143,26 @@ export const TrackerPage: React.FC = () => {
                     </Col>
                 </Row>
             </Form>
+            <Stopwatch/>
             {tracks.length ? (
                 <div className={s.container}>
                     <div className={s.table_header}>
                         <div className={s.cell} style={{width: '30%'}}>
                             Title
                         </div>
-                        <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
+                        <div className={[s.divider, s.header_divider].join(' ')}/>
                         <div className={s.cell} style={{width: '20%'}}>
                             Hours kind
                         </div>
-                        <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
+                        <div className={[s.divider, s.header_divider].join(' ')}/>
                         <div className={s.cell} style={{width: '20%'}}>
                             Start Time
                         </div>
-                        <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
+                        <div className={[s.divider, s.header_divider].join(' ')}/>
                         <div className={s.cell} style={{width: '20%'}}>
                             End Time
                         </div>
-                        <div className={s.divider} style={{color: "white", borderColor: "white"}}/>
+                        <div className={[s.divider, s.header_divider].join(' ')}/>
                         <div className={s.cell} style={{width: '10%'}}>
                             Tools
                         </div>
@@ -168,7 +171,7 @@ export const TrackerPage: React.FC = () => {
                     {tracks.map((track, index) => (
                         <div className={s.table_row} key={index}>
                             <div className={s.cell} style={{width: '30%'}}>
-                                <EditOutlined className={s.icons}/><Input ref={inputRef} bordered={false}  value={track.title == "" ? ". . ." : track.title}/>
+                                <EditOutlined className={s.icons}/><Input ref={inputRef} bordered={false} value={track.title == "" ? ". . ." : track.title}/>
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '20%'}}>

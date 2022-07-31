@@ -22,6 +22,10 @@ namespace TimeTracker.Server.GraphQL.Abstractions
             Field<NonNullGraphType<IntGraphType>, int>()
                 .Name("PageSize")
                 .Resolve(context => context.Source.PageSize);
+
+            Field<StringGraphType, string>()
+                .Name("TrackKind")
+                .Resolve(context => context.Source.TrackKind);
         }
     }
 }

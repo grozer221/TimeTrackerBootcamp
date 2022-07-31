@@ -7,6 +7,7 @@ type InitialState = {
     tracks: Track[],
     total: number,
     pageSize: number,
+    trackKind: string,
     getTracksInputData: GetTracksInputData | null
 }
 
@@ -14,6 +15,7 @@ const initialState: InitialState = {
     tracks: [],
     total: 0,
     pageSize: 10,
+    trackKind: "",
     getTracksInputData: null
 }
 
@@ -21,11 +23,11 @@ export  const  tracksSlice = createSlice({
     name: 'tracks',
     initialState,
     reducers: {
-        getAsync: (state, action: PayloadAction<{ like: string, pageSize: number, pageNumber: number }>) => state,
+        getAsync: (state, action: PayloadAction<GetTracksInputData>) => state,
         addTracks: (state, action: PayloadAction<Track[]>) =>{
             state.tracks = action.payload
         },
-        updateTracksMetrics: (state, action: PayloadAction<{total: number, pageSize: number}>) => {
+        updateTracksMetrics: (state, action: PayloadAction<{total: number, pageSize: number, trackKind: string}>) => {
             state.total = action.payload.total
             state.pageSize = action.payload.pageSize
         },
