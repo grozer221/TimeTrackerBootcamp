@@ -50,8 +50,8 @@ namespace TimeTracker.MsSql.Repositories
             model.CreatedAt = dateTimeNow;
             model.UpdatedAt = dateTimeNow;
             string query = $@"insert into CalendarDays 
-                            ( Id,  Title,  Date,  Kind,  PercentageWorkHours,  CreatedAt,  UpdatedAt) values 
-                            (@Id, @Title, @Date, @Kind, @PercentageWorkHours, @CreatedAt, @UpdatedAt)";
+                            ( Id,  Title,  Date,  Kind,  WorkHours,  CreatedAt,  UpdatedAt) values 
+                            (@Id, @Title, @Date, @Kind, @WorkHours, @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, model);
@@ -67,7 +67,7 @@ namespace TimeTracker.MsSql.Repositories
             model.UpdatedAt = DateTime.Now;
             string query = @"update CalendarDays
                             SET Title = @Title, Date = @Date, Kind = @Kind, 
-                                PercentageWorkHours = @PercentageWorkHours, UpdatedAt = @UpdatedAt
+                                WorkHours = @WorkHours, UpdatedAt = @UpdatedAt
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {

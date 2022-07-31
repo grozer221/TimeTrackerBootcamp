@@ -2,6 +2,8 @@
 using GraphQL;
 using GraphQL.Types;
 using TimeTracker.Business.Abstractions;
+using TimeTracker.Business.Enums;
+using TimeTracker.Business.Filters;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.Extensions;
@@ -36,8 +38,12 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests
                .ResolveAsync(async context =>
                {
                    var vacationRequestsGetInput = context.GetArgument<VacationRequestsGetInput>("VacationRequestsGetInputType");
+                   if (vacationRequestsGetInput.Filter.Kind == VacationRequestsFilterKind.All)
+                       if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.NoteTheAbsenceAndVacation))
+                           throw new ExecutionError("You can not get all vacation requests");
                    vacationRequestsGetInputValidator.ValidateAndThrow(vacationRequestsGetInput);
-                   return await vacationRequestRepository.GetAsync(vacationRequestsGetInput.PageNumber, vacationRequestsGetInput.PageSize);
+                   var currentUserId = httpContextAccessor.HttpContext.GetUserId();
+                   return await vacationRequestRepository.GetAsync(vacationRequestsGetInput.PageNumber, vacationRequestsGetInput.PageSize, vacationRequestsGetInput.Filter, currentUserId);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
 

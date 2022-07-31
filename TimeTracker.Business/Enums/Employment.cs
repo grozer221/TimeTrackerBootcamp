@@ -2,7 +2,7 @@
 {
     public enum Employment
     {
-        PartTime,
         FullTime,
+        PartTime,
     }
 }

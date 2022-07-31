@@ -32,10 +32,10 @@ export const UpdateUserModal: FC<Props> = () => {
     const email = params['email']
 
     let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
-    let usersForVocation = useSelector((s: RootState) => s.users.usersForVocation)
+    let usersForVacation = useSelector((s: RootState) => s.users.usersForVacation)
 
     useEffect(() => {
-        dispatch(usersActions.fetchUsersForVocationsSelect({filter: {email: ""}, skip: 0, take: 1000}))
+        dispatch(usersActions.fetchUsersForVacationsSelect({filter: {email: ""}, skip: 0, take: 1000}))
     }, [])
 
     const handleOk = async () => {
@@ -52,7 +52,7 @@ export const UpdateUserModal: FC<Props> = () => {
             let updatedUser: UpdateUserInput = {
                 id: user.id,
                 firstName, lastName, middleName, email, permissions,
-                usersWhichCanApproveVocationRequestIds: usersWhichCanApproveVacationRequest
+                usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequest
             } as UpdateUserInput
 
             dispatch(usersActions.updateUser(updatedUser))
@@ -136,10 +136,10 @@ export const UpdateUserModal: FC<Props> = () => {
                         placeholder="Users"
                         filterOption={false}
                         onSearch={(e) => {
-                            dispatch(usersActions.fetchUsersForVocationsSelect({filter: {email: e}, skip: 0, take: 1000}))
+                            dispatch(usersActions.fetchUsersForVacationsSelect({filter: {email: e}, skip: 0, take: 1000}))
                         }}
                     >
-                        {usersForVocation.map((user) => (
+                        {usersForVacation.map((user) => (
                             <Select.Option key={user.id} value={user.id}>
                                 {user.email}
                             </Select.Option>

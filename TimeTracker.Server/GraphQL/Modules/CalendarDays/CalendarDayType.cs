@@ -23,8 +23,8 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays
                .Resolve(context => context.Source.Kind);
             
             Field<NonNullGraphType<IntGraphType>, int>()
-               .Name("PercentageWorkHours")
-               .Resolve(context => context.Source.PercentageWorkHours);
+               .Name("WorkHours")
+               .Resolve(context => context.Source.WorkHours);
         }
     }
 }

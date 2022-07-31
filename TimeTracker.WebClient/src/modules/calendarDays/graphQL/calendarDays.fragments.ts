@@ -6,7 +6,7 @@ export const CALENDAR_DAY_FRAGMENT = gql`
         date
         title
         kind
-        percentageWorkHours
+        workHours
         createdAt
         updatedAt
     }

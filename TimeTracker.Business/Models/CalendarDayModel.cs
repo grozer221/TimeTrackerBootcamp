@@ -8,6 +8,6 @@ namespace TimeTracker.Business.Models
         public string? Title { get; set; }
         public DateTime Date { get; set; }
         public DayKind Kind { get; set; }
-        public int PercentageWorkHours { get; set; }
+        public int WorkHours { get; set; }
     }
 }

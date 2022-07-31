@@ -14,13 +14,13 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsTasksUpdate
 
         public SettingsTasksAutoCreateDaysOff ToModel()
         {
-            var TimeWhenCreateDateTime = new DateTime();
-            TimeWhenCreateDateTime += TimeWhenCreate.ToTimeSpan();
+            var timeWhenCreateDateTime = new DateTime();
+            timeWhenCreateDateTime += TimeWhenCreate.ToTimeSpan();
             return new SettingsTasksAutoCreateDaysOff
             {
                 IsEnabled = this.IsEnabled,
                 DayOfWeekWhenCreate = this.DayOfWeekWhenCreate,
-                TimeWhenCreate = TimeWhenCreateDateTime,
+                TimeWhenCreate = timeWhenCreateDateTime,
                 DaysOfWeek = this.DaysOfWeek,
             };
         }

@@ -14,11 +14,11 @@ export const USER_FRAGMENT = gql`
     }
 `
 
-export const USER_WITH_USERS_WHICH_CAN_APPROVE_VOCATION_REQUESTS_FRAGMENT = gql`
+export const USER_WITH_USERS_WHICH_CAN_APPROVE_VACATION_REQUESTS_FRAGMENT = gql`
     ${USER_FRAGMENT}
-    fragment UserWithUsersWhichCanApproveVocationRequestsFragment on UserType {
+    fragment UserWithUsersWhichCanApproveVacationRequestsFragment on UserType {
         ...UserFragment
-        usersWhichCanApproveVocationRequest {
+        usersWhichCanApproveVacationRequest {
             ...UserFragment
         }
     }
