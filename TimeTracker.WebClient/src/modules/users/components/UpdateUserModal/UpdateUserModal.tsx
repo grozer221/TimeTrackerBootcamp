@@ -1,18 +1,16 @@
 import * as React from 'react';
-import {FC, useEffect, useState} from 'react';
 import {Form, Input, Modal, Select} from "antd";
-import './CreateUserModal.css'
+import {FC, useEffect,} from "react";
 import Title from "antd/lib/typography/Title";
-import {useNavigate} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
-import {useDispatch} from "react-redux";
+import {useDispatch, useSelector} from "react-redux";
 import {User} from "../../graphQL/users.types";
-import {useAppSelector} from "../../../../store/store";
-import {CreateUserInput} from "../../graphQL/users.mutations";
 import {usersActions} from "../../store/users.slice";
-
+import {RootState} from "../../../../store/store";
+import {UpdateUserInput} from "../../graphQL/users.mutations";
 
 type FormValues = {
     firstName: string,
@@ -26,19 +24,18 @@ type FormValues = {
 }
 
 type Props = {};
-export const CreateUserModal: FC<Props> = () => {
+export const UpdateUserModal: FC<Props> = () => {
     const navigate = useNavigate();
     const [form] = useForm()
     const dispatch = useDispatch()
+    const params = useParams();
+    const email = params['email']
 
-    let users = useAppSelector(s => s.users.usersForVocation)
+    let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
+    let usersForVocation = useSelector((s: RootState) => s.users.usersForVocation)
 
     useEffect(() => {
-        dispatch(usersActions.fetchUsersForVocationsSelect({
-            filter: {email: '', permissions: [], roles: []},
-            take: 100,
-            skip: 0,
-        }))
+        dispatch(usersActions.fetchUsersForVocationsSelect({filter: {email: ""}, skip: 0, take: 1000}))
     }, [])
 
     const handleOk = async () => {
@@ -48,39 +45,47 @@ export const CreateUserModal: FC<Props> = () => {
             const lastName = form.getFieldValue(nameof<FormValues>("lastName"))
             const middleName = form.getFieldValue(nameof<FormValues>("middleName"))
             const email = form.getFieldValue(nameof<FormValues>("email"))
-            const password = form.getFieldValue(nameof<FormValues>("password"))
             const permissions = form.getFieldValue(nameof<FormValues>("permissions")) ?? []
             const usersWhichCanApproveVacationRequest =
                 form.getFieldValue(nameof<FormValues>("usersWhichCanApproveVacationRequest")) ?? []
 
-            let newUser: CreateUserInput = {
-                firstName, lastName, middleName, email, permissions, password,
+            let updatedUser: UpdateUserInput = {
+                id: user.id,
+                firstName, lastName, middleName, email, permissions,
                 usersWhichCanApproveVocationRequestIds: usersWhichCanApproveVacationRequest
-            } as CreateUserInput
+            } as UpdateUserInput
 
-            dispatch(usersActions.createUser(newUser))
+            dispatch(usersActions.updateUser(updatedUser))
         } catch (e) {
             console.log(e)
         }
     }
 
-    console.log(users)
-
     return (
         <Modal
-            title={<Title level={4}>Create new User</Title>}
+            title={<Title level={4}>{"Update User " + user.firstName}</Title>}
             // confirmLoading={loading}
             visible={true}
             onOk={handleOk}
-            okText={'Create'}
+            okText={'Update'}
             onCancel={() => navigate(-1)}
         >
             <Form
                 form={form}
-                labelCol={{span: 24}}>
+                labelCol={{span: 24}}
+                initialValues={{
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    middleName: user.middleName,
+                    email: user.email,
+                    permissions: user.permissions,
+                    usersWhichCanApproveVacationRequest: user.usersWhichCanApproveVacationRequest
+                } as FormValues}
+            >
                 <Form.Item name={nameof<FormValues>("firstName")}
                            label={"Firstname:"}
-                           rules={[{required: true, message: 'Please input user Firstname!'}]}>
+                           rules={[{required: true, message: 'Please input user Firstname!'}]}
+                >
                     <Input placeholder="Input user firstname"/>
                 </Form.Item>
 
@@ -98,42 +103,8 @@ export const CreateUserModal: FC<Props> = () => {
 
                 <Form.Item name={nameof<FormValues>("email")}
                            label={"Email:"}
-                           rules={[
-                               {required: true, message: 'Please input user Email!'},
-                               {type:"email" , message: "It's not email!"}
-                           ]}>
+                           rules={[{required: true, message: 'Please input user Email!'}]}>
                     <Input placeholder="example@gmail.com"/>
-                </Form.Item>
-
-                <Form.Item name={nameof<FormValues>("password")}
-                           label={"Password:"}
-                           rules={[{required: true, message: 'Please input user Password!'}]}>
-                    <Input.Password
-                        placeholder="Input user password"
-                    />
-                </Form.Item>
-
-                <Form.Item name={nameof<FormValues>("repeatPassword")}
-                           label={"Repeat password:"}
-                           dependencies={['password']}
-                           hasFeedback
-                           rules={[
-                               {
-                                   required: true,
-                                   message: 'Please confirm password!',
-                               },
-                               ({getFieldValue}) => ({
-                                   validator(_, value) {
-                                       if (!value || getFieldValue('password') === value) {
-                                           return Promise.resolve();
-                                       }
-                                       return Promise.reject(new Error('The two passwords that you entered do not match!'));
-                                   },
-                               }),
-                           ]}>
-                    <Input.Password
-                        placeholder="Repeat password"
-                    />
                 </Form.Item>
 
                 <Form.Item
@@ -164,15 +135,11 @@ export const CreateUserModal: FC<Props> = () => {
                         allowClear
                         placeholder="Users"
                         filterOption={false}
-                        onSearch={(email) => {
-                            dispatch(usersActions.fetchUsersForVocationsSelect({
-                                filter: {email, permissions: [], roles: []},
-                                take: 100,
-                                skip: 0,
-                            }))
+                        onSearch={(e) => {
+                            dispatch(usersActions.fetchUsersForVocationsSelect({filter: {email: e}, skip: 0, take: 1000}))
                         }}
                     >
-                        {users.map((user) => (
+                        {usersForVocation.map((user) => (
                             <Select.Option key={user.id} value={user.id}>
                                 {user.email}
                             </Select.Option>
