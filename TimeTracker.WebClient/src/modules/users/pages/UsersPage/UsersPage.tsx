@@ -135,7 +135,9 @@ export const UsersPage = React.memo(() => {
                 </Link>
             </Col>
             <Col>
-                <ExcelExportButton date={"2022-07-27T16:11:04Z"} like={""}/>
+                <Link to={"createReport"} state={{popup: location}}>
+                    <ExcelExportButton/>
+                </Link>
             </Col>
         </Row>
         <Divider/>
