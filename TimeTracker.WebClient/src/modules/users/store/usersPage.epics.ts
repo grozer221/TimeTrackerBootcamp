@@ -74,6 +74,7 @@ export const createUserEpic: Epic<ReturnType<typeof usersActions.createUser>,
                 }
             })).pipe(
                 mergeMap(response => [
+                    navigateActions.navigate(-1),
                     notificationsActions.addSuccess("User was created!"),
                     usersActions.getAsync({
                         take: state$.value.users.pageSize,
