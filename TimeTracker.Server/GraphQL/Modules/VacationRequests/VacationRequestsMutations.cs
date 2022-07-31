@@ -14,7 +14,7 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests
     public class VacationRequestsMutations : ObjectGraphType
     {
         public VacationRequestsMutations(
-            IUsers_UsersWhichCanApproveVocationRequestsRepository users_UsersWhichCanApproveVocationRequestsRepository,
+            IUsers_UsersWhichCanApproveVacationRequestsRepository users_UsersWhichCanApproveVacationRequestsRepository,
             IVacationRequestRepository vacationRequestRepository,
             IHttpContextAccessor httpContextAccessor,
             IValidator<VacationRequestsCreateInput> vacationRequestsCreateInputValidator,
@@ -58,7 +58,7 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests
 
             //       var currentUserId = httpContextAccessor.HttpContext.GetUserId();
             //       if (oldVacationRequest.UserId != currentUserId)
-            //           if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.NoteTheAbsenceAndVocation))
+            //           if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.NoteTheAbsenceAndVacation))
             //               throw new ExecutionError("You do not have permissions for update vacation request");
 
             //       Guid userIdForGetAvaliableDays;
@@ -90,10 +90,10 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests
                    await vacationRequestsUpdateStatusInputValidator.ValidateAndThrowAsync(vacationRequestsUpdateStatusInput);
 
                    var oldVacationRequest = await vacationRequestRepository.GetByIdAsync(vacationRequestsUpdateStatusInput.Id);
-                   var usersWhichCanApproveVacationRequests = await users_UsersWhichCanApproveVocationRequestsRepository.GetUsersWhichCanApproveVacationRequests(oldVacationRequest.UserId);
+                   var usersWhichCanApproveVacationRequests = await users_UsersWhichCanApproveVacationRequestsRepository.GetUsersWhichCanApproveVacationRequests(oldVacationRequest.UserId);
                    var currentUserId = httpContextAccessor.HttpContext.GetUserId();
                    if (!usersWhichCanApproveVacationRequests.Any(u => u.Id == currentUserId))
-                       if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.NoteTheAbsenceAndVocation))
+                       if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.NoteTheAbsenceAndVacation))
                            throw new ExecutionError("You do not have permissions for update status vacation request");
 
                    Guid userIdForGetAvaliableDays;
@@ -136,7 +136,7 @@ namespace TimeTracker.Server.GraphQL.Modules.VacationRequests
 
                    var currentUserId = httpContextAccessor.HttpContext.GetUserId();
                    if (vacationRequest.UserId != currentUserId)
-                       if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.NoteTheAbsenceAndVocation))
+                       if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.NoteTheAbsenceAndVacation))
                            throw new ExecutionError("You do not have permissions for update vacation request");
 
                    await vacationRequestRepository.RemoveAsync(id);

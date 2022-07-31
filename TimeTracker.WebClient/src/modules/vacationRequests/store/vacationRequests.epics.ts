@@ -4,21 +4,27 @@ import {catchError, endWith, from, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
 import {vacationRequestsActions} from "./vacationRequests.slice";
 import {
-    VACATION_REQUESTS_GET_AVAILABLE_DAYS_QUERY, VACATION_REQUESTS_GET_BY_ID_QUERY,
+    VACATION_REQUESTS_GET_AVAILABLE_DAYS_QUERY,
+    VACATION_REQUESTS_GET_BY_ID_QUERY,
     VACATION_REQUESTS_GET_QUERY,
     VacationRequestsGetAvailableDaysData,
-    VacationRequestsGetAvailableDaysVars, VacationRequestsGetByIdData, VacationRequestsGetByIdVars,
+    VacationRequestsGetAvailableDaysVars,
+    VacationRequestsGetByIdData,
+    VacationRequestsGetByIdVars,
     VacationRequestsGetData,
     VacationRequestsGetVars
 } from "../graphQL/vacationRequests.queries";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
 import {
     VACATION_REQUESTS_CREATE_MUTATION,
-    VACATION_REQUESTS_REMOVE_MUTATION, VACATION_REQUESTS_UPDATE_STATUS_MUTATION,
+    VACATION_REQUESTS_REMOVE_MUTATION,
+    VACATION_REQUESTS_UPDATE_STATUS_MUTATION,
     VacationRequestsCreateData,
     VacationRequestsCreateVars,
     VacationRequestsRemoveData,
-    VacationRequestsRemoveVars, VacationRequestsUpdateStatusData, VacationRequestsUpdateStatusVars
+    VacationRequestsRemoveVars,
+    VacationRequestsUpdateStatusData,
+    VacationRequestsUpdateStatusVars
 } from "../graphQL/vacationRequests.mutations";
 import {navigateActions} from "../../navigate/store/navigate.slice";
 
@@ -69,10 +75,14 @@ export const getAsyncEpic: Epic<ReturnType<typeof vacationRequestsActions.getAsy
                 query: VACATION_REQUESTS_GET_QUERY,
                 variables: {vacationRequestsGetInputType: action.payload}
             })).pipe(
-                mergeMap(response => [
-                    vacationRequestsActions.setVacationRequestsGetInputType(action.payload),
-                    vacationRequestsActions.setVacationRequests(response.data.vacationRequests.get)
-                ]),
+                mergeMap(response => {
+                    return response.errors?.length
+                        ? response.errors.map(error => notificationsActions.addError(error.message))
+                        : [
+                            vacationRequestsActions.setVacationRequestsGetInputType(action.payload),
+                            vacationRequestsActions.setVacationRequests(response.data.vacationRequests.get)
+                        ]
+                }),
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(vacationRequestsActions.setLoadingGet(true)),
                 endWith(vacationRequestsActions.setLoadingGet(false)),

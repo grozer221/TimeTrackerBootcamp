@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business.Filters;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 
@@ -34,18 +35,52 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public async Task<GetEntitiesResponse<VacationRequestModel>> GetAsync(int pageNumber, int pageSize)
+        public async Task<GetEntitiesResponse<VacationRequestModel>> GetAsync(int pageNumber, int pageSize, VacationRequestsFilter filter, Guid currentUserId)
         {
-            string getCountQuery = @"select count(*) from VacationRequests";
+            string query = @"select {0} from VacationRequests";
 
-            string getEntitiesQuery = @"select * from VacationRequests
-                                        ORDER BY DateStart desc
-                                        OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+            var wheres = new List<string>();
+            if (filter.Statuses.Count() > 0)
+                wheres.Add("status in @statuses");
+            if (filter.UserIds.Count() > 0)
+                wheres.Add("userId in @userIds");
+
+            switch (filter.Kind)
+            {
+                case VacationRequestsFilterKind.CanApprove:
+                    wheres.Add(@"userId in 
+	                            (select userId from Users_UsersWhichCanApproveVacationRequests 
+	                            join Users on Users_UsersWhichCanApproveVacationRequests.UserWhichCanApproveVacationRequestId = Users.Id
+	                            where userWhichCanApproveVacationRequestId = @currentUserId)");
+                    break;
+                case VacationRequestsFilterKind.Mine:
+                    wheres.Add(@"userId = @currentUserId");
+                    break;
+                case VacationRequestsFilterKind.All:
+                default:
+                    break;
+            }
+
+            if(wheres.Count > 0)
+                query += @" where " + string.Join(" and ", wheres);
+
+            string getCountQuery = string.Format(query, "count(*)");
+            string getEntitiesQuery = string.Format(query, "*");
+
+            getEntitiesQuery += @" ORDER BY DateStart desc
+                                    OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
 
             int skip = (pageNumber - 1) * pageSize;
             using (var connection = dapperContext.CreateConnection())
             {
-                var reader = await connection.QueryMultipleAsync($"{getCountQuery};{getEntitiesQuery}", new { skip, take = pageSize });
+                var reader = await connection.QueryMultipleAsync($"{getCountQuery};{getEntitiesQuery}", new 
+                { 
+                    skip,
+                    take = pageSize, 
+                    statuses = filter.Statuses,
+                    userIds = filter.UserIds,
+                    currentUserId,
+                });
                 int total = reader.Read<int>().FirstOrDefault();
                 var vacationRequests = reader.Read<VacationRequestModel>();
                 return new GetEntitiesResponse<VacationRequestModel>

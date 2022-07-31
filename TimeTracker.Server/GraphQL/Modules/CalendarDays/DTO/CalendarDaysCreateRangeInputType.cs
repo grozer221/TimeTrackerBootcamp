@@ -14,7 +14,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
         public DateTime To { get; set; }
         public IEnumerable<DayOfWeek> DaysOfWeek { get; set; }
         public DayKind Kind { get; set; }
-        public int PercentageWorkHours { get; set; }
+        public int WorkHours { get; set; }
         public bool Override { get; set; }
 
         public async Task<IEnumerable<CalendarDayModel>> ToListAsync(ICalendarDayManager calendarDayManager)
@@ -38,7 +38,7 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                         Title = this.Title,
                         Date = fromCopy,
                         Kind = this.Kind,
-                        PercentageWorkHours = this.PercentageWorkHours,
+                        WorkHours = this.WorkHours,
                     });
                 }
                 fromCopy = fromCopy.AddDays(1);
@@ -72,8 +72,8 @@ namespace TimeTracker.Server.GraphQL.Modules.CalendarDays.DTO
                  .Resolve(context => context.Source.Kind);
 
             Field<NonNullGraphType<IntGraphType>, int>()
-                 .Name("PercentageWorkHours")
-                 .Resolve(context => context.Source.PercentageWorkHours);
+                 .Name("WorkHours")
+                 .Resolve(context => context.Source.WorkHours);
             
             Field<NonNullGraphType<BooleanGraphType>, bool>()
                  .Name("Override")

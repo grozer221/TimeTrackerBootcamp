@@ -6,14 +6,14 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsTasksUpdate
 {
     public class SettingsTasksUpdateInput : IModelable<SettingsTasks>
     {
-        public SettingsTasksAutoSetWorkingHoursForFullTimersInput AutoSetWorkingHoursForFullTimers { get; set; }
+        public SettingsTasksAutoCreateTracksInput AutoCreateTracks { get; set; }
         public SettingsTasksAutoCreateDaysOffInput AutoCreateDaysOff { get; set; }
 
         public SettingsTasks ToModel()
         {
             return new SettingsTasks
             {
-                AutoSetWorkingHoursForFullTimers = this.AutoSetWorkingHoursForFullTimers.ToModel(),
+                AutoCreateTracks = this.AutoCreateTracks.ToModel(),
                 AutoCreateDaysOff = this.AutoCreateDaysOff.ToModel(),
             };
         }
@@ -23,9 +23,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.DTO.SettingsTasksUpdate
     {
         public SettingsTasksUpdateInputType()
         {
-            Field<SettingsTasksAutoSetWorkingHoursForFullTimersInputType, SettingsTasksAutoSetWorkingHoursForFullTimersInput>()
-                 .Name("AutoSetWorkingHoursForFullTimers")
-                 .Resolve(context => context.Source.AutoSetWorkingHoursForFullTimers);
+            Field<SettingsTasksAutoCreateTracksInputType, SettingsTasksAutoCreateTracksInput>()
+                 .Name("AutoCreateTracks")
+                 .Resolve(context => context.Source.AutoCreateTracks);
             
             Field<SettingsTasksAutoCreateDaysOffInputType, SettingsTasksAutoCreateDaysOffInput>()
                  .Name("AutoCreateDaysOff")

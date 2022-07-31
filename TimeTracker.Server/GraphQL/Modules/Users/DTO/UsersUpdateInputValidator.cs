@@ -41,24 +41,24 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
                 })
                 .WithMessage("Permissions can not duplicate");
 
-            RuleFor(l => l.UsersWhichCanApproveVocationRequestIds)
+            RuleFor(l => l.UsersWhichCanApproveVacationRequestIds)
                .NotNull()
-               .MustAsync(async (usersWhichCanApproveVocationRequestIds, _) =>
+               .MustAsync(async (usersWhichCanApproveVacationRequestIds, _) =>
                {
-                   foreach (var userWhichCanApproveVocationRequestId in usersWhichCanApproveVocationRequestIds)
+                   foreach (var usersWhichCanApproveVacationRequestId in usersWhichCanApproveVacationRequestIds)
                    {
-                       var user = await userRepository.GetByIdAsync(userWhichCanApproveVocationRequestId);
+                       var user = await userRepository.GetByIdAsync(usersWhichCanApproveVacationRequestId);
                        if (user == null)
                            return false;
                    }
                    return true;
                })
-               .WithMessage("One of users which can approve vocation request ids does not exists")
-               .Must(usersWhichCanApproveVocationRequestIds =>
+               .WithMessage("One of users which can approve vacation request ids does not exists")
+               .Must(usersWhichCanApproveVacationRequestIds =>
                {
-                   return usersWhichCanApproveVocationRequestIds.Count() == usersWhichCanApproveVocationRequestIds.Distinct().Count();
+                   return usersWhichCanApproveVacationRequestIds.Count() == usersWhichCanApproveVacationRequestIds.Distinct().Count();
                })
-               .WithMessage("Users which can approve vocation request ids can not duplicate");
+               .WithMessage("Users which can approve vacation request ids can not duplicate");
         }
     }
 }

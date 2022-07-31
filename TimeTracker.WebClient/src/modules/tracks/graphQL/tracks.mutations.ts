@@ -1,11 +1,12 @@
 import {gql} from "@apollo/client";
 import {TRACK_FRAGMENT} from "./tracks.fragments";
 import {Track} from "./tracks.types";
+import {TrackKind} from "../../../graphQL/enums/TrackKind";
 
 export type CreateTrackData = { tracks: {create: Track} }
 export type CreateTrackInput = {
     title: string,
-    description: string | null
+    kind: TrackKind | TrackKind.Default
 }
 export type CreateTrackInputType = { TrackData: CreateTrackInput}
 

@@ -69,14 +69,25 @@ namespace TimeTracker.Server.Extensions
         public static IServiceCollection AddTasks(this IServiceCollection services)
         {
             services.AddHostedService<TasksService>();
+
+            services.AddScoped<ITask, AutoCreateDaysOffTask>();
             services.AddScoped<AutoCreateDaysOffTask>();
+
+            services.AddScoped<ITask, AutoCreateTracks>();
+            services.AddScoped<AutoCreateTracks>();
+
             services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
             services.AddQuartz(q =>
             {
                 q.UseMicrosoftDependencyInjectionScopedJobFactory();
-                q.AddJob<AutoCreateDaysOffTask>(configure => configure.WithIdentity(AutoCreateDaysOffTask.JobKey));
+
                 var autoCreateDaysOffTask = services.BuildServiceProvider().GetRequiredService<AutoCreateDaysOffTask>();
+                q.AddJob<AutoCreateDaysOffTask>(configure => configure.WithIdentity(autoCreateDaysOffTask.JobKey));
                 q.AddTrigger(configure => autoCreateDaysOffTask.ConfigureTriggerConfiguratorAsync(configure).GetAwaiter().GetResult());
+
+                var autoCreateTracks = services.BuildServiceProvider().GetRequiredService<AutoCreateTracks>();
+                q.AddJob<AutoCreateTracks>(configure => configure.WithIdentity(autoCreateTracks.JobKey));
+                q.AddTrigger(configure => autoCreateTracks.ConfigureTriggerConfiguratorAsync(configure).GetAwaiter().GetResult());
             });
             return services;
         }

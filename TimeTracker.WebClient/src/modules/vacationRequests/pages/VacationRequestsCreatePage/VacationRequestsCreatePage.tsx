@@ -27,6 +27,7 @@ type RangeValue = [Moment | null, Moment | null] | null;
 export const VacationRequestsCreatePage: FC = () => {
     const location = useLocation();
     const dispatch = useAppDispatch();
+    const settings = useAppSelector(s => s.settings.settings)
     const loadingGet = useAppSelector(s => s.vacationRequests.loadingGet)
     const loadingGetAvailableDays = useAppSelector(s => s.vacationRequests.loadingGetAvailableDays)
     const availableDays = useAppSelector(s => s.vacationRequests.availableDays)
@@ -122,7 +123,7 @@ export const VacationRequestsCreatePage: FC = () => {
                                     disabled={loadingGetAvailableDays}
                                     onClick={() => dispatch(vacationRequestsActions.getAvailableDaysAsync())}
                                 />
-                                <span>Available days: {availableDays}</span>
+                                <span>Available days: {availableDays} from {settings?.vacationRequests.amountDaysPerYear}</span>
                             </Space>
                         </Text>
                     </WithSmallLoading>

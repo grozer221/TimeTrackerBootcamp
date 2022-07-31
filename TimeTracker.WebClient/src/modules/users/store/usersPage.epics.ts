@@ -39,10 +39,10 @@ export const getUsersEpic: Epic<ReturnType<typeof usersActions.getAsync>, any, R
     )
 }
 
-export const getUsersForVocationsSelectEpic: Epic<ReturnType<typeof usersActions.fetchUsersForVocationsSelect>,
+export const getUsersForVacationsSelectEpic: Epic<ReturnType<typeof usersActions.fetchUsersForVacationsSelect>,
     any, RootState> = (action$, state$) => {
     return action$.pipe(
-        ofType(usersActions.fetchUsersForVocationsSelect.type),
+        ofType(usersActions.fetchUsersForVacationsSelect.type),
         debounceTime(100),
         mergeMap(action =>
             from(client.query<GetUsersDataType, GetUsersInputType>({
@@ -54,7 +54,7 @@ export const getUsersForVocationsSelectEpic: Epic<ReturnType<typeof usersActions
                 }
             })).pipe(
                 mergeMap(response => [
-                    usersActions.addUsersForVocationsSelect(response.data.users.get.entities)
+                    usersActions.addUsersForVacationsSelect(response.data.users.get.entities)
                 ])
             )
         ),
@@ -135,7 +135,7 @@ export const updateUserEpic: Epic<ReturnType<typeof usersActions.updateUser>,
 
 export const usersPageEpics = combineEpics(
     getUsersEpic,
-    getUsersForVocationsSelectEpic,
+    getUsersForVacationsSelectEpic,
     // @ts-ignore
     createUserEpic,
     removeUserEpic,

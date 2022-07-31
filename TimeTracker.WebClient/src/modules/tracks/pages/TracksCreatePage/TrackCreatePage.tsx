@@ -6,10 +6,11 @@ import {nameof} from "../../../../utils/stringUtils";
 import {CreateTrackInput} from "../../graphQL/tracks.mutations";
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../store/tracks.slice";
+import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 
 type FormValues = {
     title: string,
-    description: string | null
+    kind: TrackKind | TrackKind.Default
 }
 
 export const TrackCreatePage = () => {
@@ -20,12 +21,12 @@ export const TrackCreatePage = () => {
         try {
             await form.validateFields()
             const title = form.getFieldValue(nameof<FormValues>('title'))
-            const description = form.getFieldValue(nameof<FormValues>('description'))
+            const kind = form.getFieldValue(nameof<FormValues>('kind'))
 
             let newTrack: CreateTrackInput = {
                 title,
-                description
-            } as CreateTrackInput
+                kind
+            }
 
             dispatch(tracksAction.createTrack(newTrack))
             navigate(-1)
@@ -50,9 +51,9 @@ export const TrackCreatePage = () => {
                 <Form.Item name={nameof<FormValues>('title')} label="Title" rules={[{ required: true }]}>
                     <Input />
                 </Form.Item>
-                <Form.Item name={nameof<FormValues>('description')} label="Description" rules={[{ required: false }]}>
+                {/*<Form.Item name={nameof<FormValues>('description')} label="Description" rules={[{ required: false }]}>
                     <Input />
-                </Form.Item>
+                </Form.Item>*/}
             </Form>
         </Modal>
 

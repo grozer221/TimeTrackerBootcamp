@@ -1,17 +1,20 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Track} from "../graphQL/tracks.types";
 import {CreateTrackInput} from "../graphQL/tracks.mutations";
+import {GetTracksInputData} from "../graphQL/tracks.queries";
 
 type InitialState = {
     tracks: Track[],
     total: number,
-    pageSize: number
+    pageSize: number,
+    getTracksInputData: GetTracksInputData | null
 }
 
 const initialState: InitialState = {
     tracks: [],
     total: 0,
-    pageSize: 10
+    pageSize: 10,
+    getTracksInputData: null
 }
 
 export  const  tracksSlice = createSlice({
@@ -26,8 +29,12 @@ export  const  tracksSlice = createSlice({
             state.total = action.payload.total
             state.pageSize = action.payload.pageSize
         },
-        createTrack: (state, action: PayloadAction<CreateTrackInput>) => state
+        createTrack: (state, action: PayloadAction<CreateTrackInput>) => state,
+        setGetTracksInputData: (state, action: PayloadAction<GetTracksInputData>) => {
+            state.getTracksInputData = action.payload
+        }
     }
+
 })
 
 export const tracksAction = tracksSlice.actions

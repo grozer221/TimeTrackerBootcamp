@@ -31,10 +31,10 @@ export const CreateUserModal: FC<Props> = () => {
     const [form] = useForm()
     const dispatch = useDispatch()
 
-    let users = useAppSelector(s => s.users.usersForVocation)
+    let users = useAppSelector(s => s.users.usersForVacation)
 
     useEffect(() => {
-        dispatch(usersActions.fetchUsersForVocationsSelect({
+        dispatch(usersActions.fetchUsersForVacationsSelect({
             filter: {email: '', permissions: [], roles: []},
             take: 100,
             skip: 0,
@@ -55,7 +55,7 @@ export const CreateUserModal: FC<Props> = () => {
 
             let newUser: CreateUserInput = {
                 firstName, lastName, middleName, email, permissions, password,
-                usersWhichCanApproveVocationRequestIds: usersWhichCanApproveVacationRequest
+                usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequest
             } as CreateUserInput
 
             dispatch(usersActions.createUser(newUser))
@@ -165,7 +165,7 @@ export const CreateUserModal: FC<Props> = () => {
                         placeholder="Users"
                         filterOption={false}
                         onSearch={(email) => {
-                            dispatch(usersActions.fetchUsersForVocationsSelect({
+                            dispatch(usersActions.fetchUsersForVacationsSelect({
                                 filter: {email, permissions: [], roles: []},
                                 take: 100,
                                 skip: 0,

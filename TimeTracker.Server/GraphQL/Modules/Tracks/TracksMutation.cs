@@ -83,8 +83,6 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     var model = await trackRepository.GetByIdAsync(track.Id);
                     if (track.Title != null)
                         model.Title = track.Title;
-                    if (track.Description != null)
-                        model.Description = track.Description;
                     if (track.StartTime != null)
                         model.StartTime = track.StartTime;
                     if (track.EndTime != null)

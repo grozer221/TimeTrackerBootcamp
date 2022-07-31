@@ -8,9 +8,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes.Se
     {
         public SettingsTasksType()
         {
-            Field<SettingsTasksAutoSetWorkingHoursForFullTimersType, SettingsTasksAutoSetWorkingHoursForFullTimers>()
-               .Name("AutoSetWorkingHoursForFullTimers")
-               .Resolve(context => context.Source.AutoSetWorkingHoursForFullTimers);
+            Field<SettingsTasksAutoCreateTracksType, SettingsTasksAutoCreateTracks?>()
+               .Name("AutoCreateTracks")
+               .Resolve(context => context.Source.AutoCreateTracks);
 
             Field<SettingsTasksAutoCreateDaysOffType, SettingsTasksAutoCreateDaysOff?>()
                .Name("AutoCreateDaysOff")
