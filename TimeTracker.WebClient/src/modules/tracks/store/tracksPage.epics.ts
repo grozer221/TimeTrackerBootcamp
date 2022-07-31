@@ -4,10 +4,13 @@ import {catchError, debounceTime, from, mergeMap, of} from "rxjs";
 import {client} from "../../../graphQL/client";
 import {TRACKS_GET_QUERY, GetTracksData, GetTracksInputData} from "../graphQL/tracks.queries";
 import {
-    CreateTrackData,
+    CreateTrack,
     CreateTrackInput,
     CreateTrackInputType,
-    TRACK_CREATE_MUTATION
+    RemoveTrack,
+    RemoveTrackInputType,
+    TRACK_CREATE_MUTATION,
+    TRACK_REMOVE_NUTATION
 } from "../graphQL/tracks.mutations";
 import {tracksAction} from "./tracks.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
@@ -43,7 +46,7 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
     return action$.pipe(
         ofType(tracksAction.createTrack.type),
         mergeMap(action =>
-            from(client.mutate<CreateTrackData, CreateTrackInputType>({
+            from(client.mutate<CreateTrack, CreateTrackInputType>({
                 mutation: TRACK_CREATE_MUTATION,
                 variables: {
                     TrackData: action.payload
@@ -63,8 +66,32 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
     )
 }
 
+export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, any, RootState> = (action$, state$) =>{
+    return action$.pipe(
+        ofType(tracksAction.removeTrack.type),
+        mergeMap(action =>
+            from(client.mutate<RemoveTrack, RemoveTrackInputType>({
+                mutation: TRACK_REMOVE_NUTATION,
+                variables: {
+                    TrackData: action.payload
+                }
+            })).pipe(
+                mergeMap(response=>{
+                    const tracksInputData = state$.value.tracks.getTracksInputData
+                    return [
+                        tracksInputData && tracksAction.getAsync(tracksInputData),
+                        notificationsActions.addWarning("Track deleted!")
+                    ]
+                })
+            )
+        ),
+        catchError(error => of(notificationsActions.addError(error.message))),
+    )
+}
+
 export const tracksPageEpics = combineEpics(
     getTracksEpic,
     // @ts-ignore
-    createTrackEpic
+    createTrackEpic,
+    removeTrackEpic
 )
