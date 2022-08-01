@@ -2,6 +2,7 @@ import {gql} from '@apollo/client';
 import {VACATION_REQUEST_FRAGMENT} from "./vacationRequests.fragments";
 import {GetEntitiesResponse} from "../../../graphQL/types/getEntitiesResponse";
 import {VacationRequest} from "./vacationRequests.types";
+import {VacationRequestStatus} from "../../../graphQL/enums/VacationRequestStatus";
 
 export type VacationRequestsGetByIdData = { vacationRequests: { getById: VacationRequest } }
 export type VacationRequestsGetByIdVars = { id: string }
@@ -21,6 +22,17 @@ export type VacationRequestsGetVars = { vacationRequestsGetInputType: VacationRe
 export type VacationRequestsGetInputType = {
     pageNumber: number,
     pageSize: number,
+    filter: VacationRequestsFilterInputType
+}
+export type VacationRequestsFilterInputType = {
+    statuses: VacationRequestStatus[],
+    userIds: string[],
+    kind: VacationRequestsFilterKind,
+}
+export enum VacationRequestsFilterKind {
+    Mine = "MINE",
+    CanApprove = 'CAN_APPROVE',
+    All = 'ALL',
 }
 export const VACATION_REQUESTS_GET_QUERY = gql`
     ${VACATION_REQUEST_FRAGMENT}

@@ -13,8 +13,8 @@ import {SettingsTasksUpdateInputType} from "../../graphQL/settings.mutations";
 import {settingsActions} from "../../store/settings.slice";
 
 type FormValues = {
-    autoSetWorkingHoursForFullTimers_IsEnabled: boolean,
-    autoSetWorkingHoursForFullTimers_TimeWhenCreate?: Moment,
+    autoCreateTracks_IsEnabled: boolean,
+    autoCreateTracks_TimeWhenCreate?: Moment,
     autoCreateDaysOff_IsEnabled: boolean,
     autoCreateDaysOff_DayOfWeekWhenCreate?: DayOfWeek,
     autoCreateDaysOff_TimeWhenCreate?: Moment,
@@ -27,13 +27,13 @@ export const SettingsTasksUpdate: FC = () => {
     const loading = useSelector((s: RootState) => s.settings.loadingUpdate)
     const settings = useSelector((s: RootState) => s.settings.settings)
     const autoCreateDaysOff_IsEnabled = Form.useWatch(nameof<FormValues>('autoCreateDaysOff_IsEnabled'), form);
-    const autoSetWorkingHoursForFullTimers_IsEnabled = Form.useWatch(nameof<FormValues>('autoSetWorkingHoursForFullTimers_IsEnabled'), form);
+    const autoCreateTracks_IsEnabled = Form.useWatch(nameof<FormValues>('autoCreateTracks_IsEnabled'), form);
 
     const onFinish = (values: FormValues) => {
         const settingsTasksUpdateInputType: SettingsTasksUpdateInputType = {
-            autoSetWorkingHoursForFullTimers: {
-                isEnabled: values.autoSetWorkingHoursForFullTimers_IsEnabled,
-                timeWhenCreate: values.autoSetWorkingHoursForFullTimers_TimeWhenCreate?.format('HH:mm:ss'),
+            autoCreateTracks: {
+                isEnabled: values.autoCreateTracks_IsEnabled,
+                timeWhenCreate: values.autoCreateTracks_TimeWhenCreate?.format('HH:mm:ss'),
             },
             autoCreateDaysOff: {
                 isEnabled: values.autoCreateDaysOff_IsEnabled,
@@ -51,8 +51,8 @@ export const SettingsTasksUpdate: FC = () => {
     }
 
     const initialValues: FormValues = {
-        autoSetWorkingHoursForFullTimers_IsEnabled: settings?.tasks?.autoSetWorkingHoursForFullTimers?.isEnabled || false,
-        autoSetWorkingHoursForFullTimers_TimeWhenCreate: moment(settings?.tasks?.autoSetWorkingHoursForFullTimers?.timeWhenCreate, 'HH:mm:ss'),
+        autoCreateTracks_IsEnabled: settings?.tasks?.autoCreateTracks?.isEnabled || false,
+        autoCreateTracks_TimeWhenCreate: moment(settings?.tasks?.autoCreateTracks?.timeWhenCreate, 'HH:mm:ss'),
         autoCreateDaysOff_IsEnabled: settings?.tasks?.autoCreateDaysOff?.isEnabled || false,
         autoCreateDaysOff_DayOfWeekWhenCreate: settings?.tasks?.autoCreateDaysOff?.dayOfWeekWhenCreate,
         autoCreateDaysOff_TimeWhenCreate: moment(settings?.tasks?.autoCreateDaysOff?.timeWhenCreate, 'HH:mm:ss'),
@@ -70,23 +70,23 @@ export const SettingsTasksUpdate: FC = () => {
             <div className={'settingsBlock'}>
                 <Space>
                     <Form.Item
-                        name={nameof<FormValues>('autoSetWorkingHoursForFullTimers_IsEnabled')}
+                        name={nameof<FormValues>('autoCreateTracks_IsEnabled')}
                         style={{marginBottom: 0}}
                     >
                         <Switch size={'small'}
-                                defaultChecked={initialValues.autoSetWorkingHoursForFullTimers_IsEnabled}/>
+                                defaultChecked={initialValues.autoCreateTracks_IsEnabled}/>
                     </Form.Item>
-                    <Title level={4}>Auto set working hours for full timers</Title>
+                    <Title level={4}>Auto create tracks</Title>
                 </Space>
                 <Row gutter={16}>
                     <Col span={8}>
                         <Form.Item
-                            label="Time when set"
-                            name={nameof<FormValues>('autoSetWorkingHoursForFullTimers_TimeWhenCreate')}
+                            label="Time when create"
+                            name={nameof<FormValues>('autoCreateTracks_TimeWhenCreate')}
                         >
                             <TimePicker
                                 placeholder={'Time when set'}
-                                disabled={!autoSetWorkingHoursForFullTimers_IsEnabled}
+                                disabled={!autoCreateTracks_IsEnabled}
                             />
                         </Form.Item>
                     </Col>

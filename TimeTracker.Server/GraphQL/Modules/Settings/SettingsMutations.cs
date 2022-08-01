@@ -5,6 +5,7 @@ using Quartz;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
+using TimeTracker.Server.Abstractions;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.Settings.DTO;
@@ -23,7 +24,8 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
             IValidator<SettingsEmailUpdateInput> settingsEmailUpdateInputValidator, 
             IValidator<SettingsVacationRequestsUpdateInput> settingsVacationRequestsUpdateInputValidator, 
             ISchedulerFactory schedulerFactory,
-            AutoCreateDaysOffTask autoCreateDaysOffTask)
+            IEnumerable<ITask> tasks
+            )
         {
             Field<NonNullGraphType<SettingsType>, SettingsModel>()
                .Name("UpdateEmployment")
@@ -64,12 +66,11 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings
                    var settingsCommon = settingsTasksUpdateInput.ToModel();
                    var newSettings = await settingsManager.UpdateTasksAsync(settingsCommon);
 
-                   var scheduler = await schedulerFactory.GetScheduler();
-                   await scheduler.RescheduleJob(AutoCreateDaysOffTask.TriggerKey, await autoCreateDaysOffTask.CreateTriggerAsync());
-                    if (newSettings.Tasks.AutoCreateDaysOff.IsEnabled)
-                        await scheduler.ResumeJob(AutoCreateDaysOffTask.JobKey);
-                    else
-                        await scheduler.PauseJob(AutoCreateDaysOffTask.JobKey);
+                   foreach(var task in tasks)
+                   {
+                       await task.RescheduleAsync();
+                   }
+
                    return newSettings;
                })
                .AuthorizeWith(AuthPolicies.Authenticated);

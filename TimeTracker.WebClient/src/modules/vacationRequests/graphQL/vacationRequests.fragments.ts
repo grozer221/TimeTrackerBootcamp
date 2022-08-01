@@ -1,8 +1,8 @@
 import {gql} from "@apollo/client";
-import {USER_FRAGMENT} from "../../users/graphQL/users.fragments";
+import {USER_WITH_USERS_WHICH_CAN_APPROVE_VACATION_REQUESTS_FRAGMENT} from "../../users/graphQL/users.fragments";
 
 export const VACATION_REQUEST_FRAGMENT = gql`
-    ${USER_FRAGMENT}
+    ${USER_WITH_USERS_WHICH_CAN_APPROVE_VACATION_REQUESTS_FRAGMENT}
     fragment VacationRequestFragment on VacationRequestType {
         id
         dateStart
@@ -11,7 +11,7 @@ export const VACATION_REQUEST_FRAGMENT = gql`
         status
         userId
         user {
-            ...UserFragment
+            ...UserWithUsersWhichCanApproveVacationRequestsFragment
         }
         createdAt
         updatedAt

@@ -14,7 +14,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
     {
         public UsersMutations(
             IUserRepository userRepository,
-            IUsers_UsersWhichCanApproveVocationRequestsRepository users_UsersWhichCanApproveVocationRequestsRepository,
+            IUsers_UsersWhichCanApproveVacationRequestsRepository users_UsersWhichCanApproveVacationRequestsRepository,
             IHttpContextAccessor httpContextAccessor,
             IAccessTokenRepository aceessTokenRepository,
             IValidator<UsersCreateInput> usersCreateInputValidator,
@@ -36,14 +36,14 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                    user.Password = user.Password.CreateMD5WithSalt(out var salt);
                    user.Salt = salt;
                    user = await userRepository.CreateAsync(user);
-                   foreach (var userWhichCanApproveVocationRequestId in usersCreateInput.UsersWhichCanApproveVocationRequestIds)
+                   foreach (var userWhichCanApproveVacationRequestId in usersCreateInput.UsersWhichCanApproveVacationRequestIds)
                    {
-                       var userWhichCanApproveVocationRequest = new Users_UsersWhichCanApproveVocationRequests
+                       var userWhichCanApproveVacationRequest = new Users_UsersWhichCanApproveVacationRequests
                        {
                            UserId = user.Id,
-                           UserWhichCanApproveVocationRequestId = userWhichCanApproveVocationRequestId,
+                           UserWhichCanApproveVacationRequestId = userWhichCanApproveVacationRequestId,
                        };
-                       await users_UsersWhichCanApproveVocationRequestsRepository.CreateUsersWhichCanApproveVacationRequests(userWhichCanApproveVocationRequest);
+                       await users_UsersWhichCanApproveVacationRequestsRepository.CreateUsersWhichCanApproveVacationRequests(userWhichCanApproveVacationRequest);
                    }
                    return user;
                })
@@ -60,15 +60,15 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                    await usersUpdateInputValidator.ValidateAndThrowAsync(usersUpdateInput);
                    var user = usersUpdateInput.ToModel();
                    user = await userRepository.UpdateAsync(user);
-                   await users_UsersWhichCanApproveVocationRequestsRepository.RemoveUsersWhichCanApproveVacationRequests(user.Id);
-                   foreach (var userWhichCanApproveVocationRequestId in usersUpdateInput.UsersWhichCanApproveVocationRequestIds)
+                   await users_UsersWhichCanApproveVacationRequestsRepository.RemoveUsersWhichCanApproveVacationRequests(user.Id);
+                   foreach (var userWhichCanApproveVacationRequestId in usersUpdateInput.UsersWhichCanApproveVacationRequestIds)
                    {
-                       var userWhichCanApproveVocationRequest = new Users_UsersWhichCanApproveVocationRequests
+                       var userWhichCanApproveVacationRequest = new Users_UsersWhichCanApproveVacationRequests
                        {
                            UserId = user.Id,
-                           UserWhichCanApproveVocationRequestId = userWhichCanApproveVocationRequestId,
+                           UserWhichCanApproveVacationRequestId = userWhichCanApproveVacationRequestId,
                        };
-                       await users_UsersWhichCanApproveVocationRequestsRepository.CreateUsersWhichCanApproveVacationRequests(userWhichCanApproveVocationRequest);
+                       await users_UsersWhichCanApproveVacationRequestsRepository.CreateUsersWhichCanApproveVacationRequests(userWhichCanApproveVacationRequest);
                    }
                    return user;
                })
@@ -103,7 +103,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                    var usersRemoveInput = context.GetArgument<UsersRemoveInput>("UsersRemoveInputType");
                    await usersRemoveInputValidator.ValidateAndThrowAsync(usersRemoveInput);
                    var user = await userRepository.GetByEmailAsync(usersRemoveInput.Email);
-                   await users_UsersWhichCanApproveVocationRequestsRepository.RemoveUsersWhichCanApproveVacationRequests(user.Id);
+                   await users_UsersWhichCanApproveVacationRequestsRepository.RemoveUsersWhichCanApproveVacationRequests(user.Id);
                    return await userRepository.RemoveAsync(usersRemoveInput.Email);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);

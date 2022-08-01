@@ -2,10 +2,10 @@
 
 namespace TimeTracker.Business.Repositories
 {
-    public interface IUsers_UsersWhichCanApproveVocationRequestsRepository
+    public interface IUsers_UsersWhichCanApproveVacationRequestsRepository
     {
         Task<IEnumerable<UserModel>> GetUsersWhichCanApproveVacationRequests(Guid forUserId);
-        Task<Users_UsersWhichCanApproveVocationRequests> CreateUsersWhichCanApproveVacationRequests(Users_UsersWhichCanApproveVocationRequests users_UsersWhichCanApproveVocationRequests);
+        Task<Users_UsersWhichCanApproveVacationRequests> CreateUsersWhichCanApproveVacationRequests(Users_UsersWhichCanApproveVacationRequests users_UsersWhichCanApproveVacationRequests);
         Task RemoveUsersWhichCanApproveVacationRequests(Guid forUserId);
     }
 }

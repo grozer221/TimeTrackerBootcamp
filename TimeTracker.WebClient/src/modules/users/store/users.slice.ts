@@ -7,7 +7,7 @@ type InitialState = {
     total: number,
     pageSize: number,
     currentPage: number,
-    usersForVocation: User[],
+    usersForVacation: User[],
     filter: UserFilter
 }
 
@@ -16,7 +16,7 @@ const initialState: InitialState = {
     total: 0,
     pageSize: 10,
     currentPage: 0,
-    usersForVocation: [],
+    usersForVacation: [],
     filter: {
         firstName: "",
         lastName: "",
@@ -40,9 +40,9 @@ export const usersSlice = createSlice({
             state.total = action.payload.total;
             state.pageSize = action.payload.pageSize;
         },
-        fetchUsersForVocationsSelect: (state, action: PayloadAction<{ filter: UserFilter, take: number, skip: number }>) => state,
-        addUsersForVocationsSelect: (state, action: PayloadAction<User[]>) => {
-            state.usersForVocation = action.payload;
+        fetchUsersForVacationsSelect: (state, action: PayloadAction<{ filter: UserFilter, take: number, skip: number }>) => state,
+        addUsersForVacationsSelect: (state, action: PayloadAction<User[]>) => {
+            state.usersForVacation = action.payload;
         },
         createUser: (state, action: PayloadAction<CreateUserInput>) => state,
         removeUserAsync: (state, action: PayloadAction<RemoveUserInput>) => state,
