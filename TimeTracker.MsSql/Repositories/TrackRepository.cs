@@ -59,7 +59,7 @@ namespace TimeTracker.MsSql.Repositories
             {
                 model.StartTime = DateTime.Now;
             }
-           
+            await StopAllAsync();
             using (IDbConnection db = dapperContext.CreateConnection())
             {
                 string query = @"INSERT INTO Tracks 
@@ -105,6 +105,29 @@ namespace TimeTracker.MsSql.Repositories
             }
 
             return tracks;
+        }
+        private async Task StopAllAsync()
+        {
+            IEnumerable<TrackModel> tracks;
+            string query = "SELECT * FROM Tracks";
+
+            using (IDbConnection db = dapperContext.CreateConnection())
+            {
+                tracks = await db.QueryAsync<TrackModel>(query);
+            }
+            foreach (var track in tracks)
+            {
+                await UpdateAsync(new TrackModel()
+                {
+                    Id = track.Id,
+                    Title = track.Title,
+                    Kind = track.Kind,
+                    StartTime = track.StartTime,
+                    EndTime = (track.EndTime == null) ? DateTime.Now : track.EndTime,
+                    UpdatedAt = DateTime.Now,
+                    CreatedAt = track.CreatedAt
+                });
+            }
         }
 
     }

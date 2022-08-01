@@ -10,7 +10,7 @@ import {
     RemoveTrack,
     RemoveTrackInputType,
     TRACK_CREATE_MUTATION,
-    TRACK_REMOVE_NUTATION
+    TRACK_REMOVE_MUTATION, TRACK_UPDATE_MUTATION, UpdateTrack, UpdateTrackInputType
 } from "../graphQL/tracks.mutations";
 import {tracksAction} from "./tracks.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
@@ -73,7 +73,7 @@ export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, 
         ofType(tracksAction.removeTrack.type),
         mergeMap(action =>
             from(client.mutate<RemoveTrack, RemoveTrackInputType>({
-                mutation: TRACK_REMOVE_NUTATION,
+                mutation: TRACK_REMOVE_MUTATION,
                 variables: {
                     TrackData: action.payload
                 }
@@ -91,9 +91,33 @@ export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, 
     )
 }
 
+export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, any, RootState> = (action$, state$) =>{
+    return action$.pipe(
+        ofType(tracksAction.updateTrack.type),
+        mergeMap(action =>
+            from(client.mutate<UpdateTrack, UpdateTrackInputType>({
+                mutation: TRACK_UPDATE_MUTATION,
+                variables: {
+                    TrackData: action.payload
+                }
+            })).pipe(
+                mergeMap(response=>{
+                    const tracksInputData = state$.value.tracks.getTracksInputData
+                    return [
+                        tracksInputData && tracksAction.getAsync(tracksInputData),
+                        notificationsActions.addInfo("Track updated!")
+                    ]
+                })
+            )
+        ),
+        catchError(error => of(notificationsActions.addError(error.message))),
+    )
+}
+
 export const tracksPageEpics = combineEpics(
     getTracksEpic,
     // @ts-ignore
     createTrackEpic,
-    removeTrackEpic
+    removeTrackEpic,
+    updateTrackEpic
 )

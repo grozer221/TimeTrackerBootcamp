@@ -27,10 +27,30 @@ export type RemoveTrackInput = {
 }
 export type RemoveTrackInputType = { TrackData: RemoveTrackInput}
 
-export const TRACK_REMOVE_NUTATION = gql`
+export const TRACK_REMOVE_MUTATION = gql`
     mutation RemoveTask($TrackData: TrackRemoveInputType!){
       tracks{
         remove(trackInput: $TrackData)
       }
+    }
+`
+
+export type UpdateTrack = {tracks: {update: Track}}
+export type UpdateTrackInput = {
+    id: string,
+    title: string,
+    kind: TrackKind,
+    startTime: string,
+    endTime: string,
+
+}
+export type UpdateTrackInputType = {TrackData: UpdateTrackInput}
+
+export const TRACK_UPDATE_MUTATION = gql`
+    ${TRACK_FRAGMENT}
+    mutation UpdateTrack($TrackData: TrackUpdateInputType!){
+        update(trackInput: $TrackData){
+            ...TrackFragment
+        }
     }
 `

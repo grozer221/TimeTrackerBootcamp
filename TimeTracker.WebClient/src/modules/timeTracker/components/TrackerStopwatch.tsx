@@ -1,10 +1,26 @@
-import React from "react";
+import React, {FC, useEffect, useState} from "react";
+import {Button, Divider} from "antd";
+import s from './TrackerStopwatch.module.css'
+import {Track} from "../../tracks/graphQL/tracks.types";
+import {useDispatch} from "react-redux";
+import {tracksAction} from "../../tracks/store/tracks.slice";
+import {stringToUSDatetime} from "../../../convertors/stringToDatetimeConvertors";
 
-const Stopwatch = () => {
-    const [time, setTime] = React.useState(1000000);
-    const [timerOn, setTimerOn] = React.useState(false);
+type Props={
+    track: Track
+}
 
-    React.useEffect(() => {
+
+
+const Stopwatch: FC<Props> = ({track}) => {
+    const startDate= new Date(track.startTime)
+    const endDate = (track.endTime == null) ? new Date() : new Date(track.endTime)
+    const start = endDate.getTime() - startDate.getTime()
+    const [time, setTime] = useState(start)
+    const [timerOn, setTimerOn] = React.useState(true)
+    const dispatch = useDispatch()
+
+    useEffect(() => {
         let interval : any = null;
 
         if (timerOn) {
@@ -18,23 +34,36 @@ const Stopwatch = () => {
         return () => clearInterval(interval);
     }, [timerOn]);
 
-    return (
-        <div className="Timers">
-            <div style={{fontSize: '72px'}}>
-                <span>{("0" + Math.floor((time / (60 * 60 * 1000)) % 60)).slice(-2)}:</span>
-                <span>{("0" + Math.floor((time / (60 * 1000)) % 60)).slice(-2)}:</span>
-                <span>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}:</span>
-                <span>{("0" + ((time / 10) % 100)).slice(-2)}</span>
-            </div>
+    const OnEndTrack = () => {
+        setTime(0)
+        const dateNowString = new Date().toString()
+        dispatch(tracksAction.updateTrack({
+            id: track.id,
+            title: track.title,
+            kind: track.kind,
+            startTime: track.startTime,
+            endTime: stringToUSDatetime(dateNowString)
+        }))
+    }
 
-            <div id="buttons">
-                <button onClick={() => setTimerOn(true)}>Start</button>
-                {timerOn && <button onClick={() => setTimerOn(false)}>Stop</button>}
-                {!timerOn && time > 0 && (
-                    <button onClick={() => setTime(0)}>Reset</button>
-                )}
+    return (
+        <>
+            <Divider/>
+            <div className={s.stopwatch_container}>
+                <div className={s.element}>
+                    <span>{("0" + Math.floor((time / (60 * 60 * 1000)) % 60)).slice(-2)}:</span>
+                    <span>{("0" + Math.floor((time / (60 * 1000)) % 60)).slice(-2)}:</span>
+                    <span>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}{/*.*/}</span>
+                    {/*<span  style={{fontSize: '48px'}}>{("0" + ((time / 10) % 100)).slice(-2)}</span>*/}
+                </div>
+
+                <div >
+                    <button className={s.stop_button} onClick={OnEndTrack}>End Track</button>
+                </div>
             </div>
-        </div>
+            <Divider/>
+        </>
+
     );
 };
 

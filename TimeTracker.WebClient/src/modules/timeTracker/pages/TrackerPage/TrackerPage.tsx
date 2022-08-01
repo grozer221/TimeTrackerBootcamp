@@ -36,16 +36,9 @@ export const TrackerPage: React.FC = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [form] = useForm()
-    const inputRef = useRef<InputRef>(null);
 
     let totalPages = useAppSelector(s => s.tracks.total)
-    let tracksNotSort = useAppSelector(s => s.tracks.tracks)
-            .map((obj) => {
-            return { ...obj, startTime: new Date(obj.startTime), endTime: new Date(obj.endTime)};
-        });
-    let tracks = tracksNotSort.sort(
-        (objA, objB) => objB.startTime.getTime() - objA.startTime.getTime(),
-    );
+    let tracks = useAppSelector(s => s.tracks.tracks);
     
     let trackKindIcon: { [id: string]: JSX.Element; } = {
         "DEFAULT": <CodeSandboxOutlined className={s.icons}/>,
@@ -63,7 +56,7 @@ export const TrackerPage: React.FC = () => {
     const onCreate = async (values: FormValues) => {
         let newTrack: CreateTrackInput = {
             title: values.title || "",
-            kind: TrackKind.Sick
+            kind: TrackKind.Default
         }
         dispatch(tracksAction.createTrack(newTrack))
         form.resetFields()
@@ -110,11 +103,15 @@ export const TrackerPage: React.FC = () => {
         )
 
     }
-    function sortByDateFunction(a: Track,b: Track){
-        let dateA = new Date(a.startTime).getTime();
-        let dateB = new Date(b.startTime).getTime();
-        return dateA > dateB ? 1 : -1;
-    };
+
+    const RenderStopWatch = () => {
+      if(tracks.length == 0){
+          return
+      }
+      return(
+          <Stopwatch track={tracks[0]}/>
+      )
+    }
 
     // @ts-ignore
     return (
@@ -143,7 +140,7 @@ export const TrackerPage: React.FC = () => {
                     </Col>
                 </Row>
             </Form>
-            <Stopwatch/>
+            {RenderStopWatch()}
             {tracks.length ? (
                 <div className={s.container}>
                     <div className={s.table_header}>
@@ -171,7 +168,7 @@ export const TrackerPage: React.FC = () => {
                     {tracks.map((track, index) => (
                         <div className={s.table_row} key={index}>
                             <div className={s.cell} style={{width: '30%'}}>
-                                <EditOutlined className={s.icons}/><Input ref={inputRef} bordered={false} value={track.title == "" ? ". . ." : track.title}/>
+                                <EditOutlined className={s.icons}/>{track.title == "" ? ". . ." : track.title}
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '20%'}}>
@@ -181,12 +178,12 @@ export const TrackerPage: React.FC = () => {
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '20%'}}>
-                                <CalendarOutlined className={s.icons}/>{track.startTime.toLocaleString()}
+                                <CalendarOutlined className={s.icons}/>{track.startTime.replace('T', ' ')}
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '20%'}}>
-                                {track.endTime.getTime() == 0 ? <>{Processing()}</> : <><CalendarOutlined
-                                    className={s.icons}/>{track.endTime.toLocaleString()}</>}
+                                {track.endTime == null ? <>{Processing()}</> : <><CalendarOutlined
+                                    className={s.icons}/>{track.endTime.replace('T', ' ')}</>}
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '10%'}}>
@@ -196,6 +193,7 @@ export const TrackerPage: React.FC = () => {
                             </div>
                         </div>
                     ))}
+
                     <Pagination
                         showQuickJumper
                         showSizeChanger
