@@ -5,6 +5,7 @@ import {Track} from "../../tracks/graphQL/tracks.types";
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../tracks/store/tracks.slice";
 import {stringToUSDatetime} from "../../../convertors/stringToDatetimeConvertors";
+import moment from "moment";
 
 type Props={
     track: Track
@@ -36,13 +37,13 @@ const Stopwatch: FC<Props> = ({track}) => {
 
     const OnEndTrack = () => {
         setTime(0)
-        const dateNowString = new Date().toString()
+        setTimerOn(false)
         dispatch(tracksAction.updateTrack({
             id: track.id,
             title: track.title,
             kind: track.kind,
             startTime: track.startTime,
-            endTime: stringToUSDatetime(dateNowString)
+            endTime: moment(new Date()).format('YYYY-MM-DDTHH:mm:ss')
         }))
     }
 
@@ -53,8 +54,8 @@ const Stopwatch: FC<Props> = ({track}) => {
                 <div className={s.element}>
                     <span>{("0" + Math.floor((time / (60 * 60 * 1000)) % 60)).slice(-2)}:</span>
                     <span>{("0" + Math.floor((time / (60 * 1000)) % 60)).slice(-2)}:</span>
-                    <span>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}{/*.*/}</span>
-                    {/*<span  style={{fontSize: '48px'}}>{("0" + ((time / 10) % 100)).slice(-2)}</span>*/}
+                    <span>{("0" + Math.floor((time / 1000) % 60)).slice(-2)}.</span>
+                    <span  style={{fontSize: '48px'}}>{("0" + ((time / 10) % 100)).slice(-2)}</span>
                 </div>
 
                 <div >

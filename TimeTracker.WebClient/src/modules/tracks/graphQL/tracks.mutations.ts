@@ -41,16 +41,17 @@ export type UpdateTrackInput = {
     title: string,
     kind: TrackKind,
     startTime: string,
-    endTime: string,
-
+    endTime: string
 }
 export type UpdateTrackInputType = {TrackData: UpdateTrackInput}
 
 export const TRACK_UPDATE_MUTATION = gql`
     ${TRACK_FRAGMENT}
     mutation UpdateTrack($TrackData: TrackUpdateInputType!){
-        update(trackInput: $TrackData){
-            ...TrackFragment
+        tracks{
+            update(trackInput: $TrackData){
+                ...TrackFragment
+            }
         }
     }
 `

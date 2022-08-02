@@ -40,7 +40,7 @@ namespace TimeTracker.MsSql.Repositories
             using (IDbConnection db = dapperContext.CreateConnection())
             {
                 tracks = await db.QueryAsync<TrackModel>(query, new {like, skip, take = pageSize, trackKind = kindReg});
-                total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like", new { like });
+                total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like and Kind LIKE @trackKind", new { like, trackKind = kindReg });
             }
 
             return new GetEntitiesResponse<TrackModel>
@@ -109,7 +109,7 @@ namespace TimeTracker.MsSql.Repositories
         private async Task StopAllAsync()
         {
             IEnumerable<TrackModel> tracks;
-            string query = "SELECT * FROM Tracks";
+            string query = "SELECT * FROM Tracks WHERE EndTime is null";
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
@@ -117,16 +117,8 @@ namespace TimeTracker.MsSql.Repositories
             }
             foreach (var track in tracks)
             {
-                await UpdateAsync(new TrackModel()
-                {
-                    Id = track.Id,
-                    Title = track.Title,
-                    Kind = track.Kind,
-                    StartTime = track.StartTime,
-                    EndTime = (track.EndTime == null) ? DateTime.Now : track.EndTime,
-                    UpdatedAt = DateTime.Now,
-                    CreatedAt = track.CreatedAt
-                });
+                track.EndTime = DateTime.Now;
+                await UpdateAsync(track);
             }
         }
 

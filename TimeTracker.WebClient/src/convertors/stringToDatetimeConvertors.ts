@@ -13,7 +13,7 @@ export const stringToUSTime = (dateString: string): string => {
 export const stringToUSDatetime = (dateString: string): string => {
     if (!dateString)
         return '';
-    return `${stringToUSDate(dateString)} ${stringToUSTime(dateString)}`;
+    return `${stringToUSDate(dateString)}T${stringToUSTime(dateString)}.000`;
 }
 
 

@@ -57,6 +57,7 @@ export const TrackerPage: React.FC = () => {
         let newTrack: CreateTrackInput = {
             title: values.title || "",
             kind: TrackKind.Default
+
         }
         dispatch(tracksAction.createTrack(newTrack))
         form.resetFields()
