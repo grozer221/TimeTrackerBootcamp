@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {FC, useEffect, useState} from 'react';
-import {Form, Input, Modal, Select} from "antd";
+import {Form, Input, Modal, Select, Radio} from "antd";
 import './CreateUserModal.css'
 import Title from "antd/lib/typography/Title";
 import {useNavigate} from "react-router-dom";
@@ -12,6 +12,7 @@ import {User} from "../../graphQL/users.types";
 import {useAppSelector} from "../../../../store/store";
 import {CreateUserInput} from "../../graphQL/users.mutations";
 import {usersActions} from "../../store/users.slice";
+import {Employment} from "../../../../graphQL/enums/Employment";
 
 
 type FormValues = {
@@ -23,6 +24,7 @@ type FormValues = {
     repeatPassword: string,
     permissions: Permission[],
     usersWhichCanApproveVacationRequest: User[],
+    employment: Employment,
 }
 
 type Props = {};
@@ -49,6 +51,7 @@ export const CreateUserModal: FC<Props> = () => {
             const middleName = form.getFieldValue(nameof<FormValues>("middleName"))
             const email = form.getFieldValue(nameof<FormValues>("email"))
             const password = form.getFieldValue(nameof<FormValues>("password"))
+            const employment = form.getFieldValue(nameof<FormValues>("employment"))
             const permissions = form.getFieldValue(nameof<FormValues>("permissions")) ?? []
             const usersWhichCanApproveVacationRequest =
                 form.getFieldValue(nameof<FormValues>("usersWhichCanApproveVacationRequest")) ?? []
@@ -63,8 +66,6 @@ export const CreateUserModal: FC<Props> = () => {
             console.log(e)
         }
     }
-
-    console.log(users)
 
     return (
         <Modal
@@ -100,11 +101,23 @@ export const CreateUserModal: FC<Props> = () => {
                            label={"Email:"}
                            rules={[
                                {required: true, message: 'Please input user Email!'},
-                               {type:"email" , message: "It's not email!"}
+                               {type: "email", message: "It's not email!"}
                            ]}>
                     <Input placeholder="example@gmail.com"/>
                 </Form.Item>
 
+                <Form.Item name={nameof<FormValues>("employment")}
+                           label={"Employment:"}
+                           rules={[{required: true, message: 'Please choose user employment!'}]}>
+                    <Radio.Group>
+                        {
+                            Object.values(Employment).map(value =>
+                                <Radio value={value}>
+                                    {uppercaseToWords(value)}
+                                </Radio>)
+                        }
+                    </Radio.Group>
+                </Form.Item>
                 <Form.Item name={nameof<FormValues>("password")}
                            label={"Password:"}
                            rules={[{required: true, message: 'Please input user Password!'}]}>
@@ -112,16 +125,11 @@ export const CreateUserModal: FC<Props> = () => {
                         placeholder="Input user password"
                     />
                 </Form.Item>
-
                 <Form.Item name={nameof<FormValues>("repeatPassword")}
                            label={"Repeat password:"}
                            dependencies={['password']}
                            hasFeedback
-                           rules={[
-                               {
-                                   required: true,
-                                   message: 'Please confirm password!',
-                               },
+                           rules={[{required: true, message: 'Please confirm password!',},
                                ({getFieldValue}) => ({
                                    validator(_, value) {
                                        if (!value || getFieldValue('password') === value) {
