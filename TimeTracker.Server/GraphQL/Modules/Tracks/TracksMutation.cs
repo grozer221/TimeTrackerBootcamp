@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
