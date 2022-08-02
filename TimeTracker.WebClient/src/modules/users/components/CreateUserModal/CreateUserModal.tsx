@@ -58,7 +58,7 @@ export const CreateUserModal: FC<Props> = () => {
 
             let newUser: CreateUserInput = {
                 firstName, lastName, middleName, email, permissions, password,
-                usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequest
+                usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequest, employment
             } as CreateUserInput
 
             dispatch(usersActions.createUser(newUser))
@@ -164,7 +164,7 @@ export const CreateUserModal: FC<Props> = () => {
 
                 <Form.Item
                     name={nameof<FormValues>("usersWhichCanApproveVacationRequest")}
-                    label={'Can approve vacation requests for users:'}
+                    label={'Users which can approve vacation request'}
                 >
                     <Select
                         className={'w-100'}

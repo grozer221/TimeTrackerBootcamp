@@ -144,7 +144,7 @@ export const UpdateUserModal: FC<Props> = () => {
 
                 <Form.Item
                     name={nameof<FormValues>("usersWhichCanApproveVacationRequest")}
-                    label={'Can approve vacation requests for users:'}
+                    label={'Users which can approve vacation request'}
                 >
                     <Select
                         className={'w-100'}
@@ -165,6 +165,5 @@ export const UpdateUserModal: FC<Props> = () => {
                 </Form.Item>
             </Form>
         </Modal>
-    )
-        ;
+    );
 };
