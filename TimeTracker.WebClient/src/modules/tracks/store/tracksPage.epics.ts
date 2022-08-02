@@ -1,6 +1,6 @@
 import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
-import {catchError, debounceTime, from, mergeMap, of} from "rxjs";
+import {catchError, debounceTime, endWith, from, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
 import {TRACKS_GET_QUERY, GetTracksData, GetTracksInputData} from "../graphQL/tracks.queries";
 import {
@@ -15,6 +15,7 @@ import {
 import {tracksAction} from "./tracks.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
 import {navigateActions} from "../../navigate/store/navigate.slice";
+import {vacationRequestsActions} from "../../vacationRequests/store/vacationRequests.slice";
 
 export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, RootState> = (action$, state$) => {
     return action$.pipe(
@@ -37,10 +38,12 @@ export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, 
                         pageSize: response.data.tracks.get.pageSize,
                         trackKind: response.data.tracks.get.trackKind
                     })
-                ])
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(tracksAction.setLoadingGet(true)),
+                endWith(tracksAction.setLoadingGet(false))
             )
         ),
-        catchError(error => of(notificationsActions.addError(error.message)))
     )
 }
 
@@ -58,7 +61,7 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
                         tracksInputData && tracksAction.getAsync(tracksInputData),
-                    notificationsActions.addSuccess("Track created!")
+                        notificationsActions.addSuccess("Track created!")
                     ]
                 })
             )

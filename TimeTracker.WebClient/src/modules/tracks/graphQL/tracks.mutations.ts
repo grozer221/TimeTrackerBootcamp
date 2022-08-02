@@ -6,7 +6,7 @@ import {TrackKind} from "../../../graphQL/enums/TrackKind";
 export type CreateTrack = { tracks: {create: Track} }
 export type CreateTrackInput = {
     title: string,
-    kind: TrackKind | TrackKind.Default
+    kind: TrackKind
 }
 export type CreateTrackInputType = { TrackData: CreateTrackInput}
 

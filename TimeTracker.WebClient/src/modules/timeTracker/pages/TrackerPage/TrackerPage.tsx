@@ -1,16 +1,17 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect} from 'react';
 import {useLocation, useNavigate, useSearchParams} from "react-router-dom";
 import {
     AlertOutlined,
-    CalendarOutlined, CarOutlined, CodeSandboxOutlined,
+    CalendarOutlined,
+    CarOutlined,
+    CodeSandboxOutlined,
     DeleteOutlined,
     EditOutlined,
-    FormOutlined,
     PlusCircleOutlined,
     SmileOutlined,
     SyncOutlined
 } from '@ant-design/icons';
-import {Button, Card, Col, Divider, Form, Input, InputRef, Pagination, PaginationProps, Row, Tag, Typography} from 'antd';
+import {Button, Col, Form, Input, Pagination, PaginationProps, Row, Tag, Typography} from 'antd';
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useAppSelector} from "../../../../store/store";
@@ -21,25 +22,25 @@ import {CreateTrackInput, RemoveTrackInput} from "../../../tracks/graphQL/tracks
 import s from './TrackerPage.module.css'
 import './TrackerPage.module.css'
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import {ButtonRemove} from "../../../../components/ButtonRemove";
-import {Track} from "../../../tracks/graphQL/tracks.types";
 import Stopwatch from "../../components/TrackerStopwatch";
+import {useTimer} from 'use-timer';
 
 type FormValues = {
     title: string,
     kind: TrackKind
 }
 
+
+
 export const TrackerPage: React.FC = () => {
-    const location = useLocation();
     const isAuth = useAppSelector(s => s.auth.isAuth)
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const [form] = useForm()
+    const loadingGet = useAppSelector(s => s.tracks.loadingGet)
+    const totalPages = useAppSelector(s => s.tracks.total)
+    const tracks = useAppSelector(s => s.tracks.tracks);
 
-    let totalPages = useAppSelector(s => s.tracks.total)
-    let tracks = useAppSelector(s => s.tracks.tracks);
-    
     let trackKindIcon: { [id: string]: JSX.Element; } = {
         "DEFAULT": <CodeSandboxOutlined className={s.icons}/>,
         "VACATION": <CarOutlined className={s.icons}/>,
@@ -50,8 +51,7 @@ export const TrackerPage: React.FC = () => {
     const pageSize = searchParams.get('pageSize') || '10'
     const pageNumber = searchParams.get('pageNumber') || '1'
     const trackKind = searchParams.get('kind') || ''
-    const time = new Date();
-    time.setSeconds(time.getSeconds() + 600);
+    const indexOfS = Object.values(TrackKind).indexOf(trackKind as unknown as TrackKind)
 
     const onCreate = async (values: FormValues) => {
         let newTrack: CreateTrackInput = {
@@ -81,7 +81,7 @@ export const TrackerPage: React.FC = () => {
             like: like,
             pageSize: parseInt(pageSize),
             pageNumber: parseInt(pageNumber),
-            kind: trackKind
+            kind: Object.values(TrackKind)[indexOfS]
         }))
     }, [setSearchParams])
 
@@ -91,7 +91,7 @@ export const TrackerPage: React.FC = () => {
             like: like,
             pageSize: pageSize,
             pageNumber: pageNumber,
-            kind: trackKind
+            kind: Object.values(TrackKind)[indexOfS]
         }));
     };
     console.log(tracks)
@@ -105,13 +105,13 @@ export const TrackerPage: React.FC = () => {
 
     }
 
-    const RenderStopWatch = () => {
-      if(tracks.length == 0){
-          return
-      }
-      return(
-          <Stopwatch track={tracks[0]}/>
-      )
+    const RenderStopwatch = () => {
+        if (tracks.length == 0) {
+            return
+        }
+        return (
+            <Stopwatch track={tracks[0]}/>
+        )
     }
 
     // @ts-ignore
@@ -141,7 +141,7 @@ export const TrackerPage: React.FC = () => {
                     </Col>
                 </Row>
             </Form>
-            {RenderStopWatch()}
+            {RenderStopwatch()}
             {tracks.length ? (
                 <div className={s.container}>
                     <div className={s.table_header}>
@@ -188,7 +188,7 @@ export const TrackerPage: React.FC = () => {
                             </div>
                             <div className={s.divider}/>
                             <div className={s.cell} style={{width: '10%'}}>
-                                <Form onFinish={()=>onRemove(track.id)}>
+                                <Form onFinish={() => onRemove(track.id)}>
                                     <Button htmlType={'submit'} shape={'round'} icon={<DeleteOutlined/>} danger/>
                                 </Form>
                             </div>

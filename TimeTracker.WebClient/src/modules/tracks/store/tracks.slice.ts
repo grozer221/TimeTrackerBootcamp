@@ -8,7 +8,8 @@ type InitialState = {
     total: number,
     pageSize: number,
     trackKind: string,
-    getTracksInputData: GetTracksInputData | null
+    getTracksInputData: GetTracksInputData | null,
+    loadingGet: boolean,
 }
 
 const initialState: InitialState = {
@@ -16,7 +17,8 @@ const initialState: InitialState = {
     total: 0,
     pageSize: 10,
     trackKind: "",
-    getTracksInputData: null
+    getTracksInputData: null,
+    loadingGet: false
 }
 
 export  const  tracksSlice = createSlice({
@@ -26,6 +28,9 @@ export  const  tracksSlice = createSlice({
         getAsync: (state, action: PayloadAction<GetTracksInputData>) => state,
         addTracks: (state, action: PayloadAction<Track[]>) =>{
             state.tracks = action.payload
+        },
+        setLoadingGet: (state, action: PayloadAction<boolean>) => {
+            state.loadingGet = action.payload
         },
         updateTracksMetrics: (state, action: PayloadAction<{total: number, pageSize: number, trackKind: string}>) => {
             state.total = action.payload.total

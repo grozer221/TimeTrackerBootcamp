@@ -3,6 +3,7 @@ using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using Dapper;
 using TimeTracker.Business.Abstractions;
+using TimeTracker.Business.Enums;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -26,11 +27,11 @@ namespace TimeTracker.MsSql.Repositories
             return track;
         }
 
-        public async Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int pageSize, int pageNumber, string kind)
+        public async Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int pageSize, int pageNumber, TrackKind? kind)
         {
             IEnumerable<TrackModel> tracks;
             like = "%" + like + "%";
-            string kindReg = "%" + kind + "%";
+            string kindReg = "%" + ((kind == null) ? kind : kind.GetHashCode()) + "%";
 
             int total;
             int skip = (pageNumber - 1) * pageSize;

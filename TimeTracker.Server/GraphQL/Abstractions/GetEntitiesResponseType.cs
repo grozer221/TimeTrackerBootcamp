@@ -1,5 +1,7 @@
 ﻿using GraphQL.Types;
 using TimeTracker.Business.Abstractions;
+using TimeTracker.Business.Enums;
+using TimeTracker.Server.GraphQL.EnumTypes;
 
 namespace TimeTracker.Server.GraphQL.Abstractions
 {
@@ -23,7 +25,7 @@ namespace TimeTracker.Server.GraphQL.Abstractions
                 .Name("PageSize")
                 .Resolve(context => context.Source.PageSize);
 
-            Field<StringGraphType, string>()
+            Field<TrackKindType, TrackKind?>()
                 .Name("TrackKind")
                 .Resolve(context => context.Source.TrackKind);
         }
