@@ -116,7 +116,10 @@ export const VacationRequestsIndexPage: FC = () => {
                 maxTagCount={'responsive'}
             >
                 {usersForVacation.map(user => (
-                    <Select.Option key={user.id}>{user.email}</Select.Option>
+                    <Select.Option key={user.id}>
+                        <Text>{user.lastName} {user.firstName} </Text>
+                        <Text type={'secondary'}>{user.email}</Text>
+                    </Select.Option>
                 ))}
             </Select>,
             dataIndex: nameof<VacationRequest>('user'),
@@ -165,7 +168,7 @@ export const VacationRequestsIndexPage: FC = () => {
                 <WithSmallLoading loading={loadingGetAvailableDays}>
                     <Space>
                         <ReloadOutlined onClick={() => dispatch(vacationRequestsActions.getAvailableDaysAsync())}/>
-                        <div>Available days: {availableDays} from {settings?.vacationRequests.amountDaysPerYear}</div>
+                        <div>Available days: {availableDays} / {settings?.vacationRequests.amountDaysPerYear}</div>
                     </Space>
                 </WithSmallLoading>
             </Row>
