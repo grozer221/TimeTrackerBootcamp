@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TimeTracker.Business.Models;
+using TimeTracker.Business.Models.Filters;
 using TimeTracker.Business.Repositories;
 
 namespace TimeTracker.MsSql.Repositories
@@ -19,15 +20,34 @@ namespace TimeTracker.MsSql.Repositories
             this.dapperContext = dapperContext;
         }
 
-        public async Task<IEnumerable<UserModel>> GetAsync(string like, DateTime date)
+        public async Task<IEnumerable<UserModel>> GetAsync(UserFilter filter, DateTime date)
         {
             IEnumerable<UserModel> users;
-            like = "%" + like + "%";
+            string email = "%" + filter.Email + "%";
+            string firstname = "%" + filter.FirstName + "%";
+            string lastname = "%" + filter.LastName + "%";
+            string middlename = "%" + filter.MiddleName + "%";
+            var allPremisions = filter.Permissions?.Select(p => p.ToString()).ToArray();
+            var permissionsCount = filter.Permissions?.Count();
+            var rolesNumbers = filter.Roles;
+            var employments = filter.Employments;
 
-            string query = "SELECT * FROM Users WHERE LastName LIKE @like ORDER BY LastName";
+            string query = @"SELECT * FROM Users WHERE FirstName like @firstname
+                             and LastName like @lastname
+                             and MiddleName like @middlename
+                             and Email like @email ";
+
+            if (filter.Roles != null && filter.Roles.Count() != 0)
+                query += "and RoleNumber in @rolesNumbers ";
+
+            if (filter.Permissions != null && filter.Permissions.Count() != 0)
+                query += @"and @permissionsCount = (select count(value) from OPENJSON(PermissionsString) where value in @allPremisions) ";
+
+            if (filter.Employments != null && filter.Employments.Count() != 0)
+                query += "and Employment in @employments ";
 
             using IDbConnection db = dapperContext.CreateConnection();
-            users = await db.QueryAsync<UserModel>(query, new { like });
+            users = await db.QueryAsync<UserModel>(query, new { email, firstname, lastname, middlename, allPremisions, permissionsCount, rolesNumbers, employments });
 
             return users;
         }

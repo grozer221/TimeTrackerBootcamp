@@ -12,6 +12,7 @@ import {
 } from "../graphQL/users.mutations";
 import {usersActions} from "./users.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
+import {navigateActions} from "../../navigate/store/navigate.slice";
 
 export const getUsersEpic: Epic<ReturnType<typeof usersActions.getAsync>, any, RootState> = (action$, state$) => {
     return action$.pipe(
@@ -72,11 +73,13 @@ export const createUserEpic: Epic<ReturnType<typeof usersActions.createUser>,
                     UserData: action.payload
                 }
             })).pipe(
-                mergeMap(response => {
-                    history.back()
-                    return [
-                    notificationsActions.addSuccess("User was created!")
-                ]})
+                mergeMap(response => [
+                    notificationsActions.addSuccess("User was created!"),
+                    usersActions.getAsync({
+                        take: state$.value.users.pageSize,
+                        skip: state$.value.users.currentPage
+                    })
+                ])
             )
         ),
         catchError(error => of(notificationsActions.addError(error.message))),
@@ -94,13 +97,14 @@ export const removeUserEpic: Epic<ReturnType<typeof usersActions.removeUserAsync
                     RemoveData: action.payload
                 }
             })).pipe(
-                mergeMap(response => {
-                    history.back()
-                    return [
-                        notificationsActions.addSuccess("User was deleted!"),
-                        usersActions.getAsync({take: state$.value.users.pageSize, skip: state$.value.users.currentPage})
-                    ]
-                })
+                mergeMap(response => [
+                    navigateActions.navigate(-1),
+                    notificationsActions.addSuccess("User was deleted!"),
+                    usersActions.getAsync({
+                        take: state$.value.users.pageSize,
+                        skip: state$.value.users.currentPage
+                    })
+                ])
             )
         ),
         catchError(error => of(notificationsActions.addError(error.message))),
@@ -118,13 +122,11 @@ export const updateUserEpic: Epic<ReturnType<typeof usersActions.updateUser>,
                     UpdateData: action.payload
                 }
             })).pipe(
-                mergeMap(response => {
-                    history.back()
-                    return [
-                        notificationsActions.addSuccess("User was updated!"),
-                        usersActions.getAsync({take: state$.value.users.pageSize, skip: state$.value.users.currentPage})
-                    ]
-                })
+                mergeMap(response => [
+                    navigateActions.navigate(-1),
+                    notificationsActions.addSuccess("User was updated!"),
+                    usersActions.getAsync({take: state$.value.users.pageSize, skip: state$.value.users.currentPage})
+                ])
             )
         ),
         catchError(error => of(notificationsActions.addError(error.message))),

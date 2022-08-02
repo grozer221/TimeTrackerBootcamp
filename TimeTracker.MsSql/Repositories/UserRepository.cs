@@ -50,39 +50,52 @@ namespace TimeTracker.MsSql.Repositories
             string firstname = "%" + filter.FirstName + "%";
             string lastname = "%" + filter.LastName + "%";
             string middlename = "%" + filter.MiddleName + "%";
-            var allPremisions = filter.Permissions.Select(p => p.ToString()).ToArray();
-            var permissionsCount = filter.Permissions.Count();
-            string roles = "";
+            var allPremisions = filter.Permissions?.Select(p => p.ToString()).ToArray();
+            var permissionsCount = filter.Permissions?.Count();
+            var rolesNumbers = filter.Roles;
+            var employments = filter.Employments;
+            int skipNumber = skip * take;
 
-            if (filter.Roles.Count() != 0)
-                roles = " and " + String.Join(" or ", filter.Roles.Select(i => "RoleNumber = " + (int)i));
-
-            string getCountQuery = @"select count(*) FROM Users 
+            string getCountQuery = @"select count(*) from Users 
                                     where FirstName like @firstname
                                         and LastName like @lastname
                                         and MiddleName like @middlename
-                                        and	Email like @email
-                                        and
-                                    @permissionsCount = (
-	                                        select count(value) from OPENJSON([PermissionsString]) 
-	                                        where value in @allPremisions )";
-
-
-            int skipNumber = skip * take;
+                                        and	Email like @email ";
 
             string getEntitieQuery = @"select * FROM Users
                                         where FirstName like @firstname
                                         and LastName like @lastname
                                         and MiddleName like @middlename
-                                        and	Email like @email
-                                        and @permissionsCount = (
-	                                        select count(value) from OPENJSON([PermissionsString]) 
-	                                        where value in @allPremisions )";
+                                        and	Email like @email ";
+
+
+            if (filter.Roles != null && filter.Roles.Count() != 0)
+            {
+                getCountQuery += " and RoleNumber in @rolesNumbers ";
+                getEntitieQuery += "and RoleNumber in @rolesNumbers ";
+            }
+            
+
+            if (filter.Permissions != null && filter.Permissions.Count() != 0)
+            {
+                getCountQuery += @"and @permissionsCount = (select count(value) from OPENJSON(PermissionsString) where value in @allPremisions) ";
+                getEntitieQuery += @"and @permissionsCount = (select count(value) from OPENJSON(PermissionsString) where value in @allPremisions) ";
+            }
+
+            if (filter.Employments != null && filter.Employments.Count() != 0)
+            {
+                getCountQuery += "and Employment in @employments ";
+                getEntitieQuery += "and Employment in @employments ";
+            }
+
+            getEntitieQuery += @"ORDER BY Id 
+                                 OFFSET @skipNumber ROWS 
+                                 FETCH NEXT @take ROWS ONLY";
 
             using (var connection = dapperContext.CreateConnection())
             {
-                var reader = await connection.QueryMultipleAsync($"{ getCountQuery};{getEntitieQuery}",
-                    new { email, firstname, lastname, middlename, take, skipNumber, allPremisions, permissionsCount});
+                var reader = await connection.QueryMultipleAsync($"{getCountQuery};{getEntitieQuery}",
+                    new { email, firstname, lastname, middlename, take, skipNumber, allPremisions, permissionsCount, rolesNumbers, employments });
                 int total = reader.Read<int>().FirstOrDefault();
                 var users = reader.Read<UserModel>();
                 return new GetEntitiesResponse<UserModel>
