@@ -106,7 +106,7 @@ export const TrackerPage: React.FC = () => {
     }
 
     const RenderStopwatch = () => {
-        if (tracks.length == 0) {
+        if (tracks.length == 0 || tracks[0].endTime) {
             return
         }
         return (
