@@ -43,6 +43,7 @@ import {TrackerPage} from "./modules/timeTracker/pages/TrackerPage/TrackerPage";
 import {TrackCreatePage} from "./modules/tracks/pages/TracksCreatePage/TrackCreatePage";
 import {RemoveUserModal} from "./modules/users/components/RemoveUserModal/RemoveUserModal";
 import {UpdateUserModal} from "./modules/users/components/UpdateUserModal/UpdateUserModal";
+import {CreateReportModal} from "./modules/excelExport/components/CreateReportModal";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -107,6 +108,7 @@ export const App = () => {
                                 <Route path="create" element={<CreateUserModal/>}/>
                                 <Route path="remove/:email" element={<RemoveUserModal/>}/>
                                 <Route path="update/:email" element={<UpdateUserModal/>}/>
+                                <Route path="createReport" element={<CreateReportModal/>}/>
                             </Route>
                             <Route path={"tools/*"}>
                                 <Route path={"file-manager/*"}>

@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TimeTracker.Business.Models;
+using TimeTracker.Business.Models.Filters;
 
 namespace TimeTracker.Business.Repositories
 {
     public interface IExcelExportRepository
     {
-        Task<IEnumerable<UserModel>> GetAsync(string like, DateTime date);
+        Task<IEnumerable<UserModel>> GetAsync(UserFilter filter, DateTime date);
         Task<double> GetUserHours(Guid userId, DateTime date);
     }
 }

@@ -123,7 +123,7 @@ export const VacationRequestsCreatePage: FC = () => {
                                     disabled={loadingGetAvailableDays}
                                     onClick={() => dispatch(vacationRequestsActions.getAvailableDaysAsync())}
                                 />
-                                <span>Available days: {availableDays} from {settings?.vacationRequests.amountDaysPerYear}</span>
+                                <span>Available days: {availableDays} / {settings?.vacationRequests.amountDaysPerYear}</span>
                             </Space>
                         </Text>
                     </WithSmallLoading>
