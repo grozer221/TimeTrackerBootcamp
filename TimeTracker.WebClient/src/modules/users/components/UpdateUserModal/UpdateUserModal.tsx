@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Form, Input, Modal, Select} from "antd";
+import {Form, Input, Modal, Radio, Select} from "antd";
 import {FC, useEffect,} from "react";
 import Title from "antd/lib/typography/Title";
 import {useNavigate, useParams} from "react-router-dom";
@@ -11,6 +11,7 @@ import {User} from "../../graphQL/users.types";
 import {usersActions} from "../../store/users.slice";
 import {RootState} from "../../../../store/store";
 import {UpdateUserInput} from "../../graphQL/users.mutations";
+import {Employment} from "../../../../graphQL/enums/Employment";
 
 type FormValues = {
     firstName: string,
@@ -21,6 +22,7 @@ type FormValues = {
     repeatPassword: string,
     permissions: Permission[],
     usersWhichCanApproveVacationRequest: User[],
+    employment: Employment,
 }
 
 type Props = {};
@@ -45,13 +47,14 @@ export const UpdateUserModal: FC<Props> = () => {
             const lastName = form.getFieldValue(nameof<FormValues>("lastName"))
             const middleName = form.getFieldValue(nameof<FormValues>("middleName"))
             const email = form.getFieldValue(nameof<FormValues>("email"))
+            const employment = form.getFieldValue(nameof<FormValues>("employment"))
             const permissions = form.getFieldValue(nameof<FormValues>("permissions")) ?? []
             const usersWhichCanApproveVacationRequest =
                 form.getFieldValue(nameof<FormValues>("usersWhichCanApproveVacationRequest")) ?? []
 
             let updatedUser: UpdateUserInput = {
                 id: user.id,
-                firstName, lastName, middleName, email, permissions,
+                firstName, lastName, middleName, email, permissions,employment,
                 usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequest
             } as UpdateUserInput
 
@@ -79,6 +82,7 @@ export const UpdateUserModal: FC<Props> = () => {
                     middleName: user.middleName,
                     email: user.email,
                     permissions: user.permissions,
+                    employment: user.employment,
                     usersWhichCanApproveVacationRequest: user.usersWhichCanApproveVacationRequest
                 } as FormValues}
             >
@@ -107,6 +111,19 @@ export const UpdateUserModal: FC<Props> = () => {
                     <Input placeholder="example@gmail.com"/>
                 </Form.Item>
 
+                <Form.Item name={nameof<FormValues>("employment")}
+                           label={"Employment:"}
+                           rules={[{required: true, message: 'Please choose user employment!'}]}>
+                    <Radio.Group>
+                        {
+                            Object.values(Employment).map(value =>
+                                <Radio value={value}>
+                                    {uppercaseToWords(value)}
+                                </Radio>)
+                        }
+                    </Radio.Group>
+                </Form.Item>
+
                 <Form.Item
                     name={nameof<FormValues>("permissions")}
                     label={'Permissions'}
@@ -127,7 +144,7 @@ export const UpdateUserModal: FC<Props> = () => {
 
                 <Form.Item
                     name={nameof<FormValues>("usersWhichCanApproveVacationRequest")}
-                    label={'Can approve vacation requests for users:'}
+                    label={'Users which can approve vacation request'}
                 >
                     <Select
                         className={'w-100'}
@@ -148,6 +165,5 @@ export const UpdateUserModal: FC<Props> = () => {
                 </Form.Item>
             </Form>
         </Modal>
-    )
-        ;
+    );
 };

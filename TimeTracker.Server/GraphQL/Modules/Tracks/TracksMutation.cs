@@ -1,7 +1,6 @@
 ﻿using FluentValidation;
 using GraphQL;
 using GraphQL.Types;
-using Microsoft.AspNetCore.Http;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
@@ -63,9 +62,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     var userId = httpContextAccessor.HttpContext.GetUserId();
                     await trackRemoveInputTypeValidator.ValidateAndThrowAsync(trackInput);
                     var model = await trackRepository.GetByIdAsync(trackInput.Id);
-
-                    if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateOthersTimeTracker) || model.UserId != userId)
-                        throw new ExecutionError("You do not have permissions for delete others tracks");
+                    if (model.UserId != userId)
+                        if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateOthersTimeTracker))
+                            throw new ExecutionError("You do not have permissions for delete others tracks");
 
                     await trackRepository.RemoveAsync(trackInput.Id);
 

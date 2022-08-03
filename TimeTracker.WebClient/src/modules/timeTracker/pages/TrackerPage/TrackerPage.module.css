@@ -1,8 +1,4 @@
-.font{
-    font-family: 'Arial';
-    font-size: 14px;
-    color: #434343;
-}
+
 
 .container{
     position: relative;
@@ -27,6 +23,8 @@
 }
 
 .cell{
+    word-wrap: anywhere;
+    overflow-x:hidden;
     display: flex;
     padding-left: 2%;
 }
@@ -49,6 +47,11 @@
     border-left: 1px solid lightgrey;
 }
 
+.header_divider{
+    color: white;
+    border-color: white;
+}
+
 .icons{
     position: relative;
     margin-top: 4px;
@@ -67,4 +70,16 @@
 
 .table_row:hover{
     box-shadow: 0 0 5px gray;
+}
+
+.start_button{
+    width: 100%;
+}
+
+.for_form{
+    display: flex;
+}
+
+.form_item{
+    justify-content: center;
 }

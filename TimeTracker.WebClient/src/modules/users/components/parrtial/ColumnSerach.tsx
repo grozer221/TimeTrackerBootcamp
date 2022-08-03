@@ -54,7 +54,7 @@ export const getColumnSearchProps = (dataIndex: DataIndex): ColumnType<User> => 
                     </Button>
                     <Button
                         onClick={(e) => {
-                            if(selectedKeys) setSelectedKeys( [])
+                            if (selectedKeys) setSelectedKeys([])
                             handleReset(confirm, selectedKeys, dataIndex)
                         }}
                         size="small"
