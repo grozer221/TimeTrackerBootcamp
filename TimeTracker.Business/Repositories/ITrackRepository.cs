@@ -9,7 +9,7 @@ using TimeTracker.Business.Models;
 
 namespace TimeTracker.Business.Repositories
 {
-    public interface ITrackRepository
+    public interface ITrackRepository 
     {
         Task<TrackModel> GetByIdAsync(Guid id);
         Task<IEnumerable<TrackModel>> GetAsync();
