@@ -4,6 +4,7 @@ using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Abstractions;
 using TimeTracker.Server.GraphQL.EnumTypes;
 using TimeTracker.Server.GraphQL.Modules.Auth;
@@ -26,7 +27,10 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     int pageSize = context.GetArgument<int>("pageSize");
                     int pageNumber = context.GetArgument<int>("pageNumber");
                     TrackKind? kind = context.GetArgument<TrackKind?>("kind");
-                    return await trackRepository.GetAsync(like, pageSize, pageNumber, kind);
+                    var currentUserId = httpContextAccessor.HttpContext.GetUserId();
+                    var tracks = await trackRepository.GetAsync(like, pageSize, pageNumber, kind);
+                    tracks.Entities = tracks.Entities.Where(t => t.UserId == currentUserId);
+                    return tracks;
                 }).AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<TrackType, TrackModel>()

@@ -1,3 +1,5 @@
+
+
 .container{
     position: relative;
     display: flex;
@@ -21,6 +23,8 @@
 }
 
 .cell{
+    word-wrap: anywhere;
+    overflow-x:hidden;
     display: flex;
     padding-left: 2%;
 }
