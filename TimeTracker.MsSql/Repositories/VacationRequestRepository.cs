@@ -4,6 +4,7 @@ using TimeTracker.Business.Enums;
 using TimeTracker.Business.Filters;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.MsSql.Extensions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -82,10 +83,10 @@ namespace TimeTracker.MsSql.Repositories
                     currentUserId,
                 });
                 int total = reader.Read<int>().FirstOrDefault();
-                var vacationRequests = reader.Read<VacationRequestModel>();
+                var entities = reader.Read<VacationRequestModel>();
                 return new GetEntitiesResponse<VacationRequestModel>
                 {
-                    Entities = vacationRequests,
+                    Entities = entities,
                     Total = total,
                     PageSize = pageSize,
                 };
@@ -95,7 +96,7 @@ namespace TimeTracker.MsSql.Repositories
         public async Task<VacationRequestModel> CreateAsync(VacationRequestModel model)
         {
             model.Id = Guid.NewGuid();
-            DateTime dateTimeNow = DateTime.Now;
+            DateTime dateTimeNow = DateTime.UtcNow;
             model.CreatedAt = dateTimeNow;
             model.UpdatedAt = dateTimeNow;
             string query = $@"insert into VacationRequests 
@@ -110,7 +111,7 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task<VacationRequestModel> UpdateAsync(VacationRequestModel model)
         {
-            model.UpdatedAt = DateTime.Now;
+            model.UpdatedAt = DateTime.UtcNow;
             string query = @"update VacationRequests
                             SET DateStart = @DateStart, DateEnd = @DateEnd, Comment = @Comment, UpdatedAt = @UpdatedAt
                             WHERE Id = @Id";
@@ -128,7 +129,7 @@ namespace TimeTracker.MsSql.Repositories
                             WHERE Id = @Id";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, new { id, status, updatedAt = DateTime.Now });
+                await connection.ExecuteAsync(query, new { id, status, updatedAt = DateTime.UtcNow });
             }
         }
 

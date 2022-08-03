@@ -1,6 +1,8 @@
-﻿using System.Data;
+﻿using Dapper;
+using System.Data;
 using System.Data.SqlClient;
 using System.Text.RegularExpressions;
+using TimeTracker.MsSql.TypeHandlers;
 
 namespace TimeTracker.MsSql
 {
@@ -18,6 +20,7 @@ namespace TimeTracker.MsSql
 
         public IDbConnection CreateConnection()
         {
+            SqlMapper.AddTypeHandler(new DateTimeTypeHandler());
             return new SqlConnection(ConnectionString);
         }
     }

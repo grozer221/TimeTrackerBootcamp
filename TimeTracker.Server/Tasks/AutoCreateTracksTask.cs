@@ -7,7 +7,7 @@ using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.Tasks
 {
-    public class AutoCreateTracks : ITask
+    public class AutoCreateTracksTask : ITask
     {
         public string JobName => GetType().Name;
         public JobKey JobKey => new JobKey(JobName);
@@ -18,27 +18,34 @@ namespace TimeTracker.Server.Tasks
         private readonly IServiceProvider serviceProvider;
         private readonly IUserRepository userRepository;
         private readonly ITrackRepository trackRepository;
+        private readonly ICompletedTaskRepository completedTaskRepository;
 
-        public AutoCreateTracks(ISettingsManager settingsManager, IServiceProvider serviceProvider, IUserRepository userRepository, ITrackRepository trackRepository)
+        public AutoCreateTracksTask(ISettingsManager settingsManager, IServiceProvider serviceProvider, IUserRepository userRepository, ITrackRepository trackRepository, ICompletedTaskRepository completedTaskRepository)
         {
             this.settingsManager = settingsManager;
             this.serviceProvider = serviceProvider;
             this.userRepository = userRepository;
             this.trackRepository = trackRepository;
+            this.completedTaskRepository = completedTaskRepository;
         }
 
         public async Task Execute(IJobExecutionContext context)
         {
+            var nowUtc = DateTime.UtcNow;
+            await ExecuteAsync(context, nowUtc);
+        }
+
+        public async Task ExecuteAsync(IJobExecutionContext? context, DateTime dateTimeNow)
+        {
             var settings = await settingsManager.GetAsync();
             var hoursInWorkday = settings.Employment.HoursInWorkday;
             var workdayStartAt = settings.Employment.WorkdayStartAt;
-            var now = DateTime.Now;
-            var workdayStartAtDateTime = new DateTime(now.Year, now.Month, now.Day, workdayStartAt.Hour, workdayStartAt.Minute, workdayStartAt.Second);
+            var workdayStartAtDateTime = new DateTime(dateTimeNow.Year, dateTimeNow.Month, dateTimeNow.Day, workdayStartAt.Hour, workdayStartAt.Minute, workdayStartAt.Second);
             var workdayEndAtDateTime = workdayStartAtDateTime.AddHours(hoursInWorkday);
             var users = await userRepository.GetAsync();
             foreach (var user in users)
             {
-                if(user.Employment == Employment.FullTime)
+                if (user.Employment == Employment.FullTime)
                 {
                     var track = new TrackModel
                     {
@@ -52,7 +59,12 @@ namespace TimeTracker.Server.Tasks
                     await trackRepository.UpdateAsync(track);
                 }
             }
-            Console.WriteLine($"[{DateTime.Now}] -- {JobName}");
+            await completedTaskRepository.CreateAsync(new CompletedTaskModel
+            {
+                DateExecute = dateTimeNow,
+                Kind = JobName,
+            });
+            Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {dateTimeNow}");
         }
 
         public async Task ResumeAsync()
@@ -91,7 +103,7 @@ namespace TimeTracker.Server.Tasks
             return TriggerBuilder.Create()
                 .ForJob(JobKey)
                 .WithIdentity(TriggerKey)
-                .WithCronSchedule(cron)
+                .WithCronSchedule(cron, builder => builder.InTimeZone(TimeZoneInfo.Utc))
                 .Build();
         }
 
@@ -101,7 +113,7 @@ namespace TimeTracker.Server.Tasks
             return configurator
                 .ForJob(JobKey)
                 .WithIdentity(TriggerKey)
-                .WithCronSchedule(cron);
+                .WithCronSchedule(cron, builder => builder.InTimeZone(TimeZoneInfo.Utc));
         }
 
         public async Task<string> GetCronAsync()

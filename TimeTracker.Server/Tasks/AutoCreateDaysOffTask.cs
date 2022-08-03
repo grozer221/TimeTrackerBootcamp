@@ -2,6 +2,7 @@
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
+using TimeTracker.Business.Repositories;
 using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.Tasks
@@ -16,32 +17,40 @@ namespace TimeTracker.Server.Tasks
         private readonly ISettingsManager settingsManager;
         private readonly ICalendarDayManager calendarDayManager;
         private readonly IServiceProvider serviceProvider;
+        private readonly ICompletedTaskRepository completedTaskRepository;
 
-        public AutoCreateDaysOffTask(ISettingsManager settingsManager, ICalendarDayManager calendarDayManager, IServiceProvider serviceProvider)
+        public AutoCreateDaysOffTask(ISettingsManager settingsManager, ICalendarDayManager calendarDayManager, IServiceProvider serviceProvider, ICompletedTaskRepository completedTaskRepository)
         {
             this.settingsManager = settingsManager;
             this.calendarDayManager = calendarDayManager;
             this.serviceProvider = serviceProvider;
+            this.completedTaskRepository = completedTaskRepository;
         }
 
         public async Task Execute(IJobExecutionContext context)
         {
+            var nowUtc = DateTime.UtcNow;
+            await ExecuteAsync(context, nowUtc);
+        }
+
+        public async Task ExecuteAsync(IJobExecutionContext? context, DateTime dateTimeNow)
+        {
             var settings = await settingsManager.GetAsync();
-            var dateTimeNow = DateTime.Now;
-            var mondayDate = DateTime.Today;
+            int diff = (7 + (dateTimeNow.DayOfWeek - DayOfWeek.Monday)) % 7;
+            var mondayDate = dateTimeNow.AddDays(-1 * diff).Date;
             mondayDate = mondayDate
-                       .AddDays(-(((mondayDate.DayOfWeek - DayOfWeek.Monday) + 7) % 7));
+                .AddDays(-(((mondayDate.DayOfWeek - DayOfWeek.Monday) + 7) % 7));
             var saturdayDate = mondayDate.AddDays(7);
             var numDays = (int)((saturdayDate - mondayDate).TotalDays);
             var currentWeekDates = Enumerable
-                       .Range(0, numDays)
-                       .Select(x => mondayDate.AddDays(x))
-                       .ToList();
+                .Range(0, numDays)
+                .Select(x => mondayDate.AddDays(x))
+                .ToList();
             var datesForCreateDayOff = currentWeekDates.Where(date => settings.Tasks.AutoCreateDaysOff.DaysOfWeek.Contains(date.DayOfWeek)).ToList();
             foreach (var dateForCreateDayOff in datesForCreateDayOff)
             {
                 var calendarDay = await calendarDayManager.GetByDateAsync(dateForCreateDayOff);
-                if(calendarDay == null)
+                if (calendarDay == null)
                 {
                     await calendarDayManager.CreateAsync(new CalendarDayModel
                     {
@@ -50,7 +59,12 @@ namespace TimeTracker.Server.Tasks
                     });
                 }
             }
-            Console.WriteLine($"[{DateTime.Now}] -- {JobName}");
+            await completedTaskRepository.CreateAsync(new CompletedTaskModel
+            {
+                DateExecute = dateTimeNow,
+                Kind = JobName,
+            });
+            Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {mondayDate} - {saturdayDate}");
         }
 
         public async Task ResumeAsync()
@@ -89,7 +103,7 @@ namespace TimeTracker.Server.Tasks
             return TriggerBuilder.Create()
                 .ForJob(JobKey)
                 .WithIdentity(TriggerKey)
-                .WithCronSchedule(cron)
+                .WithCronSchedule(cron, builder => builder.InTimeZone(TimeZoneInfo.Utc))
                 .Build();
         }
 
@@ -99,7 +113,7 @@ namespace TimeTracker.Server.Tasks
             return configurator
                 .ForJob(JobKey)
                 .WithIdentity(TriggerKey)
-                .WithCronSchedule(cron);
+                .WithCronSchedule(cron, builder => builder.InTimeZone(TimeZoneInfo.Utc));
         }
 
         public async Task<string> GetCronAsync()
