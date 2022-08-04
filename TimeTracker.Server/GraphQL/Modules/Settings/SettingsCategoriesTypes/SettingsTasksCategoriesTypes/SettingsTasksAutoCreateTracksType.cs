@@ -11,9 +11,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes.Se
                .Name("IsEnabled")
                .Resolve(context => context.Source.IsEnabled);
             
-            Field<TimeOnlyGraphType, TimeOnly>()
+            Field<DateTimeGraphType, DateTime>()
                .Name("TimeWhenCreate")
-               .Resolve(context => TimeOnly.FromDateTime(context.Source.TimeWhenCreate));
+               .Resolve(context => context.Source.TimeWhenCreate);
         }
     }
 }

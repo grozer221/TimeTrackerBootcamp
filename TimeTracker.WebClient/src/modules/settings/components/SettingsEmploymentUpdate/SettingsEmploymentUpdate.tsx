@@ -24,18 +24,14 @@ export const SettingsEmploymentUpdate: FC = () => {
 
     const onFinish = (values: FormValues) => {
         const settingsEmploymentUpdateInputType: SettingsEmploymentUpdateInputType = {
-            workdayStartAt: values.workdayStartAt?.format('HH:mm:ss') || '',
+            workdayStartAt: values.workdayStartAt?.utc().format('HH:mm:ss') || '',
             hoursInWorkday: values.hoursInWorkday ? parseInt(values.hoursInWorkday) : 0,
         }
         dispatch(settingsActions.updateEmploymentAsync(settingsEmploymentUpdateInputType));
     };
 
-    const onDiscardChanges = () => {
-        form.resetFields()
-    }
-
     const initialValues: FormValues = {
-        workdayStartAt: moment(settings?.employment.workdayStartAt, 'HH:mm:ss'),
+        workdayStartAt: moment(new Date(settings?.employment.workdayStartAt || '')),
         hoursInWorkday: settings?.employment?.hoursInWorkday.toString(),
     }
 
@@ -73,7 +69,7 @@ export const SettingsEmploymentUpdate: FC = () => {
                 </Col>
             </Row>
             <ExtraHeaderButtons
-                onDiscardChanges={onDiscardChanges}
+                onDiscardChanges={() => form.resetFields()}
                 onSaveChanges={form.submit}
                 loading={loading}
             />

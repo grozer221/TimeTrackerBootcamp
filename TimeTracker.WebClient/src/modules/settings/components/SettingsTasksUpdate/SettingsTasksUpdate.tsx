@@ -33,12 +33,12 @@ export const SettingsTasksUpdate: FC = () => {
         const settingsTasksUpdateInputType: SettingsTasksUpdateInputType = {
             autoCreateTracks: {
                 isEnabled: values.autoCreateTracks_IsEnabled,
-                timeWhenCreate: values.autoCreateTracks_TimeWhenCreate?.format('HH:mm:ss'),
+                timeWhenCreate: values.autoCreateTracks_TimeWhenCreate?.utc().format('HH:mm:ss'),
             },
             autoCreateDaysOff: {
                 isEnabled: values.autoCreateDaysOff_IsEnabled,
                 dayOfWeekWhenCreate: values.autoCreateDaysOff_DayOfWeekWhenCreate,
-                timeWhenCreate: values.autoCreateDaysOff_TimeWhenCreate?.format('HH:mm:ss'),
+                timeWhenCreate: values.autoCreateDaysOff_TimeWhenCreate?.utc().format('HH:mm:ss'),
                 daysOfWeek: values.autoCreateDaysOff_DaysOfWeek,
             }
         }
@@ -52,10 +52,10 @@ export const SettingsTasksUpdate: FC = () => {
 
     const initialValues: FormValues = {
         autoCreateTracks_IsEnabled: settings?.tasks?.autoCreateTracks?.isEnabled || false,
-        autoCreateTracks_TimeWhenCreate: moment(settings?.tasks?.autoCreateTracks?.timeWhenCreate, 'HH:mm:ss'),
+        autoCreateTracks_TimeWhenCreate: moment(new Date(settings?.tasks?.autoCreateTracks?.timeWhenCreate || '')),
         autoCreateDaysOff_IsEnabled: settings?.tasks?.autoCreateDaysOff?.isEnabled || false,
         autoCreateDaysOff_DayOfWeekWhenCreate: settings?.tasks?.autoCreateDaysOff?.dayOfWeekWhenCreate,
-        autoCreateDaysOff_TimeWhenCreate: moment(settings?.tasks?.autoCreateDaysOff?.timeWhenCreate, 'HH:mm:ss'),
+        autoCreateDaysOff_TimeWhenCreate: moment(new Date(settings?.tasks?.autoCreateDaysOff?.timeWhenCreate || '')),
         autoCreateDaysOff_DaysOfWeek: settings?.tasks?.autoCreateDaysOff?.daysOfWeek,
     }
 
