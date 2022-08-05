@@ -26,7 +26,7 @@ namespace TimeTracker.MsSql.Repositories
                     string queryInsert = $@"insert into Settings 
                             ( Id,  CreatedAt,  UpdatedAt) values 
                             (@Id, @CreatedAt, @UpdatedAt)";
-                    DateTime dateTimeNow = DateTime.Now;
+                    DateTime dateTimeNow = DateTime.UtcNow;
                     settings = new SettingsModel
                     {
                         Id = Guid.NewGuid(),
@@ -43,7 +43,7 @@ namespace TimeTracker.MsSql.Repositories
         {
             var settings = await GetAsync();
             settings.Application = settingsApplication;
-            settings.UpdatedAt = DateTime.Now;
+            settings.UpdatedAt = DateTime.UtcNow;
             string query = @"update Settings
                             SET ApplicationString = @ApplicationString, UpdatedAt = @UpdatedAt
                             WHERE Id = @Id";
@@ -58,7 +58,7 @@ namespace TimeTracker.MsSql.Repositories
         {
             var settings = await GetAsync();
             settings.Employment = settingsEmployment;
-            settings.UpdatedAt = DateTime.Now;
+            settings.UpdatedAt = DateTime.UtcNow;
             string query = @"update Settings
                             SET EmploymentString = @EmploymentString, UpdatedAt = @UpdatedAt
                             WHERE Id = @Id";
@@ -88,7 +88,7 @@ namespace TimeTracker.MsSql.Repositories
         {
             var settings = await GetAsync();
             settings.Email = settingsEmail;
-            settings.UpdatedAt = DateTime.Now;
+            settings.UpdatedAt = DateTime.UtcNow;
             string query = @"update Settings
                             SET EmailString = @EmailString, UpdatedAt = @UpdatedAt
                             WHERE Id = @Id";
@@ -103,7 +103,7 @@ namespace TimeTracker.MsSql.Repositories
         {
             var settings = await GetAsync();
             settings.VacationRequests = settingsVacationRequests;
-            settings.UpdatedAt = DateTime.Now;
+            settings.UpdatedAt = DateTime.UtcNow;
             string query = @"update Settings
                             SET VacationRequestsString = @VacationRequestsString, UpdatedAt = @UpdatedAt
                             WHERE Id = @Id";

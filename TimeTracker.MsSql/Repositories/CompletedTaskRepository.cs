@@ -13,12 +13,12 @@ namespace TimeTracker.MsSql.Repositories
             this.dapperContext = dapperContext;
         }
 
-        public async Task<CompletedTaskModel?> GetLastExecutedAsync(string kind)
+        public async Task<CompletedTaskModel?> GetLastExecutedAsync(string name)
         {
-            string query = @"select top 1 * from CompletedTasks where Kind = @Kind order by CreatedAt desc";
+            string query = @"select top 1 * from CompletedTasks where Name = @Name order by CreatedAt desc";
             using (var connection = dapperContext.CreateConnection())
             {
-                return await connection.QueryFirstOrDefaultAsync<CompletedTaskModel>(query, new { kind });
+                return await connection.QueryFirstOrDefaultAsync<CompletedTaskModel>(query, new { name });
             }
         }
 
@@ -29,8 +29,8 @@ namespace TimeTracker.MsSql.Repositories
             model.CreatedAt = dateTimeNow;
             model.UpdatedAt = dateTimeNow;
             string query = $@"insert into CompletedTasks 
-                            (Id,   DateExecute,  Kind,  CreatedAt,  UpdatedAt) values 
-                            (@Id, @DateExecute, @Kind, @CreatedAt, @UpdatedAt)";
+                            (Id,   DateExecute,  Name,  CreatedAt,  UpdatedAt) values 
+                            (@Id, @DateExecute, @Name, @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
             {
                 await connection.ExecuteAsync(query, model);

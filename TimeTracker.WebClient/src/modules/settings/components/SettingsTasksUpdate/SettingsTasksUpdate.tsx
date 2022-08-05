@@ -30,6 +30,7 @@ export const SettingsTasksUpdate: FC = () => {
     const autoCreateTracks_IsEnabled = Form.useWatch(nameof<FormValues>('autoCreateTracks_IsEnabled'), form);
 
     const onFinish = (values: FormValues) => {
+        console.log(values.autoCreateTracks_TimeWhenCreate, values.autoCreateTracks_TimeWhenCreate?.utc())
         const settingsTasksUpdateInputType: SettingsTasksUpdateInputType = {
             autoCreateTracks: {
                 isEnabled: values.autoCreateTracks_IsEnabled,
@@ -52,10 +53,10 @@ export const SettingsTasksUpdate: FC = () => {
 
     const initialValues: FormValues = {
         autoCreateTracks_IsEnabled: settings?.tasks?.autoCreateTracks?.isEnabled || false,
-        autoCreateTracks_TimeWhenCreate: moment(new Date(settings?.tasks?.autoCreateTracks?.timeWhenCreate || '')),
+        autoCreateTracks_TimeWhenCreate: moment(settings?.tasks?.autoCreateTracks?.timeWhenCreate).local(),
         autoCreateDaysOff_IsEnabled: settings?.tasks?.autoCreateDaysOff?.isEnabled || false,
         autoCreateDaysOff_DayOfWeekWhenCreate: settings?.tasks?.autoCreateDaysOff?.dayOfWeekWhenCreate,
-        autoCreateDaysOff_TimeWhenCreate: moment(new Date(settings?.tasks?.autoCreateDaysOff?.timeWhenCreate || '')),
+        autoCreateDaysOff_TimeWhenCreate: moment(settings?.tasks?.autoCreateDaysOff?.timeWhenCreate).local(),
         autoCreateDaysOff_DaysOfWeek: settings?.tasks?.autoCreateDaysOff?.daysOfWeek,
     }
 

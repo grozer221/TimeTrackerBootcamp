@@ -1,5 +1,4 @@
 ﻿using Quartz;
-using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
@@ -51,7 +50,7 @@ namespace TimeTracker.Server.Services
                     await completedTaskRepository.CreateAsync(new CompletedTaskModel
                     {
                         DateExecute = dateTimeOffsetNow.DateTime,
-                        Kind = task.JobName,
+                        Name = task.JobName,
                     });
                     continue;
                 }

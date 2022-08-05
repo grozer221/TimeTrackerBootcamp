@@ -62,7 +62,7 @@ namespace TimeTracker.Server.Tasks
             await completedTaskRepository.CreateAsync(new CompletedTaskModel
             {
                 DateExecute = dateTimeNow,
-                Kind = JobName,
+                Name = JobName,
             });
             Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {mondayDate} - {saturdayDate}");
         }

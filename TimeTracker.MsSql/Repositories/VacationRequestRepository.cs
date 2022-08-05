@@ -25,10 +25,20 @@ namespace TimeTracker.MsSql.Repositories
                 return await connection.QueryFirstOrDefaultAsync<VacationRequestModel>(query, new { id });
             }
         }
+        
+        public async Task<VacationRequestModel> GetByDateAsync(DateTime date, Guid userId)
+        {
+            string query = @"select * from VacationRequests
+                            where userId = @userId and @date between DateStart and DateEnd";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                return await connection.QueryFirstOrDefaultAsync<VacationRequestModel>(query, new { date, userId });
+            }
+        }
 
         public async Task<IEnumerable<VacationRequestModel>> GetAsync(Guid userId, DateTime from, DateTime to)
         {
-            string query = @"select * from VacationRequests 
+            string query = @"select top 1 * from VacationRequests 
                             where userId = @userId and DateStart between @from and @to";
             using (var connection = dapperContext.CreateConnection())
             {

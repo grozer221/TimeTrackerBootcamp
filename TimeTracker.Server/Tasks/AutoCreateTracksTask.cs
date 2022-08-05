@@ -19,14 +19,23 @@ namespace TimeTracker.Server.Tasks
         private readonly IUserRepository userRepository;
         private readonly ITrackRepository trackRepository;
         private readonly ICompletedTaskRepository completedTaskRepository;
+        private readonly IVacationRequestRepository vacationRequestRepository;
 
-        public AutoCreateTracksTask(ISettingsManager settingsManager, IServiceProvider serviceProvider, IUserRepository userRepository, ITrackRepository trackRepository, ICompletedTaskRepository completedTaskRepository)
+        public AutoCreateTracksTask(
+            ISettingsManager settingsManager, 
+            IServiceProvider serviceProvider, 
+            IUserRepository userRepository, 
+            ITrackRepository trackRepository, 
+            ICompletedTaskRepository completedTaskRepository, 
+            IVacationRequestRepository vacationRequestRepository
+            )
         {
             this.settingsManager = settingsManager;
             this.serviceProvider = serviceProvider;
             this.userRepository = userRepository;
             this.trackRepository = trackRepository;
             this.completedTaskRepository = completedTaskRepository;
+            this.vacationRequestRepository = vacationRequestRepository;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -45,13 +54,31 @@ namespace TimeTracker.Server.Tasks
             var users = await userRepository.GetAsync();
             foreach (var user in users)
             {
-                if (user.Employment == Employment.FullTime)
+                var trackKinds = new List<TrackKind>();
+                var todayVacationRequest = await vacationRequestRepository.GetByDateAsync(dateTimeNow, user.Id);
+                if (todayVacationRequest != null)
+                {
+                    trackKinds.Add(TrackKind.Vacation);
+                }
+
+                object todaySickLeave = null; // change !!
+                if (todaySickLeave != null)
+                {
+                    trackKinds.Add(TrackKind.Sick);
+                }
+
+                if (trackKinds.Count == 0 && user.Employment == Employment.FullTime)
+                {
+                    trackKinds.Add(TrackKind.Default);
+                }
+                foreach (var trackKind in trackKinds)
                 {
                     var track = new TrackModel
                     {
                         Id = Guid.NewGuid(),
                         Title = "Auto created",
                         StartTime = workdayStartAtDateTime,
+                        Kind = trackKind,
                         UserId = user.Id,
                     };
                     await trackRepository.CreateAsync(track);
@@ -62,7 +89,7 @@ namespace TimeTracker.Server.Tasks
             await completedTaskRepository.CreateAsync(new CompletedTaskModel
             {
                 DateExecute = dateTimeNow,
-                Kind = JobName,
+                Name = JobName,
             });
             Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {dateTimeNow}");
         }

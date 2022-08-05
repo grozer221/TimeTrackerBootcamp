@@ -16,7 +16,7 @@ namespace TimeTracker.MsSql.Migrations
             Create.Table("CompletedTasks")
                .WithColumn("Id").AsGuid().NotNullable().PrimaryKey()
                .WithColumn("DateExecute").AsDateTime().NotNullable()
-               .WithColumn("Kind").AsString(200).NotNullable()
+               .WithColumn("Name").AsString(200).NotNullable()
                .WithColumn("CreatedAt").AsDateTime().NotNullable()
                .WithColumn("UpdatedAt").AsDateTime().NotNullable();
         }
