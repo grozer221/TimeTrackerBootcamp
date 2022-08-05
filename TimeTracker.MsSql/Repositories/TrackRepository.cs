@@ -40,7 +40,7 @@ namespace TimeTracker.MsSql.Repositories
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                tracks = await db.QueryAsync<TrackModel>(query, new {like, skip, take = pageSize, trackKind = kindReg});
+                tracks = await db.QueryAsync<TrackModel>(query, new {like, trackKind = kindReg, skip, take = pageSize});
                 total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like and Kind LIKE @trackKind", new { like, trackKind = kindReg });
             }
 
