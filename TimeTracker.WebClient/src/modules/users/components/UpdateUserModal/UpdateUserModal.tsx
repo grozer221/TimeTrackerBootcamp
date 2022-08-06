@@ -21,7 +21,7 @@ type FormValues = {
     password: string,
     repeatPassword: string,
     permissions: Permission[],
-    usersWhichCanApproveVacationRequest: User[],
+    usersWhichCanApproveVacationRequest: string[],
     employment: Employment,
 }
 
@@ -34,6 +34,7 @@ export const UpdateUserModal: FC<Props> = () => {
     const email = params['email']
 
     let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
+    console.log(user)
     let usersForVacation = useSelector((s: RootState) => s.users.usersForVacation)
 
     useEffect(() => {
@@ -49,14 +50,17 @@ export const UpdateUserModal: FC<Props> = () => {
             const email = form.getFieldValue(nameof<FormValues>("email"))
             const employment = form.getFieldValue(nameof<FormValues>("employment"))
             const permissions = form.getFieldValue(nameof<FormValues>("permissions")) ?? []
-            const usersWhichCanApproveVacationRequest =
+            const usersWhichCanApproveVacationRequestIds =
                 form.getFieldValue(nameof<FormValues>("usersWhichCanApproveVacationRequest")) ?? []
 
             let updatedUser: UpdateUserInput = {
                 id: user.id,
-                firstName, lastName, middleName, email, permissions,employment,
-                usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequest
+                firstName, lastName, middleName, email, permissions, employment,
+                usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequestIds
             } as UpdateUserInput
+
+            console.log(updatedUser)
+
 
             dispatch(usersActions.updateUser(updatedUser))
         } catch (e) {
@@ -83,7 +87,7 @@ export const UpdateUserModal: FC<Props> = () => {
                     email: user.email,
                     permissions: user.permissions,
                     employment: user.employment,
-                    usersWhichCanApproveVacationRequest: user.usersWhichCanApproveVacationRequest
+                    usersWhichCanApproveVacationRequest: user.usersWhichCanApproveVacationRequest.map(u => u.id)
                 } as FormValues}
             >
                 <Form.Item name={nameof<FormValues>("firstName")}
@@ -153,7 +157,11 @@ export const UpdateUserModal: FC<Props> = () => {
                         placeholder="Users"
                         filterOption={false}
                         onSearch={(e) => {
-                            dispatch(usersActions.fetchUsersForVacationsSelect({filter: {email: e}, skip: 0, take: 1000}))
+                            dispatch(usersActions.fetchUsersForVacationsSelect({
+                                filter: {email: e},
+                                skip: 0,
+                                take: 1000
+                            }))
                         }}
                     >
                         {usersForVacation.map((user) => (
