@@ -1,21 +1,21 @@
 import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
-import {catchError, debounceTime, endWith, from, mergeMap, of, startWith} from "rxjs";
+import {catchError, endWith, from, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
-import {TRACKS_GET_QUERY, GetTracksData, GetTracksInputData} from "../graphQL/tracks.queries";
+import {GetTracksData, GetTracksInputData, TRACKS_GET_QUERY} from "../graphQL/tracks.queries";
 import {
     CreateTrack,
-    CreateTrackInput,
     CreateTrackInputType,
     RemoveTrack,
     RemoveTrackInputType,
     TRACK_CREATE_MUTATION,
-    TRACK_REMOVE_MUTATION, TRACK_UPDATE_MUTATION, UpdateTrack, UpdateTrackInputType
+    TRACK_REMOVE_MUTATION,
+    TRACK_UPDATE_MUTATION,
+    UpdateTrack,
+    UpdateTrackInputType
 } from "../graphQL/tracks.mutations";
 import {tracksAction} from "./tracks.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
-import {navigateActions} from "../../navigate/store/navigate.slice";
-import {vacationRequestsActions} from "../../vacationRequests/store/vacationRequests.slice";
 
 export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, RootState> = (action$, state$) => {
     return action$.pipe(
