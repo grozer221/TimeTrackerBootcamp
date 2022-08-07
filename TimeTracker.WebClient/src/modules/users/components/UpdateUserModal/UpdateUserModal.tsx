@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {Form, Input, Modal, Radio, Select} from "antd";
-import {FC, useEffect,} from "react";
+import {FC, useEffect, useState,} from "react";
 import Title from "antd/lib/typography/Title";
 import {useNavigate, useParams} from "react-router-dom";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
@@ -9,7 +9,7 @@ import {useForm} from "antd/es/form/Form";
 import {useDispatch, useSelector} from "react-redux";
 import {User} from "../../graphQL/users.types";
 import {usersActions} from "../../store/users.slice";
-import {RootState} from "../../../../store/store";
+import {RootState, useAppSelector} from "../../../../store/store";
 import {UpdateUserInput} from "../../graphQL/users.mutations";
 import {Employment} from "../../../../graphQL/enums/Employment";
 
@@ -36,8 +36,23 @@ export const UpdateUserModal: FC<Props> = () => {
     let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
     let usersForVacation = useSelector((s: RootState) => s.users.usersForVacation)
 
+    let notFetchedUsers = user.usersWhichCanApproveVacationRequest.filter(user => {
+        if(!usersForVacation.find(u => u.id === user.id)) return true
+        return false
+    }) as User[]
+
+    console.log('notFetchedUsers:', notFetchedUsers)
+    console.log('usersWhichCanApproveVacationRequest:', user.usersWhichCanApproveVacationRequest)
+
+    let usersForVacationLoading = useAppSelector(s => s.users.usersForVacationLoading)
+    let [usersForVacationEmail, setUsersForVacationEmail] = useState('')
+    let [currentPage, setCurrentPage] = useState(0)
+    let [usersPageSize, setUsersPageSize] = useState(10)
+    let totalUsersForVacation = useAppSelector(s => s.users.totalUsersForVacation)
+
+
     useEffect(() => {
-        dispatch(usersActions.fetchUsersForVacationsSelect({filter: {email: ""}, skip: 0, take: 1000}))
+        dispatch(usersActions.fetchUsersForVacationsSelect({filter: {email: ""}, skip: 0, take: usersPageSize}))
     }, [])
 
     const handleOk = async () => {
@@ -57,9 +72,6 @@ export const UpdateUserModal: FC<Props> = () => {
                 firstName, lastName, middleName, email, permissions, employment,
                 usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequestIds
             } as UpdateUserInput
-
-            console.log(updatedUser)
-
 
             dispatch(usersActions.updateUser(updatedUser))
         } catch (e) {
@@ -155,15 +167,39 @@ export const UpdateUserModal: FC<Props> = () => {
                         allowClear
                         placeholder="Users"
                         filterOption={false}
-                        onSearch={(e) => {
+                        onPopupScroll={(e) => {
+                            let target = e.target as HTMLSelectElement
+                            if (!usersForVacationLoading && target.scrollTop + target.offsetHeight === target.scrollHeight) {
+                                if (currentPage < totalUsersForVacation) {
+                                    dispatch(usersActions.setUsersForVacationLoading(true))
+                                    target.scrollTo(0, target.scrollHeight)
+                                    dispatch(usersActions.fetchUsersForVacationsSelect({
+                                        filter: {email: usersForVacationEmail},
+                                        take: usersPageSize,
+                                        skip: currentPage + 1,
+                                    }))
+                                    setCurrentPage(currentPage + 1)
+                                }
+                            }
+                        }}
+                        onSearch={(email) => {
+                            setUsersForVacationEmail(email)
+                            dispatch(usersActions.setUsersForVacationLoading(true))
                             dispatch(usersActions.fetchUsersForVacationsSelect({
-                                filter: {email: e},
+                                filter: {email},
+                                take: usersPageSize,
                                 skip: 0,
-                                take: 1000
                             }))
+                            setCurrentPage(0)
                         }}
                     >
                         {usersForVacation.map((user) => (
+                            <Select.Option key={user.id} value={user.id}>
+                                {user.email}
+                            </Select.Option>
+                        ))}
+
+                        {notFetchedUsers.map((user) => (
                             <Select.Option key={user.id} value={user.id}>
                                 {user.email}
                             </Select.Option>
