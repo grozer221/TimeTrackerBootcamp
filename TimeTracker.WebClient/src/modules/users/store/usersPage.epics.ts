@@ -7,8 +7,16 @@ import {
     CreateUserData,
     CreateUserInputType,
     RemoveUserInput,
-    RemoveUserInputType, UpdateUserInput, UpdateUserInputType,
-    USERS_CREATE_MUTATION, USERS_REMOVE_MUTATION, USERS_UPDATE_MUTATION
+    RemoveUserInputType,
+    ResetUserPasswordDataResponse,
+    ResetUserPasswordInput,
+    ResetUserPasswordInputType,
+    UpdateUserInput,
+    UpdateUserInputType,
+    USERS_CREATE_MUTATION,
+    USERS_REMOVE_MUTATION,
+    USERS_RESET_PASSWORD_MUTATION,
+    USERS_UPDATE_MUTATION
 } from "../graphQL/users.mutations";
 import {usersActions} from "./users.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
@@ -134,6 +142,29 @@ export const updateUserEpic: Epic<ReturnType<typeof usersActions.updateUser>,
     )
 }
 
+export const resetUserPasswordEpic: Epic<ReturnType<typeof usersActions.resetUserPassword>,
+    any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(usersActions.resetUserPassword.type),
+        mergeMap(action =>
+            from(client.mutate<ResetUserPasswordDataResponse, ResetUserPasswordInputType>({
+                mutation: USERS_RESET_PASSWORD_MUTATION,
+                variables: {
+                    ResetRequestData: action.payload
+                }
+            })).pipe(
+                mergeMap(response => [
+                    navigateActions.navigate(-1),
+                    notificationsActions.addSuccess("Password was updated successfully for " + response.data?.users.updatePassword.email),
+                    usersActions.getAsync({take: state$.value.users.pageSize, skip: state$.value.users.currentPage})
+                ])
+            )
+        ),
+        catchError(error => of(notificationsActions.addError(error.message))),
+    )
+}
+
+
 export const usersPageEpics = combineEpics(
     getUsersEpic,
     getUsersForVacationsSelectEpic,
@@ -141,4 +172,5 @@ export const usersPageEpics = combineEpics(
     createUserEpic,
     removeUserEpic,
     updateUserEpic,
+    resetUserPasswordEpic,
 )

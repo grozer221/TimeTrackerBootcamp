@@ -14,7 +14,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Users.DTO
                 .MustAsync(async (user, id, cancellation) =>
                 {
                     var checkUser = await userRepository.GetByIdAsync(user.Id);
-                    return checkUser == null;
+                    return checkUser != null;
                 }).WithMessage("User with that id not exist!");
 
             RuleFor(l => l.Password)

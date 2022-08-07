@@ -44,6 +44,7 @@ import {TrackCreatePage} from "./modules/tracks/pages/TracksCreatePage/TrackCrea
 import {RemoveUserModal} from "./modules/users/components/RemoveUserModal/RemoveUserModal";
 import {UpdateUserModal} from "./modules/users/components/UpdateUserModal/UpdateUserModal";
 import {CreateReportModal} from "./modules/excelExport/components/CreateReportModal";
+import {ResetPasswordUserModal} from "./modules/users/components/ResetPassword/ResetPasswordUserModal";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -108,6 +109,7 @@ export const App = () => {
                                 <Route path="create" element={<CreateUserModal/>}/>
                                 <Route path="remove/:email" element={<RemoveUserModal/>}/>
                                 <Route path="update/:email" element={<UpdateUserModal/>}/>
+                                <Route path="reset-password/:id" element={<ResetPasswordUserModal/>}/>
                                 <Route path="createReport" element={<CreateReportModal/>}/>
                             </Route>
                             <Route path={"tools/*"}>

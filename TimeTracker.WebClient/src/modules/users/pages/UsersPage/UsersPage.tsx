@@ -58,7 +58,8 @@ export const UsersPage = React.memo(() => {
             items={[
                 {key: '1', label: (<Link to={"update/" + userEmail} state={{popup: location}}>Update</Link>)},
                 {key: '2', label: (<Link to={"remove/" + userEmail} state={{popup: location}}>Remove</Link>)},
-                {key: '3', label: 'View'}
+                {key: '3', label: (<Link to={"reset-password/" + userId} state={{popup: location}}>Reset password</Link>)},
+                {key: '4', label: 'View'}
             ]}
         />
     )

@@ -34,7 +34,6 @@ export const UpdateUserModal: FC<Props> = () => {
     const email = params['email']
 
     let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
-    console.log(user)
     let usersForVacation = useSelector((s: RootState) => s.users.usersForVacation)
 
     useEffect(() => {

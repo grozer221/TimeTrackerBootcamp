@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {User, UserFilter} from "../graphQL/users.types";
-import {CreateUserInput, RemoveUserInput, UpdateUserInput} from "../graphQL/users.mutations";
+import {CreateUserInput, RemoveUserInput, ResetUserPasswordInput, UpdateUserInput} from "../graphQL/users.mutations";
 
 type InitialState = {
     users: User[],
@@ -53,6 +53,7 @@ export const usersSlice = createSlice({
             state.currentPage = action.payload
         },
         updateUser: (state, action: PayloadAction<UpdateUserInput>) => state,
+        resetUserPassword: (state, action: PayloadAction<ResetUserPasswordInput>) => state,
     }
 })
 
