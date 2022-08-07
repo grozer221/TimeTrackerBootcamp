@@ -34,11 +34,16 @@ export const CreateUserModal: FC<Props> = () => {
     const dispatch = useDispatch()
 
     let users = useAppSelector(s => s.users.usersForVacation)
+    let usersForVacationLoading = useAppSelector(s => s.users.usersForVacationLoading)
+    let [usersForVacationEmail, setUsersForVacationEmail] = useState('')
+    let [currentPage, setCurrentPage] = useState(0)
+    let [usersPageSize, setUsersPageSize] = useState(10)
+    let totalUsersForVacation = useAppSelector(s => s.users.totalUsersForVacation)
 
     useEffect(() => {
         dispatch(usersActions.fetchUsersForVacationsSelect({
-            filter: {email: '', permissions: [], roles: []},
-            take: 100,
+            filter: {email: ''},
+            take: usersPageSize,
             skip: 0,
         }))
     }, [])
@@ -172,12 +177,31 @@ export const CreateUserModal: FC<Props> = () => {
                         allowClear
                         placeholder="Users"
                         filterOption={false}
+                        loading={usersForVacationLoading}
+                        onPopupScroll={(e) => {
+                            let target = e.target as HTMLSelectElement
+                            if (!usersForVacationLoading && target.scrollTop + target.offsetHeight === target.scrollHeight) {
+                                if (currentPage < totalUsersForVacation) {
+                                    dispatch(usersActions.setUsersForVacationLoading(true))
+                                    target.scrollTo(0, target.scrollHeight)
+                                    dispatch(usersActions.fetchUsersForVacationsSelect({
+                                        filter: {email: usersForVacationEmail},
+                                        take: usersPageSize,
+                                        skip: currentPage + 1,
+                                    }))
+                                    setCurrentPage(currentPage + 1)
+                                }
+                            }
+                        }}
                         onSearch={(email) => {
+                            setUsersForVacationEmail(email)
+                            dispatch(usersActions.setUsersForVacationLoading(true))
                             dispatch(usersActions.fetchUsersForVacationsSelect({
-                                filter: {email, permissions: [], roles: []},
-                                take: 100,
+                                filter: {email},
+                                take: usersPageSize,
                                 skip: 0,
                             }))
+                            setCurrentPage(0)
                         }}
                     >
                         {users.map((user) => (
@@ -189,6 +213,5 @@ export const CreateUserModal: FC<Props> = () => {
                 </Form.Item>
             </Form>
         </Modal>
-    )
-        ;
+    );
 };

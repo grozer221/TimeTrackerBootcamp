@@ -62,8 +62,12 @@ export const getUsersForVacationsSelectEpic: Epic<ReturnType<typeof usersActions
                 }
             })).pipe(
                 mergeMap(response => [
-                    usersActions.addUsersForVacationsSelect(response.data.users.get.entities)
-                ])
+                        usersActions.setUsersForVacationLoading(false),
+                        usersActions.addUsersForVacationsSelect({
+                            users: response.data.users.get.entities,
+                            total: response.data.users.get.total
+                        })]
+                )
             )
         ),
         catchError(error => of(notificationsActions.addError(error.message)))

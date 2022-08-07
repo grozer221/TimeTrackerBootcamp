@@ -8,7 +8,10 @@ type InitialState = {
     pageSize: number,
     currentPage: number,
     usersForVacation: User[],
-    filter: UserFilter
+    totalUsersForVacation: number,
+    filter: UserFilter,
+    usersLoading: boolean,
+    usersForVacationLoading: boolean,
 }
 
 const initialState: InitialState = {
@@ -17,6 +20,7 @@ const initialState: InitialState = {
     pageSize: 10,
     currentPage: 0,
     usersForVacation: [],
+    totalUsersForVacation: 0,
     filter: {
         firstName: "",
         lastName: "",
@@ -25,7 +29,9 @@ const initialState: InitialState = {
         permissions: [],
         roles: [],
         employments: []
-    }
+    },
+    usersLoading: false,
+    usersForVacationLoading: false,
 }
 
 export const usersSlice = createSlice({
@@ -41,8 +47,9 @@ export const usersSlice = createSlice({
             state.pageSize = action.payload.pageSize;
         },
         fetchUsersForVacationsSelect: (state, action: PayloadAction<{ filter: UserFilter, take: number, skip: number }>) => state,
-        addUsersForVacationsSelect: (state, action: PayloadAction<User[]>) => {
-            state.usersForVacation = action.payload;
+        addUsersForVacationsSelect: (state, action: PayloadAction<{users: User[], total: number}>) => {
+            action.payload.users.forEach((item) => state.usersForVacation.push(item))
+            state.totalUsersForVacation = action.payload.total
         },
         createUser: (state, action: PayloadAction<CreateUserInput>) => state,
         removeUserAsync: (state, action: PayloadAction<RemoveUserInput>) => state,
@@ -54,6 +61,9 @@ export const usersSlice = createSlice({
         },
         updateUser: (state, action: PayloadAction<UpdateUserInput>) => state,
         resetUserPassword: (state, action: PayloadAction<ResetUserPasswordInput>) => state,
+        setUsersForVacationLoading: (state, action: PayloadAction<boolean>) => {
+            state.usersForVacationLoading = action.payload
+        },
     }
 })
 
