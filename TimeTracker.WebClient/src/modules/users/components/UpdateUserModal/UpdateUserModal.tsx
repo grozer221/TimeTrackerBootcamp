@@ -12,6 +12,7 @@ import {usersActions} from "../../store/users.slice";
 import {RootState, useAppSelector} from "../../../../store/store";
 import {UpdateUserInput} from "../../graphQL/users.mutations";
 import {Employment} from "../../../../graphQL/enums/Employment";
+import {navigateActions} from "../../../navigate/store/navigate.slice";
 
 type FormValues = {
     firstName: string,
@@ -79,6 +80,11 @@ export const UpdateUserModal: FC<Props> = () => {
         }
     }
 
+    const handleCancel = () => {
+        dispatch(usersActions.clearUsersForVacationData())
+        dispatch(navigateActions.navigate(-1))
+    }
+
     return (
         <Modal
             title={<Title level={4}>{"Update User " + user.firstName}</Title>}
@@ -86,7 +92,7 @@ export const UpdateUserModal: FC<Props> = () => {
             visible={true}
             onOk={handleOk}
             okText={'Update'}
-            onCancel={() => navigate(-1)}
+            onCancel={handleCancel}
         >
             <Form
                 form={form}

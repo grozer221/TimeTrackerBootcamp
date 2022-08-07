@@ -64,6 +64,10 @@ export const usersSlice = createSlice({
         setUsersForVacationLoading: (state, action: PayloadAction<boolean>) => {
             state.usersForVacationLoading = action.payload
         },
+        clearUsersForVacationData: (state) => {
+            state.usersForVacation = []
+            state.totalUsersForVacation = 0
+        }
     }
 })
 

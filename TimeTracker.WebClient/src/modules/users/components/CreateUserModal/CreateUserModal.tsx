@@ -13,6 +13,7 @@ import {useAppSelector} from "../../../../store/store";
 import {CreateUserInput} from "../../graphQL/users.mutations";
 import {usersActions} from "../../store/users.slice";
 import {Employment} from "../../../../graphQL/enums/Employment";
+import {navigateActions} from "../../../navigate/store/navigate.slice";
 
 
 type FormValues = {
@@ -72,6 +73,11 @@ export const CreateUserModal: FC<Props> = () => {
         }
     }
 
+    const handleCancel = () => {
+        dispatch(usersActions.clearUsersForVacationData())
+        dispatch(navigateActions.navigate(-1))
+    }
+    
     return (
         <Modal
             title={<Title level={4}>Create new User</Title>}
@@ -79,7 +85,7 @@ export const CreateUserModal: FC<Props> = () => {
             visible={true}
             onOk={handleOk}
             okText={'Create'}
-            onCancel={() => navigate(-1)}
+            onCancel={handleCancel}
         >
             <Form
                 form={form}

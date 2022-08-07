@@ -88,6 +88,7 @@ export const createUserEpic: Epic<ReturnType<typeof usersActions.createUser>,
                 mergeMap(response => [
                     navigateActions.navigate(-1),
                     notificationsActions.addSuccess("User was created!"),
+                    usersActions.clearUsersForVacationData(),
                     usersActions.getAsync({
                         take: state$.value.users.pageSize,
                         skip: state$.value.users.currentPage
@@ -138,6 +139,7 @@ export const updateUserEpic: Epic<ReturnType<typeof usersActions.updateUser>,
                 mergeMap(response => [
                     navigateActions.navigate(-1),
                     notificationsActions.addSuccess("User was updated!"),
+                    usersActions.clearUsersForVacationData(),
                     usersActions.getAsync({take: state$.value.users.pageSize, skip: state$.value.users.currentPage})
                 ])
             )
