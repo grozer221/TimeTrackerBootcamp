@@ -36,7 +36,7 @@ namespace TimeTracker.MsSql.Repositories
             int total;
             int skip = (pageNumber - 1) * pageSize;
             
-            string query = "SELECT * FROM Tracks WHERE Title LIKE @like and Kind LIKE @trackKind ORDER BY StartTime DESC OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+            string query = "SELECT * FROM Tracks WHERE Title LIKE @like and Kind LIKE @trackKind ORDER BY StartTime DESC OFFSET @skip ROWS FETCH NEXT @pageSize ROWS ONLY";
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
