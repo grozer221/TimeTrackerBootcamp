@@ -2,7 +2,7 @@ import * as React from 'react';
 import {Form, Input, Modal, Radio, Select} from "antd";
 import {FC, useEffect, useState,} from "react";
 import Title from "antd/lib/typography/Title";
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
@@ -28,7 +28,6 @@ type FormValues = {
 
 type Props = {};
 export const UpdateUserModal: FC<Props> = () => {
-    const navigate = useNavigate();
     const [form] = useForm()
     const dispatch = useDispatch()
     const params = useParams();
@@ -38,12 +37,8 @@ export const UpdateUserModal: FC<Props> = () => {
     let usersForVacation = useSelector((s: RootState) => s.users.usersForVacation)
 
     let notFetchedUsers = user.usersWhichCanApproveVacationRequest.filter(user => {
-        if(!usersForVacation.find(u => u.id === user.id)) return true
-        return false
+        return !usersForVacation.find(u => u.id === user.id);
     }) as User[]
-
-    console.log('notFetchedUsers:', notFetchedUsers)
-    console.log('usersWhichCanApproveVacationRequest:', user.usersWhichCanApproveVacationRequest)
 
     let usersForVacationLoading = useAppSelector(s => s.users.usersForVacationLoading)
     let [usersForVacationEmail, setUsersForVacationEmail] = useState('')

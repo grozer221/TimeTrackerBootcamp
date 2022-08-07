@@ -9,7 +9,6 @@ import {
     RemoveUserInput,
     RemoveUserInputType,
     ResetUserPasswordDataResponse,
-    ResetUserPasswordInput,
     ResetUserPasswordInputType,
     UpdateUserInput,
     UpdateUserInputType,

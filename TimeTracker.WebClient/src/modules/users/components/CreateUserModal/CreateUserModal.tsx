@@ -3,7 +3,6 @@ import {FC, useEffect, useState} from 'react';
 import {Form, Input, Modal, Select, Radio} from "antd";
 import './CreateUserModal.css'
 import Title from "antd/lib/typography/Title";
-import {useNavigate} from "react-router-dom";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
@@ -30,7 +29,6 @@ type FormValues = {
 
 type Props = {};
 export const CreateUserModal: FC<Props> = () => {
-    const navigate = useNavigate();
     const [form] = useForm()
     const dispatch = useDispatch()
 
@@ -77,7 +75,7 @@ export const CreateUserModal: FC<Props> = () => {
         dispatch(usersActions.clearUsersForVacationData())
         dispatch(navigateActions.navigate(-1))
     }
-    
+
     return (
         <Modal
             title={<Title level={4}>Create new User</Title>}
