@@ -122,7 +122,7 @@ export const CreateUserModal: FC<Props> = () => {
                     <Radio.Group>
                         {
                             Object.values(Employment).map(value =>
-                                <Radio value={value}>
+                                <Radio value={value} key={value}>
                                     {uppercaseToWords(value)}
                                 </Radio>)
                         }
