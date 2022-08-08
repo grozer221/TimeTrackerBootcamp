@@ -38,6 +38,7 @@ export const CreateUserModal: FC<Props> = () => {
     let [currentPage, setCurrentPage] = useState(0)
     let [usersPageSize, setUsersPageSize] = useState(10)
     let totalUsersForVacation = useAppSelector(s => s.users.totalUsersForVacation)
+    let crudLoading = useAppSelector(s => s.users.crudLoading)
 
     useEffect(() => {
         dispatch(usersActions.fetchUsersForVacationsSelect({
@@ -79,7 +80,7 @@ export const CreateUserModal: FC<Props> = () => {
     return (
         <Modal
             title={<Title level={4}>Create new User</Title>}
-            // confirmLoading={loading}
+            confirmLoading={crudLoading}
             visible={true}
             onOk={handleOk}
             okText={'Create'}
@@ -186,7 +187,6 @@ export const CreateUserModal: FC<Props> = () => {
                             let target = e.target as HTMLSelectElement
                             if (!usersForVacationLoading && target.scrollTop + target.offsetHeight === target.scrollHeight) {
                                 if (currentPage < totalUsersForVacation) {
-                                    dispatch(usersActions.setUsersForVacationLoading(true))
                                     target.scrollTo(0, target.scrollHeight)
                                     dispatch(usersActions.fetchUsersForVacationsSelect({
                                         filter: {email: usersForVacationEmail},
@@ -199,7 +199,6 @@ export const CreateUserModal: FC<Props> = () => {
                         }}
                         onSearch={(email) => {
                             setUsersForVacationEmail(email)
-                            dispatch(usersActions.setUsersForVacationLoading(true))
                             dispatch(usersActions.fetchUsersForVacationsSelect({
                                 filter: {email},
                                 take: usersPageSize,

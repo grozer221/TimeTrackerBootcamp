@@ -13,6 +13,7 @@ import {RootState, useAppSelector} from "../../../../store/store";
 import {UpdateUserInput} from "../../graphQL/users.mutations";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {navigateActions} from "../../../navigate/store/navigate.slice";
+import {notificationsActions} from "../../../notifications/store/notifications.slice";
 
 type FormValues = {
     firstName: string,
@@ -35,6 +36,7 @@ export const UpdateUserModal: FC<Props> = () => {
 
     let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
     let usersForVacation = useSelector((s: RootState) => s.users.usersForVacation)
+    let crudLoading = useSelector((s: RootState) => s.users.crudLoading)
 
     let notFetchedUsers = user.usersWhichCanApproveVacationRequest.filter(user => {
         return !usersForVacation.find(u => u.id === user.id);
@@ -83,7 +85,7 @@ export const UpdateUserModal: FC<Props> = () => {
     return (
         <Modal
             title={<Title level={4}>{"Update User " + user.firstName}</Title>}
-            // confirmLoading={loading}
+            confirmLoading={crudLoading}
             visible={true}
             onOk={handleOk}
             okText={'Update'}
@@ -172,7 +174,6 @@ export const UpdateUserModal: FC<Props> = () => {
                             let target = e.target as HTMLSelectElement
                             if (!usersForVacationLoading && target.scrollTop + target.offsetHeight === target.scrollHeight) {
                                 if (currentPage < totalUsersForVacation) {
-                                    dispatch(usersActions.setUsersForVacationLoading(true))
                                     target.scrollTo(0, target.scrollHeight)
                                     dispatch(usersActions.fetchUsersForVacationsSelect({
                                         filter: {email: usersForVacationEmail},
@@ -185,7 +186,6 @@ export const UpdateUserModal: FC<Props> = () => {
                         }}
                         onSearch={(email) => {
                             setUsersForVacationEmail(email)
-                            dispatch(usersActions.setUsersForVacationLoading(true))
                             dispatch(usersActions.fetchUsersForVacationsSelect({
                                 filter: {email},
                                 take: usersPageSize,

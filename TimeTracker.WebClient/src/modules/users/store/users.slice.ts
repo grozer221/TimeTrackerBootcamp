@@ -7,11 +7,13 @@ type InitialState = {
     total: number,
     pageSize: number,
     currentPage: number,
+    loadingUsers: boolean,
     usersForVacation: User[],
     totalUsersForVacation: number,
     filter: UserFilter,
     usersLoading: boolean,
     usersForVacationLoading: boolean,
+    crudLoading: boolean,
 }
 
 const initialState: InitialState = {
@@ -20,6 +22,7 @@ const initialState: InitialState = {
     pageSize: 10,
     currentPage: 0,
     usersForVacation: [],
+    loadingUsers: false,
     totalUsersForVacation: 0,
     filter: {
         firstName: "",
@@ -32,6 +35,7 @@ const initialState: InitialState = {
     },
     usersLoading: false,
     usersForVacationLoading: false,
+    crudLoading: false,
 }
 
 export const usersSlice = createSlice({
@@ -63,6 +67,12 @@ export const usersSlice = createSlice({
         resetUserPassword: (state, action: PayloadAction<ResetUserPasswordInput>) => state,
         setUsersForVacationLoading: (state, action: PayloadAction<boolean>) => {
             state.usersForVacationLoading = action.payload
+        },
+        setLoadingUsers: (state, action: PayloadAction<boolean>) => {
+            state.loadingUsers = action.payload
+        },
+        setCRUDLoading: (state, action: PayloadAction<boolean>) => {
+            state.crudLoading = action.payload
         },
         clearUsersForVacationData: (state) => {
             state.usersForVacation = []

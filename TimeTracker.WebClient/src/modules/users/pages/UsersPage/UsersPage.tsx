@@ -26,6 +26,7 @@ export const UsersPage = React.memo(() => {
     let users = useAppSelector(s => s.users.users)
     let filter = useAppSelector(s => s.users.filter)
     let currentPage = useAppSelector(s => s.users.currentPage)
+    let loadingUsers = useAppSelector(s => s.users.loadingUsers)
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -41,7 +42,6 @@ export const UsersPage = React.memo(() => {
 
     // handle functions for filter dropdowns
     const handleChange: TableProps<User>['onChange'] = (pagination, filters, sorter) => {
-        console.log('changed')
         dispatch(usersActions.setFilter(
             {
                 ...filter,
@@ -58,7 +58,10 @@ export const UsersPage = React.memo(() => {
             items={[
                 {key: '1', label: (<Link to={"update/" + userEmail} state={{popup: location}}>Update</Link>)},
                 {key: '2', label: (<Link to={"remove/" + userEmail} state={{popup: location}}>Remove</Link>)},
-                {key: '3', label: (<Link to={"reset-password/" + userId} state={{popup: location}}>Reset password</Link>)},
+                {
+                    key: '3',
+                    label: (<Link to={"reset-password/" + userId} state={{popup: location}}>Reset password</Link>)
+                },
                 {key: '4', label: 'View'}
             ]}
         />
@@ -145,6 +148,7 @@ export const UsersPage = React.memo(() => {
         <Table
             columns={columns}
             dataSource={users}
+            loading={loadingUsers}
             rowKey={"id"}
             onChange={handleChange}
             pagination={{
