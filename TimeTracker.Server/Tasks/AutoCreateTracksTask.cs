@@ -72,7 +72,7 @@ namespace TimeTracker.Server.Tasks
 
                 if (trackKinds.Count == 0 && user.Employment == Employment.FullTime)
                 {
-                    trackKinds.Add(TrackKind.Default);
+                    trackKinds.Add(TrackKind.Working);
                 }
                 foreach (var trackKind in trackKinds)
                 {

@@ -2,8 +2,8 @@
 {
     public enum TrackKind
     {
-        Default,
+        Working,
         Vacation,
-        Sick
+        Sick,
     }
 }

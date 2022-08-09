@@ -12,7 +12,7 @@ type Props = {
 export const TrackKindInfo: FC<Props> = ({track}) => {
     const kind = track.kind
     let trackKindIcon: { [id: string]: JSX.Element; } = {
-        "DEFAULT": <CodeSandboxOutlined className={s.icons}/>,
+        "WORKING": <CodeSandboxOutlined className={s.icons}/>,
         "VACATION": <CarOutlined className={s.icons}/>,
         "SICK": <AlertOutlined className={s.icons}/>
     };

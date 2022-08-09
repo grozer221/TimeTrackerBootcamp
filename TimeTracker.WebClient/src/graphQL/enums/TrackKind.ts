@@ -1,5 +1,5 @@
 export enum TrackKind{
-    Default = 'WORK',
+    Working = 'WORKING',
     Vacation = 'VACATION',
     Sick = 'SICK'
 }
