@@ -102,7 +102,7 @@ export const SickLeaveIndexPage: FC = () => {
     return (
         <div>
             {(isAdministratorOrHavePermissions([Permission.NoteTheAbsenceAndVacation])
-            ) && <ButtonCreate to={'/create'} popup={location}/>
+            ) && <ButtonCreate to={'create'} popup={location}/>
             }
             <Tabs defaultActiveKey={kind}
                   onChange={kind => setParams(pageNumber, pageSize, kind)}>

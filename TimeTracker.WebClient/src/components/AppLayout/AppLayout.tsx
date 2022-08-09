@@ -117,18 +117,22 @@ export const AppLayout: FC<Props> = ({children}) => {
             icon: <ToolOutlined/>,
             label: <div>Tools</div>,
             children: [
-                {
-                    key: '/tools/file-manager',
-                    icon: <FileSearchOutlined/>,
-                    label: <Link to={'tools/file-manager'}>File manager</Link>,
-                }
+                isAdministratorOrHavePermissions([Permission.UpdateFileManager])
+                    ? {
+                        key: '/tools/file-manager',
+                        icon: <FileSearchOutlined/>,
+                        label: <Link to={'tools/file-manager'}>File manager</Link>,
+                    }
+                    : null,
             ]
         },
-        {
-            key: '/settings',
-            icon: <SettingOutlined/>,
-            label: <Link to={'settings/application'}>Settings</Link>,
-        },
+        isAdministratorOrHavePermissions([Permission.UpdateSettings])
+            ? {
+                key: '/settings',
+                icon: <SettingOutlined/>,
+                label: <Link to={'settings/application'}>Settings</Link>,
+            }
+            : null,
     ]
 
     return (

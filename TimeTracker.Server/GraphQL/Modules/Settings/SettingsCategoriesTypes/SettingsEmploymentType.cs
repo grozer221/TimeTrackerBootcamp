@@ -7,9 +7,9 @@ namespace TimeTracker.Server.GraphQL.Modules.Settings.SettingsCategoriesTypes
     {
         public SettingsEmploymentType()
         {
-            Field<TimeOnlyGraphType, TimeOnly>()
+            Field<DateTimeGraphType, DateTime>()
                .Name("WorkdayStartAt")
-               .Resolve(context => TimeOnly.FromDateTime(context.Source.WorkdayStartAt));
+               .Resolve(context => context.Source.WorkdayStartAt);
 
             Field<NonNullGraphType<IntGraphType>, int>()
                .Name("HoursInWorkday")

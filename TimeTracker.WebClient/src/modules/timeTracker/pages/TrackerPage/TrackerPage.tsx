@@ -37,8 +37,7 @@ export const TrackerPage: React.FC = () => {
     const onCreate = async (values: FormValues) => {
         let newTrack: CreateTrackInput = {
             title: values.title || "",
-            kind: TrackKind.Vacation
-
+            kind: TrackKind.Working
         }
         dispatch(tracksAction.createTrack(newTrack))
         form.resetFields()

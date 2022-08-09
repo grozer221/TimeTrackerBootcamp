@@ -7,6 +7,7 @@ namespace TimeTracker.Business.Repositories
     public interface ISickLeaveRepository
     {
         Task<SickLeaveModel> GetByIdAsync(Guid id);
+        Task<SickLeaveModel> GetByDateAsync(DateTime date, Guid userId);
         Task<IEnumerable<SickLeaveModel>> GetAsync(Guid userId, DateTime from, DateTime to);
         Task<GetEntitiesResponse<SickLeaveModel>> GetAsync(int pageNumber, int pageSize, SickLeaveFilter filter, Guid userId);
         Task<SickLeaveModel> CreateAsync(SickLeaveModel model);

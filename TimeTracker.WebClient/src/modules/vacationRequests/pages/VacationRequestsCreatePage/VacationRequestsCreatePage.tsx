@@ -46,8 +46,8 @@ export const VacationRequestsCreatePage: FC = () => {
     const onFinish = async () => {
         try {
             await form.validateFields();
-            const startAndEnd = form.getFieldValue(nameof<FromValues>('startAndEnd'));
-            const comment = form.getFieldValue(nameof<FromValues>('comment'));
+            const startAndEnd: Moment[] = form.getFieldValue(nameof<FromValues>('startAndEnd'));
+            const comment: string = form.getFieldValue(nameof<FromValues>('comment'));
             const vacationRequestsCreateInputType: VacationRequestsCreateInputType = {
                 dateStart: startAndEnd[0].format('YYYY-MM-DD'),
                 dateEnd: startAndEnd[1].format('YYYY-MM-DD'),

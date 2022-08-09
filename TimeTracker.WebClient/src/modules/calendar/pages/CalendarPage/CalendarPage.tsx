@@ -1,7 +1,7 @@
 import React, {useEffect} from 'react';
 import {Calendar, Row, Space, Typography} from "antd";
 import moment, {Moment} from 'moment';
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {useDispatch} from "react-redux";
 import {calendarDaysActions} from "../../../calendarDays/store/calendarDays.slice";
 import {useAppSelector} from "../../../../store/store";
@@ -10,7 +10,7 @@ import {ButtonCreate} from "../../../../components/ButtonCreate";
 import {DayKind} from "../../../../graphQL/enums/DayKind";
 import {ButtonRemove} from "../../../../components/ButtonRemove";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
-import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
+import {isAdministratorOrHavePermissions} from "../../../../utils/permissions";
 import {Loading} from "../../../../components/Loading/Loading";
 import {getDate} from "../../../../utils/dateUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
@@ -21,16 +21,9 @@ const {Text} = Typography;
 export const CalendarPage = () => {
     const location = useLocation();
     const dispatch = useDispatch();
-    const isAuth = useAppSelector(s => s.auth.isAuth)
     const calendarDays = useAppSelector(s => s.calendarDays.calendarDays)
     const selectedDate = useAppSelector(s => s.calendarDays.selectedDate)
     const loading = useAppSelector(s => s.calendarDays.loadingGet)
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!isAuthenticated())
-            navigate('/auth/login');
-    }, [isAuth])
 
     useEffect(() => {
         const fromTo = getFromTo(selectedDate);

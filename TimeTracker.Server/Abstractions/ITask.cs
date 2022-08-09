@@ -1,4 +1,5 @@
 ﻿using Quartz;
+using TimeTracker.Business.Enums;
 
 namespace TimeTracker.Server.Abstractions
 {
@@ -8,6 +9,7 @@ namespace TimeTracker.Server.Abstractions
         JobKey JobKey { get; }
         string TriggerName { get; }
         TriggerKey TriggerKey { get; }
+        Task ExecuteAsync(IJobExecutionContext? context, DateTime dateTimeNow);
         Task ResumeAsync();
         Task PauseAsync();
         Task RescheduleAsync();

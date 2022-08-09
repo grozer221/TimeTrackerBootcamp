@@ -12,6 +12,9 @@ import {SettingsEmailUpdate} from "../../components/SettingsEmailUpdate/Settings
 import {
     SettingsVacationRequestsUpdate
 } from "../../components/SettingsVacationRequestsUpdate/SettingsVacationRequestsUpdate";
+import {isAdministratorOrHavePermissions} from "../../../../utils/permissions";
+import {Permission} from "../../../../graphQL/enums/Permission";
+import {Error} from "../../../../components/Error/Error";
 
 const {TabPane} = Tabs;
 
@@ -29,6 +32,9 @@ export const SettingsPage: FC = () => {
         setSelectedTab(tab as Tab);
         navigate(`/settings/${tab}`)
     }
+
+    if(!isAdministratorOrHavePermissions([Permission.UpdateSettings]))
+        return <Error statusCode={403}/>
 
     if (!initialised || settingsLoadingGet || authLoadingMe)
         return <Loading/>

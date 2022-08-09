@@ -1,4 +1,4 @@
-import {Checkbox, DatePicker, Form, InputNumber, Modal, Select, Tabs, Typography} from 'antd';
+import {Checkbox, DatePicker, Form, Modal, Select, Tabs, Typography} from 'antd';
 import React, {useState} from 'react';
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {useForm} from "antd/es/form/Form";
@@ -35,7 +35,6 @@ type FromValues = {
 export const CalendarDaysCreatePage = () => {
     const [tab, setTab] = useState<Tab>('One')
     const settings = useSelector((s: RootState) => s.settings.settings);
-    const isAuth = useSelector((s: RootState) => s.auth.isAuth);
     const calendarDays = useSelector((s: RootState) => s.calendarDays.calendarDays);
     const loading = useSelector((s: RootState) => s.calendarDays.loadingCreate);
     const [searchParams] = useSearchParams();
@@ -43,11 +42,6 @@ export const CalendarDaysCreatePage = () => {
     const [form] = useForm<FromValues>();
     const dispatch = useDispatch();
     const date = searchParams.get('date') && moment(searchParams.get('date'));
-
-    // useEffect(() => {
-    //     if (!isAdministratorOrHavePermissions([Permission.UpdateCalendar]))
-    //         navigate(`/error/403?from=${location.pathname}`)
-    // }, [isAuth])
 
     const onFinish = async () => {
         try {
@@ -204,7 +198,8 @@ export const CalendarDaysCreatePage = () => {
                         allowClear
                         placeholder="Hours in workday"
                     >
-                        {range((settings?.employment.hoursInWorkday || 8) + 1, 0).map(num => <Select.Option key={num}>{num}</Select.Option>)}
+                        {range((settings?.employment.hoursInWorkday || 8) + 1, 0).map(num => <Select.Option
+                            key={num}>{num}</Select.Option>)}
                     </Select>
                 </Form.Item>
                 <Form.Item

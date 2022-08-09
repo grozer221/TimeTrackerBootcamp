@@ -2,8 +2,7 @@ import {GetEntitiesResponse} from "../../../graphQL/types/getEntitiesResponse";
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {SickLeaveFilterKind, SickLeaveType} from "../sickLeaveType";
 import {SickLeaveGetInputType} from "../graphQL/sickLeave.queries";
-import {SickLeaveInputType, SickLeaveUpdateInputType} from "../graphQL/sickLeave.mutation";
-import {VacationRequestsGetInputType} from "../../vacationRequests/graphQL/vacationRequests.queries";
+import {SickLeaveCreateInputType, SickLeaveUpdateInputType} from "../graphQL/sickLeave.mutation";
 
 type InitialState = {
     sickLeaveDays: GetEntitiesResponse<SickLeaveType>
@@ -56,7 +55,7 @@ export const sickLeaveSlice = createSlice({
             state.loadingGet = action.payload
         },
 
-        createAsync: (state, action: PayloadAction<SickLeaveInputType>) => state,
+        createAsync: (state, action: PayloadAction<SickLeaveCreateInputType>) => state,
         setLoadingCreate: (state, action: PayloadAction<boolean>) => {
             state.loadingCreate = action.payload;
         },

@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TimeTracker.Business.Enums;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Models.Filters;
 using TimeTracker.Business.Repositories;
@@ -69,15 +70,15 @@ namespace TimeTracker.MsSql.Repositories
                 {
                     switch (track.Kind)
                     {
-                        case (Business.Enums.TrackKind.Default):
+                        case (TrackKind.Working):
                             var workTime = track.EndTime - track.StartTime;
                             model.WorkerHours += workTime!.Value.TotalHours;
                             break;
-                        case (Business.Enums.TrackKind.Vacation):
+                        case (TrackKind.Vacation):
                             var vacationTime = track.EndTime - track.StartTime;
                             model.VacantionHours += vacationTime!.Value.TotalHours;
                             break;
-                        case (Business.Enums.TrackKind.Sick):
+                        case (TrackKind.Sick):
                             var sickTime = track.EndTime - track.StartTime;
                             model.VacantionHours += sickTime!.Value.TotalHours;
                             break;

@@ -8,7 +8,7 @@ import {nameof} from "../../../utils/stringUtils";
 import Title from "antd/lib/typography/Title";
 import {formStyles} from "../../../assets/form";
 import Input from "antd/es/input/Input";
-import {SickLeaveInputType} from "../graphQL/sickLeave.mutation";
+import {SickLeaveCreateInputType} from "../graphQL/sickLeave.mutation";
 import {sickLeaveActions} from "../store/sickLeave.slice";
 import {User} from "../../users/graphQL/users.types";
 import {usersActions} from "../../users/store/users.slice";
@@ -45,13 +45,13 @@ export const SickLeaveCreatePage: FC = () => {
             const startAndEnd = form.getFieldValue(nameof<FormValues>('startAndEnd'))
             const comment = form.getFieldValue(nameof<FormValues>('comment'))
             const userId = form.getFieldValue(nameof<FormValues>("userId"))
-            const sickLeaveInputType: SickLeaveInputType = {
+            const sickLeaveCreateInputType: SickLeaveCreateInputType = {
                 startDate: startAndEnd[0].format('YYYY-MM-DD'),
                 endDate: startAndEnd[1].format('YYYY-MM-DD'),
                 comment,
                 userId
             }
-            dispatch(sickLeaveActions.createAsync(sickLeaveInputType))
+            dispatch(sickLeaveActions.createAsync(sickLeaveCreateInputType))
         } catch (e) {
             console.log(e)
         }
