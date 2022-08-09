@@ -69,3 +69,19 @@ export const USERS_REMOVE_MUTATION = gql`
         }
     }
 `
+
+//Reset user password types and mutation
+export type ResetUserPasswordInput = { id: string, password: string, confirmPassword: string }
+export type ResetUserPasswordInputType = { ResetRequestData: ResetUserPasswordInput }
+export type ResetUserPasswordDataResponse = { users: { updatePassword: User } }
+
+export const USERS_RESET_PASSWORD_MUTATION = gql`
+    ${USER_WITH_USERS_WHICH_CAN_APPROVE_VACATION_REQUESTS_FRAGMENT}
+    mutation ResetUserPassword($ResetRequestData: UsersUpdatePasswordInputType!){
+        users{
+            updatePassword(usersUpdatePasswordInputType: $ResetRequestData){
+                ...UserWithUsersWhichCanApproveVacationRequestsFragment
+            }
+        }
+    }
+`
