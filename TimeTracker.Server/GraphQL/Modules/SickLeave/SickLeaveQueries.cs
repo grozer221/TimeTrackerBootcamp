@@ -10,6 +10,7 @@ using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.SickLeave.DTO;
 using FluentValidation;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business.Filters;
 
 namespace TimeTracker.Server.GraphQL.Modules.SickLeave
 {
@@ -27,18 +28,18 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave
                .ResolveAsync(async context =>
                {
                     var sickLeaveGetInput = context.GetArgument<SickLeaveGetInput>("SickLeaveGetInputType");
-                    if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.NoteTheAbsenceAndVacation))
+                    if (!httpContextAccessor.HttpContext.IsAdministratorOrHavePermissions(Permission.NoteTheAbsenceAndVacation) && sickLeaveGetInput.Filter.Kind == SickLeaveFilterKind.All)
                         throw new ExecutionError("You can not get all sick leave requests");
                     sickLeaveGetInputValidator.ValidateAndThrow(sickLeaveGetInput);
                     var currentUserId = httpContextAccessor.HttpContext.GetUserId();
 
-                    return await sickLeaveRepository.GetAsync(sickLeaveGetInput.PageNumber, sickLeaveGetInput.PageSize);
+                    return await sickLeaveRepository.GetAsync(sickLeaveGetInput.PageNumber, sickLeaveGetInput.PageSize, sickLeaveGetInput.Filter, currentUserId);
                })
                .AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<NonNullGraphType<SickLeaveType>, SickLeaveModel>()
                 .Name("GetById")
-                .Argument<NonNullGraphType<GuidGraphType>, Guid>("Id", "Id of user")
+                .Argument<NonNullGraphType<GuidGraphType>, Guid>("Id", "Id of sick leave day")
                 .ResolveAsync(async context =>
                 {
                     var id = context.GetArgument<Guid>("Id");

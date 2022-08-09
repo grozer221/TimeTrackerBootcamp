@@ -1,4 +1,5 @@
 ﻿using GraphQL.Types;
+using TimeTracker.Business.Filters;
 
 namespace TimeTracker.Server.GraphQL.Modules.SickLeave.DTO
 {
@@ -6,6 +7,7 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave.DTO
     {
         public int PageNumber { get; set; }
         public int PageSize { get; set; }
+        public SickLeaveFilter Filter { get; set; } 
     }
 
     public class SickLeaveGetInputType : InputObjectGraphType<SickLeaveGetInput>
@@ -19,6 +21,10 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave.DTO
             Field<NonNullGraphType<IntGraphType>, int>()
                  .Name("PageSize")
                  .Resolve(context => context.Source.PageSize);
+
+            Field<NonNullGraphType<SickLeaveFilterType>, SickLeaveFilter>()
+                .Name("Filter")
+                .Resolve(context => context.Source.Filter);
         }
     }
 }

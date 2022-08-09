@@ -9,6 +9,7 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave.DTO
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string? Comment { get; set; }
+        public Guid UserId { get; set; }
 
         public SickLeaveModel ToModel()
         {
@@ -17,25 +18,31 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave.DTO
                 StartDate = this.StartDate,
                 EndDate = this.EndDate,
                 Comment = this.Comment,
+                UserId = this.UserId,
             };
         }
     }
 
-    public class SickLeaveInputType : InputObjectGraphType<SickLeaveCreateInput>
+    public class SickLeaveCreateInputType : InputObjectGraphType<SickLeaveCreateInput>
     {
-        public SickLeaveInputType()
+        public SickLeaveCreateInputType()
         {
             Field<NonNullGraphType<DateGraphType>, DateTime>()
-               .Name("DateStart")
+               .Name("StartDate")
                .Resolve(context => context.Source.StartDate);
 
             Field<NonNullGraphType<DateGraphType>, DateTime>()
-               .Name("DateEnd")
+               .Name("EndDate")
                .Resolve(context => context.Source.EndDate);
 
             Field<StringGraphType, string?>()
                .Name("Comment")
                .Resolve(context => context.Source.Comment);
+
+            Field<NonNullGraphType<GuidGraphType>, Guid>()
+                .Name("UserId")
+                .Resolve(context => context.Source.UserId);
+
         }
     }
 }

@@ -44,6 +44,9 @@ import {TrackCreatePage} from "./modules/tracks/pages/TracksCreatePage/TrackCrea
 import {RemoveUserModal} from "./modules/users/components/RemoveUserModal/RemoveUserModal";
 import {UpdateUserModal} from "./modules/users/components/UpdateUserModal/UpdateUserModal";
 import {CreateReportModal} from "./modules/excelExport/components/CreateReportModal";
+import {SickLeaveIndexPage} from "./modules/sickLeave/pages/SickLeaveIndexPage";
+import {SickLeaveCreatePage} from "./modules/sickLeave/pages/SickLeaveCreatePage";
+import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -89,6 +92,7 @@ export const App = () => {
                         </Route>
                         <Route path={'time-tracker/*'} element={<TrackerPage/>}/>
                         <Route path={"vacation-requests/*"} element={<VacationRequestsIndexPage/>}/>
+                        <Route path={"sick-leave-days/*"} element={<SickLeaveIndexPage/>}/>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>
                         <Route path={'*'} element={<Error/>}/>
@@ -119,6 +123,10 @@ export const App = () => {
                             <Route path={"vacation-requests/*"}>
                                 <Route path={'create'} element={<VacationRequestsCreatePage/>}/>
                                 <Route path={'update/:id'} element={<VacationRequestsUpdatePage/>}/>
+                            </Route>
+                            <Route path={'sick-leave-days/*'}>
+                                <Route path={'create'} element={<SickLeaveCreatePage/>}/>
+                                <Route path={'update/:id'} element={<SickLeaveUpdatePage/>}/>
                             </Route>
                             <Route path={'time-tracker/*'}>
                                 <Route path={'create'} element={<TrackCreatePage/>}/>

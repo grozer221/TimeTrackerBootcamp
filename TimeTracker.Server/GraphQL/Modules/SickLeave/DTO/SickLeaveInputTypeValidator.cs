@@ -25,6 +25,8 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave.DTO
                 }).WithMessage("Date end must be greater than date start");
 
             RuleFor(l => l.Comment);
+            RuleFor(l => l.UserId)
+                .NotNull();
         }
     }
 }
