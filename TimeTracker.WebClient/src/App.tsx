@@ -130,7 +130,7 @@ export const App = () => {
                                 <Route path={'update/:id'} element={<SickLeaveUpdatePage/>}/>
                             </Route>
                             <Route path={'time-tracker/*'}>
-                                <Route path={'create'} element={<TrackCreatePage/>}/>
+                                {/*<Route path={'create'} element={<TrackCreatePage/>}/>*/}
                             </Route>
 
                         </Routes>
