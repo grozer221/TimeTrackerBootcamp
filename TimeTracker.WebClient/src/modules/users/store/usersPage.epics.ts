@@ -1,14 +1,21 @@
 import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
-import {catchError, debounceTime, from, mergeMap, of} from "rxjs";
+import {catchError, debounceTime, endWith, from, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
 import {GET_USERS_QUERY, GetUsersDataType, GetUsersInputType} from "../graphQL/users.queries";
 import {
     CreateUserData,
     CreateUserInputType,
     RemoveUserInput,
-    RemoveUserInputType, UpdateUserInput, UpdateUserInputType,
-    USERS_CREATE_MUTATION, USERS_REMOVE_MUTATION, USERS_UPDATE_MUTATION
+    RemoveUserInputType,
+    ResetUserPasswordDataResponse,
+    ResetUserPasswordInputType,
+    UpdateUserInput,
+    UpdateUserInputType,
+    USERS_CREATE_MUTATION,
+    USERS_REMOVE_MUTATION,
+    USERS_RESET_PASSWORD_MUTATION,
+    USERS_UPDATE_MUTATION
 } from "../graphQL/users.mutations";
 import {usersActions} from "./users.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
@@ -32,10 +39,12 @@ export const getUsersEpic: Epic<ReturnType<typeof usersActions.getAsync>, any, R
                         total: response.data.users.get.total,
                         pageSize: response.data.users.get.pageSize,
                     })
-                ])
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(usersActions.setLoadingUsers(true)),
+                endWith(usersActions.setLoadingUsers(false))
             )
-        ),
-        catchError(error => of(notificationsActions.addError(error.message)))
+        )
     )
 }
 
@@ -54,11 +63,16 @@ export const getUsersForVacationsSelectEpic: Epic<ReturnType<typeof usersActions
                 }
             })).pipe(
                 mergeMap(response => [
-                    usersActions.addUsersForVacationsSelect(response.data.users.get.entities)
-                ])
+                    usersActions.addUsersForVacationsSelect({
+                        users: response.data.users.get.entities,
+                        total: response.data.users.get.total
+                    })]
+                ),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(usersActions.setUsersForVacationLoading(true)),
+                endWith(usersActions.setUsersForVacationLoading(false)),
             )
-        ),
-        catchError(error => of(notificationsActions.addError(error.message)))
+        )
     )
 }
 
@@ -76,14 +90,17 @@ export const createUserEpic: Epic<ReturnType<typeof usersActions.createUser>,
                 mergeMap(response => [
                     navigateActions.navigate(-1),
                     notificationsActions.addSuccess("User was created!"),
+                    usersActions.clearUsersForVacationData(),
                     usersActions.getAsync({
                         take: state$.value.users.pageSize,
                         skip: state$.value.users.currentPage
                     })
-                ])
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(usersActions.setCRUDLoading(true)),
+                endWith(usersActions.setCRUDLoading(false)),
             )
-        ),
-        catchError(error => of(notificationsActions.addError(error.message))),
+        )
     )
 }
 
@@ -105,10 +122,12 @@ export const removeUserEpic: Epic<ReturnType<typeof usersActions.removeUserAsync
                         take: state$.value.users.pageSize,
                         skip: state$.value.users.currentPage
                     })
-                ])
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(usersActions.setCRUDLoading(true)),
+                endWith(usersActions.setCRUDLoading(false)),
             )
-        ),
-        catchError(error => of(notificationsActions.addError(error.message))),
+        )
     )
 }
 
@@ -126,13 +145,41 @@ export const updateUserEpic: Epic<ReturnType<typeof usersActions.updateUser>,
                 mergeMap(response => [
                     navigateActions.navigate(-1),
                     notificationsActions.addSuccess("User was updated!"),
+                    usersActions.clearUsersForVacationData(),
                     usersActions.getAsync({take: state$.value.users.pageSize, skip: state$.value.users.currentPage})
-                ])
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(usersActions.setCRUDLoading(true)),
+                endWith(usersActions.setCRUDLoading(false)),
             )
-        ),
-        catchError(error => of(notificationsActions.addError(error.message))),
+        )
     )
 }
+
+export const resetUserPasswordEpic: Epic<ReturnType<typeof usersActions.resetUserPassword>,
+    any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(usersActions.resetUserPassword.type),
+        mergeMap(action =>
+            from(client.mutate<ResetUserPasswordDataResponse, ResetUserPasswordInputType>({
+                mutation: USERS_RESET_PASSWORD_MUTATION,
+                variables: {
+                    ResetRequestData: action.payload
+                }
+            })).pipe(
+                mergeMap(response => [
+                    navigateActions.navigate(-1),
+                    notificationsActions.addSuccess("Password was updated successfully for " + response.data?.users.updatePassword.email),
+                    usersActions.getAsync({take: state$.value.users.pageSize, skip: state$.value.users.currentPage})
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(usersActions.setCRUDLoading(true)),
+                endWith(usersActions.setCRUDLoading(false)),
+            )
+        )
+    )
+}
+
 
 export const usersPageEpics = combineEpics(
     getUsersEpic,
@@ -141,4 +188,5 @@ export const usersPageEpics = combineEpics(
     createUserEpic,
     removeUserEpic,
     updateUserEpic,
+    resetUserPasswordEpic,
 )

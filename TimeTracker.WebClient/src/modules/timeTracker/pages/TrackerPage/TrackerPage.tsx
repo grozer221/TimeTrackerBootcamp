@@ -11,8 +11,8 @@ import {useForm} from "antd/es/form/Form";
 import {CreateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
 import s from './TrackerPage.module.css'
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import Stopwatch from "../../components/TrackerStopwatch";
-import {TracksPanel} from "../../components/TracksPanel";
+import Stopwatch from "../../components/Stopwatch/TrackerStopwatch";
+import {TracksPanel} from "../../components/Table/TracksPanel";
 
 type FormValues = {
     title: string,
