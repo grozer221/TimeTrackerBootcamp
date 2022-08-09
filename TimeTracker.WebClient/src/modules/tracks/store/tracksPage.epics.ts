@@ -31,12 +31,12 @@ export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, 
                 }
             })).pipe(
                 mergeMap(response => [
-                    tracksAction.addTracks(response.data.tracks.get.entities),
+                    tracksAction.addTracks(response.data.tracks.getUserTracks.entities),
                     tracksAction.setGetTracksInputData(action.payload),
                     tracksAction.updateTracksMetrics({
-                        total: response.data.tracks.get.total,
-                        pageSize: response.data.tracks.get.pageSize,
-                        trackKind: response.data.tracks.get.trackKind
+                        total: response.data.tracks.getUserTracks.total,
+                        pageSize: response.data.tracks.getUserTracks.pageSize,
+                        trackKind: response.data.tracks.getUserTracks.trackKind
                     })
                 ]),
                 catchError(error => of(notificationsActions.addError(error.message))),

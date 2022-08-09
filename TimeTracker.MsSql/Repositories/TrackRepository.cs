@@ -27,21 +27,27 @@ namespace TimeTracker.MsSql.Repositories
             return track;
         }
 
-        public async Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int pageSize, int pageNumber, TrackKind? kind)
+        public async Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int pageSize, int pageNumber, TrackKind? kind, Guid? userId = null)
         {
             IEnumerable<TrackModel> tracks;
             like = "%" + like + "%";
-            string kindReg = "%" + ((kind == null) ? kind : kind.GetHashCode()) + "%";
+            string userIdString = userId.ToString();
+            string userIdReg = $"%{userIdString}%";
+            string kindReg = $"%{((kind == null) ? kind : kind.GetHashCode())}%";
 
             int total;
             int skip = (pageNumber - 1) * pageSize;
             
-            string query = "SELECT * FROM Tracks WHERE Title LIKE @like ORDER BY StartTime DESC OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
+            string query = @"SELECT * 
+                             FROM Tracks 
+                             WHERE Title LIKE @like and UserId LIKE @userId and Kind LIKE @kind 
+                             ORDER BY StartTime DESC 
+                             OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                tracks = await db.QueryAsync<TrackModel>(query, new { like, skip,  take = pageSize});
-                total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like", new { like });
+                tracks = await db.QueryAsync<TrackModel>(query, new { like, userId = userIdReg, kind = kindReg, skip,  take = pageSize});
+                total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like and UserId LIKE @userId and Kind LIKE @kind", new { like, userId = userIdReg, kind = kindReg });
             }
 
             return new GetEntitiesResponse<TrackModel>
