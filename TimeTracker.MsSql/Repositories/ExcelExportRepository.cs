@@ -52,9 +52,8 @@ namespace TimeTracker.MsSql.Repositories
             return users;
         }
 
-        public async Task<double> GetUserHours(Guid userId, DateTime date)
+        public async Task GetUserHours(Guid userId, DateTime date, ExcelModel model)
         {
-            double hours = 0;
             IEnumerable<TrackModel> tracks;
             var month = date.Month;
             var year = date.Year;
@@ -68,12 +67,25 @@ namespace TimeTracker.MsSql.Repositories
             {
                 if (track.EndTime != null)
                 {
-                    var time = track.EndTime - track.StartTime;
-                    hours += time!.Value.TotalHours;
+                    switch (track.Kind)
+                    {
+                        case (Business.Enums.TrackKind.Default):
+                            var workTime = track.EndTime - track.StartTime;
+                            model.WorkerHours += workTime!.Value.TotalHours;
+                            break;
+                        case (Business.Enums.TrackKind.Vacation):
+                            var vacationTime = track.EndTime - track.StartTime;
+                            model.VacantionHours += vacationTime!.Value.TotalHours;
+                            break;
+                        case (Business.Enums.TrackKind.Sick):
+                            var sickTime = track.EndTime - track.StartTime;
+                            model.VacantionHours += sickTime!.Value.TotalHours;
+                            break;
+                    }
+                           
                 }
             }
 
-            return hours;
         }
     }
 }

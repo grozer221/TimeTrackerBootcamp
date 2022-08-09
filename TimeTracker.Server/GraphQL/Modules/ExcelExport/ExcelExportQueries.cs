@@ -25,7 +25,7 @@ namespace TimeTracker.Server.GraphQL.Modules.ExcelExport
                     foreach (var user in users)
                     {
                         var model = user.ToExcelModel();
-                        model.WorkerHours = await excelExportRepository.GetUserHours(user.Id, excelExportInputType.Date);
+                        await excelExportRepository.GetUserHours(user.Id, excelExportInputType.Date, model);
                         model.MonthHours = await calendarService.GetAmountWorkingHoursInMonth(excelExportInputType.Date);
                         model.PersentOfWork = model.WorkerHours / model.MonthHours;
                         models.Add(model);
