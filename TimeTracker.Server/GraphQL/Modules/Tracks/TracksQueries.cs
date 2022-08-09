@@ -27,11 +27,17 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     int pageSize = context.GetArgument<int>("pageSize");
                     int pageNumber = context.GetArgument<int>("pageNumber");
                     TrackKind? kind = context.GetArgument<TrackKind?>("kind");
-                    var currentUserId = httpContextAccessor.HttpContext.GetUserId();
                     var tracks = await trackRepository.GetAsync(like, pageSize, pageNumber, kind);
-                    tracks.Entities = tracks.Entities.Where(t => t.UserId == currentUserId);
+                    /*var currentUserId = httpContextAccessor.HttpContext.GetUserId();
+                    tracks.Entities = tracks.Entities.Where(t => t.UserId == currentUserId);*/
                     return tracks;
                 }).AuthorizeWith(AuthPolicies.Authenticated);
+
+            Field<TrackType, TrackModel>()
+                .Name("GetCurrentTrack")
+                .ResolveAsync(async context =>
+                    await trackRepository.GetCurrentAsync())
+                .AuthorizeWith(AuthPolicies.Authenticated);
 
             Field<TrackType, TrackModel>()
                 .Name("GetById")

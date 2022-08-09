@@ -40,7 +40,6 @@ import {
     VacationRequestsUpdatePage
 } from "./modules/vacationRequests/pages/VacationRequestsUpdatePage/VacationRequestsUpdatePage";
 import {TrackerPage} from "./modules/timeTracker/pages/TrackerPage/TrackerPage";
-import {TrackCreatePage} from "./modules/tracks/pages/TracksCreatePage/TrackCreatePage";
 import {RemoveUserModal} from "./modules/users/components/RemoveUserModal/RemoveUserModal";
 import {UpdateUserModal} from "./modules/users/components/UpdateUserModal/UpdateUserModal";
 import {CreateReportModal} from "./modules/excelExport/components/CreateReportModal";
@@ -119,9 +118,6 @@ export const App = () => {
                             <Route path={"vacation-requests/*"}>
                                 <Route path={'create'} element={<VacationRequestsCreatePage/>}/>
                                 <Route path={'update/:id'} element={<VacationRequestsUpdatePage/>}/>
-                            </Route>
-                            <Route path={'time-tracker/*'}>
-                                <Route path={'create'} element={<TrackCreatePage/>}/>
                             </Route>
 
                         </Routes>
