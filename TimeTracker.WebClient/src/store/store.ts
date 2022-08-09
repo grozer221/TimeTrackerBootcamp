@@ -22,6 +22,8 @@ import {tracksReducer} from "../modules/tracks/store/tracks.slice";
 import {tracksPageEpics} from "../modules/tracks/store/tracksPage.epics";
 import {excelExportReducer} from "../modules/excelExport/store/excelExport.slice";
 import {excelEpics} from "../modules/excelExport/store/excelExport.epics";
+import {sickLeaveReducer} from "../modules/sickLeave/store/sickLeave.slice";
+import {sickLeaveEpics} from "../modules/sickLeave/store/sickLeave.epics";
 
 
 const epicMiddleware = createEpicMiddleware();
@@ -39,7 +41,8 @@ export const store = configureStore({
         users: usersReducer,
         vacationRequests: vacationRequestsReducer,
         tracks: tracksReducer,
-        excel: excelExportReducer
+        excel: excelExportReducer,
+        sickLeave: sickLeaveReducer
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware({thunk: false}).concat(epicMiddleware),
     devTools: true,
@@ -55,7 +58,8 @@ const rootEpic = combineEpics(
     fileManagerEpics,
     vacationRequestsEpics,
     tracksPageEpics,
-    excelEpics
+    excelEpics,
+    sickLeaveEpics
 );
 // @ts-ignore
 epicMiddleware.run(rootEpic);

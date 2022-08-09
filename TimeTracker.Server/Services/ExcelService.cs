@@ -29,13 +29,8 @@ namespace TimeTracker.Server.Services
             range.AutoFitColumns();
             range.Style.Numberformat.Format = "0";
             range.Style.Border.BorderAround(ExcelBorderStyle.Medium);
-
-            for (int i = 0; i < models.Count(); i++)
-            {
-                ws.Cells[$"E{i+3}"].Formula = $"C{i+3}/D{i+3}";
-                ws.Cells[$"E{i+3}"].Style.Numberformat.Format = "0%";
-                ws.Cells[$"C{i+3}"].Style.Numberformat.Format = "0.0";
-            }
+            ws.Column(5).Style.Numberformat.Format = "0%";
+            ws.Column(3).Style.Numberformat.Format = "0.0";
 
             return await package.GetAsByteArrayAsync();
         }
