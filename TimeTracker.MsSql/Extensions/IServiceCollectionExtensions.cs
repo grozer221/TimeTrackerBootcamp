@@ -31,6 +31,7 @@ namespace TimeTracker.MsSql.Extensions
             services.AddScoped<IVacationRequestRepository, VacationRequestRepository>();
             services.AddScoped<IExcelExportRepository, ExcelExportRepository>();
             services.AddScoped<ICompletedTaskRepository, CompletedTaskRepository>();
+            services.AddScoped<ISickLeaveRepository, SickLeaveRepository>();
             return services;
         }
     }

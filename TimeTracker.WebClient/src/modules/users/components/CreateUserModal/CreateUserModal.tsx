@@ -3,7 +3,6 @@ import {FC, useEffect, useState} from 'react';
 import {Form, Input, Modal, Select, Radio} from "antd";
 import './CreateUserModal.css'
 import Title from "antd/lib/typography/Title";
-import {useNavigate} from "react-router-dom";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
@@ -13,6 +12,7 @@ import {useAppSelector} from "../../../../store/store";
 import {CreateUserInput} from "../../graphQL/users.mutations";
 import {usersActions} from "../../store/users.slice";
 import {Employment} from "../../../../graphQL/enums/Employment";
+import {navigateActions} from "../../../navigate/store/navigate.slice";
 
 
 type FormValues = {
@@ -29,16 +29,21 @@ type FormValues = {
 
 type Props = {};
 export const CreateUserModal: FC<Props> = () => {
-    const navigate = useNavigate();
     const [form] = useForm()
     const dispatch = useDispatch()
 
     let users = useAppSelector(s => s.users.usersForVacation)
+    let usersForVacationLoading = useAppSelector(s => s.users.usersForVacationLoading)
+    let [usersForVacationEmail, setUsersForVacationEmail] = useState('')
+    let [currentPage, setCurrentPage] = useState(0)
+    let [usersPageSize, setUsersPageSize] = useState(10)
+    let totalUsersForVacation = useAppSelector(s => s.users.totalUsersForVacation)
+    let crudLoading = useAppSelector(s => s.users.crudLoading)
 
     useEffect(() => {
         dispatch(usersActions.fetchUsersForVacationsSelect({
-            filter: {email: '', permissions: [], roles: []},
-            take: 100,
+            filter: {email: ''},
+            take: usersPageSize,
             skip: 0,
         }))
     }, [])
@@ -67,14 +72,19 @@ export const CreateUserModal: FC<Props> = () => {
         }
     }
 
+    const handleCancel = () => {
+        dispatch(usersActions.clearUsersForVacationData())
+        dispatch(navigateActions.navigate(-1))
+    }
+
     return (
         <Modal
             title={<Title level={4}>Create new User</Title>}
-            // confirmLoading={loading}
+            confirmLoading={crudLoading}
             visible={true}
             onOk={handleOk}
             okText={'Create'}
-            onCancel={() => navigate(-1)}
+            onCancel={handleCancel}
         >
             <Form
                 form={form}
@@ -112,7 +122,7 @@ export const CreateUserModal: FC<Props> = () => {
                     <Radio.Group>
                         {
                             Object.values(Employment).map(value =>
-                                <Radio value={value}>
+                                <Radio value={value} key={value}>
                                     {uppercaseToWords(value)}
                                 </Radio>)
                         }
@@ -172,12 +182,29 @@ export const CreateUserModal: FC<Props> = () => {
                         allowClear
                         placeholder="Users"
                         filterOption={false}
+                        loading={usersForVacationLoading}
+                        onPopupScroll={(e) => {
+                            let target = e.target as HTMLSelectElement
+                            if (!usersForVacationLoading && target.scrollTop + target.offsetHeight === target.scrollHeight) {
+                                if (currentPage < totalUsersForVacation) {
+                                    target.scrollTo(0, target.scrollHeight)
+                                    dispatch(usersActions.fetchUsersForVacationsSelect({
+                                        filter: {email: usersForVacationEmail},
+                                        take: usersPageSize,
+                                        skip: currentPage + 1,
+                                    }))
+                                    setCurrentPage(currentPage + 1)
+                                }
+                            }
+                        }}
                         onSearch={(email) => {
+                            setUsersForVacationEmail(email)
                             dispatch(usersActions.fetchUsersForVacationsSelect({
-                                filter: {email, permissions: [], roles: []},
-                                take: 100,
+                                filter: {email},
+                                take: usersPageSize,
                                 skip: 0,
                             }))
+                            setCurrentPage(0)
                         }}
                     >
                         {users.map((user) => (
@@ -189,6 +216,5 @@ export const CreateUserModal: FC<Props> = () => {
                 </Form.Item>
             </Form>
         </Modal>
-    )
-        ;
+    );
 };

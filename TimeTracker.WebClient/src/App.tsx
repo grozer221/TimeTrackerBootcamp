@@ -40,10 +40,13 @@ import {
     VacationRequestsUpdatePage
 } from "./modules/vacationRequests/pages/VacationRequestsUpdatePage/VacationRequestsUpdatePage";
 import {TrackerPage} from "./modules/timeTracker/pages/TrackerPage/TrackerPage";
-import {TrackCreatePage} from "./modules/tracks/pages/TracksCreatePage/TrackCreatePage";
 import {RemoveUserModal} from "./modules/users/components/RemoveUserModal/RemoveUserModal";
 import {UpdateUserModal} from "./modules/users/components/UpdateUserModal/UpdateUserModal";
 import {CreateReportModal} from "./modules/excelExport/components/CreateReportModal";
+import {ResetPasswordUserModal} from "./modules/users/components/ResetPassword/ResetPasswordUserModal";
+import {SickLeaveIndexPage} from "./modules/sickLeave/pages/SickLeaveIndexPage";
+import {SickLeaveCreatePage} from "./modules/sickLeave/pages/SickLeaveCreatePage";
+import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -89,6 +92,7 @@ export const App = () => {
                         </Route>
                         <Route path={'time-tracker/*'} element={<TrackerPage/>}/>
                         <Route path={"vacation-requests/*"} element={<VacationRequestsIndexPage/>}/>
+                        <Route path={"sick-leave-days/*"} element={<SickLeaveIndexPage/>}/>
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>
                         <Route path={'*'} element={<Error/>}/>
@@ -108,6 +112,7 @@ export const App = () => {
                                 <Route path="create" element={<CreateUserModal/>}/>
                                 <Route path="remove/:email" element={<RemoveUserModal/>}/>
                                 <Route path="update/:email" element={<UpdateUserModal/>}/>
+                                <Route path="reset-password/:id" element={<ResetPasswordUserModal/>}/>
                                 <Route path="createReport" element={<CreateReportModal/>}/>
                             </Route>
                             <Route path={"tools/*"}>
@@ -120,8 +125,12 @@ export const App = () => {
                                 <Route path={'create'} element={<VacationRequestsCreatePage/>}/>
                                 <Route path={'update/:id'} element={<VacationRequestsUpdatePage/>}/>
                             </Route>
+                            <Route path={'sick-leave-days/*'}>
+                                <Route path={'create'} element={<SickLeaveCreatePage/>}/>
+                                <Route path={'update/:id'} element={<SickLeaveUpdatePage/>}/>
+                            </Route>
                             <Route path={'time-tracker/*'}>
-                                <Route path={'create'} element={<TrackCreatePage/>}/>
+                                {/*<Route path={'create'} element={<TrackCreatePage/>}/>*/}
                             </Route>
 
                         </Routes>

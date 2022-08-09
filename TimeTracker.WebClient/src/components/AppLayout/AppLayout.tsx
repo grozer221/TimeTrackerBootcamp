@@ -103,6 +103,11 @@ export const AppLayout: FC<Props> = ({children}) => {
             label: <Link to={'vacation-requests'}>Vacation requests</Link>,
         },
         {
+            key: '/sick-leave-days',
+            icon: <AuditOutlined/>,
+            label: <Link to={'sick-leave-days'}>Sick leave days</Link>,
+        },
+        {
             key: '/users',
             icon: <UsergroupAddOutlined/>,
             label: <Link to={'users'}>Users</Link>,

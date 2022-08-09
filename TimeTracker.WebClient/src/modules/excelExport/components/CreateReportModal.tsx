@@ -53,7 +53,6 @@ export const CreateReportModal: FC<Props> = () => {
     return (
         <Modal
             title={<Title level={4}>Create excel report</Title>}
-            // confirmLoading={loading}
             visible={true}
             onOk={handleOk}
             okText={'Create'}
