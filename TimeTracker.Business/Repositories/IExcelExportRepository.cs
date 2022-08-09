@@ -11,6 +11,6 @@ namespace TimeTracker.Business.Repositories
     public interface IExcelExportRepository
     {
         Task<IEnumerable<UserModel>> GetAsync(UserFilter filter, DateTime date);
-        Task<double> GetUserHours(Guid userId, DateTime date);
+        Task GetUserHours(Guid userId, DateTime date, ExcelModel model);
     }
 }
