@@ -20,6 +20,7 @@ namespace TimeTracker.Server.Tasks
         private readonly ITrackRepository trackRepository;
         private readonly ICompletedTaskRepository completedTaskRepository;
         private readonly IVacationRequestRepository vacationRequestRepository;
+        private readonly ISickLeaveRepository sickLeaveRepository;
 
         public AutoCreateTracksTask(
             ISettingsManager settingsManager, 
@@ -27,7 +28,8 @@ namespace TimeTracker.Server.Tasks
             IUserRepository userRepository, 
             ITrackRepository trackRepository, 
             ICompletedTaskRepository completedTaskRepository, 
-            IVacationRequestRepository vacationRequestRepository
+            IVacationRequestRepository vacationRequestRepository,
+            ISickLeaveRepository sickLeaveRepository
             )
         {
             this.settingsManager = settingsManager;
@@ -36,6 +38,7 @@ namespace TimeTracker.Server.Tasks
             this.trackRepository = trackRepository;
             this.completedTaskRepository = completedTaskRepository;
             this.vacationRequestRepository = vacationRequestRepository;
+            this.sickLeaveRepository = sickLeaveRepository;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -61,7 +64,7 @@ namespace TimeTracker.Server.Tasks
                     trackKinds.Add(TrackKind.Vacation);
                 }
 
-                object todaySickLeave = null; // change !!
+                var todaySickLeave = await sickLeaveRepository.GetByDateAsync(dateTimeNow, user.Id);
                 if (todaySickLeave != null)
                 {
                     trackKinds.Add(TrackKind.Sick);

@@ -86,6 +86,16 @@ namespace TimeTracker.MsSql.Repositories
             return model;
         }
 
+        public async Task<SickLeaveModel> GetByDateAsync(DateTime date, Guid userId)
+        {
+            string query = @"select * from SickLeave
+                            where userId = @userId and @date between StartDate and EndDate";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                return await connection.QueryFirstOrDefaultAsync<SickLeaveModel>(query, new { date, userId });
+            }
+        }
+
         public async Task RemoveAsync(Guid id)
         {
             using var db = dapperContext.CreateConnection();

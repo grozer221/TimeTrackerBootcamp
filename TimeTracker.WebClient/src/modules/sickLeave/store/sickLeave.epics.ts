@@ -63,7 +63,7 @@ export const createAsyncEpic: Epic<ReturnType<typeof sickLeaveActions.createAsyn
         mergeMap(action =>
             from(client.query<SickLeaveCreateData, SickLeaveCreateVars>({
                 query: SICK_LEAVE_CREATE_MUTATION,
-                variables: {sickLeaveInputType: action.payload}
+                variables: {sickLeaveCreateInputType: action.payload}
             })).pipe(
                 mergeMap(response => {
                     const sickLeaveGetInputType = state$.value.sickLeave.sickLeaveGetInputType;

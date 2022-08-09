@@ -3,8 +3,8 @@ import {SickLeaveType} from "../sickLeaveType";
 import {SICK_LEAVE_FRAGMENT} from "./sickLeave.fragments";
 
 export type SickLeaveCreateData = { sickLeave: { create: SickLeaveType } }
-export type SickLeaveCreateVars = { sickLeaveInputType: SickLeaveInputType }
-export type SickLeaveInputType = {
+export type SickLeaveCreateVars = { sickLeaveCreateInputType: SickLeaveCreateInputType }
+export type SickLeaveCreateInputType = {
     startDate: string,
     endDate: string,
     comment?: string,
