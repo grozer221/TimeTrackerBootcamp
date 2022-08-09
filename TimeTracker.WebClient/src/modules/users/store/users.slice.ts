@@ -1,14 +1,19 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {User, UserFilter} from "../graphQL/users.types";
-import {CreateUserInput, RemoveUserInput, UpdateUserInput} from "../graphQL/users.mutations";
+import {CreateUserInput, RemoveUserInput, ResetUserPasswordInput, UpdateUserInput} from "../graphQL/users.mutations";
 
 type InitialState = {
     users: User[],
     total: number,
     pageSize: number,
     currentPage: number,
+    loadingUsers: boolean,
     usersForVacation: User[],
-    filter: UserFilter
+    totalUsersForVacation: number,
+    filter: UserFilter,
+    usersLoading: boolean,
+    usersForVacationLoading: boolean,
+    crudLoading: boolean,
 }
 
 const initialState: InitialState = {
@@ -17,6 +22,8 @@ const initialState: InitialState = {
     pageSize: 10,
     currentPage: 0,
     usersForVacation: [],
+    loadingUsers: false,
+    totalUsersForVacation: 0,
     filter: {
         firstName: "",
         lastName: "",
@@ -25,7 +32,10 @@ const initialState: InitialState = {
         permissions: [],
         roles: [],
         employments: []
-    }
+    },
+    usersLoading: false,
+    usersForVacationLoading: false,
+    crudLoading: false,
 }
 
 export const usersSlice = createSlice({
@@ -41,8 +51,9 @@ export const usersSlice = createSlice({
             state.pageSize = action.payload.pageSize;
         },
         fetchUsersForVacationsSelect: (state, action: PayloadAction<{ filter: UserFilter, take: number, skip: number }>) => state,
-        addUsersForVacationsSelect: (state, action: PayloadAction<User[]>) => {
-            state.usersForVacation = action.payload;
+        addUsersForVacationsSelect: (state, action: PayloadAction<{users: User[], total: number}>) => {
+            action.payload.users.forEach((item) => state.usersForVacation.push(item))
+            state.totalUsersForVacation = action.payload.total
         },
         createUser: (state, action: PayloadAction<CreateUserInput>) => state,
         removeUserAsync: (state, action: PayloadAction<RemoveUserInput>) => state,
@@ -53,6 +64,20 @@ export const usersSlice = createSlice({
             state.currentPage = action.payload
         },
         updateUser: (state, action: PayloadAction<UpdateUserInput>) => state,
+        resetUserPassword: (state, action: PayloadAction<ResetUserPasswordInput>) => state,
+        setUsersForVacationLoading: (state, action: PayloadAction<boolean>) => {
+            state.usersForVacationLoading = action.payload
+        },
+        setLoadingUsers: (state, action: PayloadAction<boolean>) => {
+            state.loadingUsers = action.payload
+        },
+        setCRUDLoading: (state, action: PayloadAction<boolean>) => {
+            state.crudLoading = action.payload
+        },
+        clearUsersForVacationData: (state) => {
+            state.usersForVacation = []
+            state.totalUsersForVacation = 0
+        }
     }
 })
 

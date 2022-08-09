@@ -6,11 +6,12 @@ import {ExclamationCircleOutlined} from "@ant-design/icons";
 import {useDispatch} from "react-redux";
 import './RemoveUserModal.css'
 import {usersActions} from "../../store/users.slice";
+import {useAppSelector} from "../../../../store/store";
+import {navigateActions} from "../../../navigate/store/navigate.slice";
 
 const {confirm} = Modal;
 
 export const RemoveUserModal = memo(() => {
-    const navigate = useNavigate();
     const params = useParams();
     const email = params['email']
     const dispatch = useDispatch()
@@ -24,7 +25,7 @@ export const RemoveUserModal = memo(() => {
                 dispatch(usersActions.removeUserAsync({email: email as string}))
             },
             onCancel() {
-                navigate(-1)
+                navigateActions.navigate(-1)
             },
         });
         return <></>

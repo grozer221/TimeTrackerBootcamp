@@ -40,10 +40,10 @@ import {
     VacationRequestsUpdatePage
 } from "./modules/vacationRequests/pages/VacationRequestsUpdatePage/VacationRequestsUpdatePage";
 import {TrackerPage} from "./modules/timeTracker/pages/TrackerPage/TrackerPage";
-import {TrackCreatePage} from "./modules/tracks/pages/TracksCreatePage/TrackCreatePage";
 import {RemoveUserModal} from "./modules/users/components/RemoveUserModal/RemoveUserModal";
 import {UpdateUserModal} from "./modules/users/components/UpdateUserModal/UpdateUserModal";
 import {CreateReportModal} from "./modules/excelExport/components/CreateReportModal";
+import {ResetPasswordUserModal} from "./modules/users/components/ResetPassword/ResetPasswordUserModal";
 import {SickLeaveIndexPage} from "./modules/sickLeave/pages/SickLeaveIndexPage";
 import {SickLeaveCreatePage} from "./modules/sickLeave/pages/SickLeaveCreatePage";
 import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage";
@@ -112,6 +112,7 @@ export const App = () => {
                                 <Route path="create" element={<CreateUserModal/>}/>
                                 <Route path="remove/:email" element={<RemoveUserModal/>}/>
                                 <Route path="update/:email" element={<UpdateUserModal/>}/>
+                                <Route path="reset-password/:id" element={<ResetPasswordUserModal/>}/>
                                 <Route path="createReport" element={<CreateReportModal/>}/>
                             </Route>
                             <Route path={"tools/*"}>
