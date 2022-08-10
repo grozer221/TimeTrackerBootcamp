@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
+using TimeTracker.Business;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Models.SettingsCategories;
@@ -63,6 +64,12 @@ namespace TimeTracker.Caching.Managers
             {
                 return await calendarDayRepository.GetAsync(from, to);
             });
+        }
+
+        public IEnumerable<Command> GetCommandsForCreate(CalendarDayModel model)
+        {
+            ResetCache();
+            return calendarDayRepository.GetCommandsForCreate(model);
         }
 
         public async Task<CalendarDayModel> CreateAsync(CalendarDayModel model)

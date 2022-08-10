@@ -8,6 +8,7 @@ namespace TimeTracker.Business.Repositories
         Task<IEnumerable<CalendarDayModel>> GetAsync();
         Task<IEnumerable<CalendarDayModel>> GetAsync(DateTime from, DateTime to);
         Task<CalendarDayModel> CreateAsync(CalendarDayModel model);
+        IEnumerable<Command> GetCommandsForCreate(CalendarDayModel model);
         Task<CalendarDayModel> UpdateAsync(CalendarDayModel model);
         Task<CalendarDayModel> RemoveAsync(DateTime date);
     }

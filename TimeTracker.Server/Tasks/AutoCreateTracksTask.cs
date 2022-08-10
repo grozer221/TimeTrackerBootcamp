@@ -1,8 +1,10 @@
 ﻿using Quartz;
+using TimeTracker.Business;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.MsSql;
 using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.Tasks
@@ -21,6 +23,7 @@ namespace TimeTracker.Server.Tasks
         private readonly ICompletedTaskRepository completedTaskRepository;
         private readonly IVacationRequestRepository vacationRequestRepository;
         private readonly ISickLeaveRepository sickLeaveRepository;
+        private readonly DapperContext dapperContext;
 
         public AutoCreateTracksTask(
             ISettingsManager settingsManager, 
@@ -29,7 +32,8 @@ namespace TimeTracker.Server.Tasks
             ITrackRepository trackRepository, 
             ICompletedTaskRepository completedTaskRepository, 
             IVacationRequestRepository vacationRequestRepository,
-            ISickLeaveRepository sickLeaveRepository
+            ISickLeaveRepository sickLeaveRepository,
+            DapperContext dapperContext
             )
         {
             this.settingsManager = settingsManager;
@@ -39,6 +43,7 @@ namespace TimeTracker.Server.Tasks
             this.completedTaskRepository = completedTaskRepository;
             this.vacationRequestRepository = vacationRequestRepository;
             this.sickLeaveRepository = sickLeaveRepository;
+            this.dapperContext = dapperContext;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -55,6 +60,7 @@ namespace TimeTracker.Server.Tasks
             var workdayStartAtDateTime = new DateTime(dateTimeNow.Year, dateTimeNow.Month, dateTimeNow.Day, workdayStartAt.Hour, workdayStartAt.Minute, workdayStartAt.Second);
             var workdayEndAtDateTime = workdayStartAtDateTime.AddHours(hoursInWorkday);
             var users = await userRepository.GetAsync();
+            var commands = new List<Command>();
             foreach (var user in users)
             {
                 var trackKinds = new List<TrackKind>();
@@ -81,19 +87,25 @@ namespace TimeTracker.Server.Tasks
                         Id = Guid.NewGuid(),
                         Title = "Auto created",
                         StartTime = workdayStartAtDateTime,
+                        EndTime = workdayEndAtDateTime,
                         Kind = trackKind,
                         UserId = user.Id,
                     };
-                    await trackRepository.CreateAsync(track);
-                    track.EndTime = workdayEndAtDateTime;
-                    await trackRepository.UpdateAsync(track);
+                    commands.AddRange(trackRepository.GetCommandsForCreate(track));
+                    //await trackRepository.CreateAsync(track);
                 }
             }
-            await completedTaskRepository.CreateAsync(new CompletedTaskModel
+            commands.AddRange(completedTaskRepository.GetCommandsForCreate(new CompletedTaskModel
             {
                 DateExecute = dateTimeNow,
                 Name = JobName,
-            });
+            }));
+            dapperContext.ExecuteInTransaction(commands);
+            //await completedTaskRepository.CreateAsync(new CompletedTaskModel
+            //{
+            //    DateExecute = dateTimeNow,
+            //    Name = JobName,
+            //});
             Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {dateTimeNow}");
         }
 
