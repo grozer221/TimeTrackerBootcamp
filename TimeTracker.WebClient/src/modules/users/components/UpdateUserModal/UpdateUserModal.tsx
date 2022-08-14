@@ -13,7 +13,6 @@ import {RootState, useAppSelector} from "../../../../store/store";
 import {UpdateUserInput} from "../../graphQL/users.mutations";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {navigateActions} from "../../../navigate/store/navigate.slice";
-import {notificationsActions} from "../../../notifications/store/notifications.slice";
 import {InfiniteScrollSelect} from "../../../../components/InfiniteScrollSelect";
 
 type FormValues = {
@@ -42,17 +41,11 @@ export const UpdateUserModal: FC<Props> = () => {
         user.usersWhichCanApproveVacationRequest.map(u => u.id)
     )
 
-    console.log('usersWhichCanApproveVacationRequest: ', usersWhichCanApproveVacationRequest)
-
     let notFetchedUsers = user.usersWhichCanApproveVacationRequest.filter(user => {
         return !usersInfinityLoad?.entities.find(u => u.id === user.id);
     }) as User[]
 
-    let usersForVacationLoading = useAppSelector(s => s.users.usersInfinityLoadLoading)
-    let [usersForVacationEmail, setUsersForVacationEmail] = useState('')
-    let [currentPage, setCurrentPage] = useState(0)
     let [usersPageSize, setUsersPageSize] = useState(10)
-
 
     useEffect(() => {
         dispatch(usersActions.fetchUsersInfinityLoad({filter: {email: ""}, skip: 0, take: usersPageSize}))

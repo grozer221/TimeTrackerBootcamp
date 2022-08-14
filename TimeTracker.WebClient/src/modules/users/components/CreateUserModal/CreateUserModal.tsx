@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {FC, useEffect, useState} from 'react';
+import {FC, useState} from 'react';
 import {Form, Input, Modal, Select, Radio} from "antd";
 import './CreateUserModal.css'
 import Title from "antd/lib/typography/Title";
@@ -7,14 +7,12 @@ import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {useForm} from "antd/es/form/Form";
 import {useDispatch} from "react-redux";
-import {User} from "../../graphQL/users.types";
 import {useAppSelector} from "../../../../store/store";
 import {CreateUserInput} from "../../graphQL/users.mutations";
 import {usersActions} from "../../store/users.slice";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {navigateActions} from "../../../navigate/store/navigate.slice";
 import {InfiniteScrollSelect} from "../../../../components/InfiniteScrollSelect";
-
 
 type FormValues = {
     firstName: string,

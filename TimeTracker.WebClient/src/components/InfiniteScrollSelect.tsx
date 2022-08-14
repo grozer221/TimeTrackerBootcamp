@@ -21,8 +21,6 @@ export const InfiniteScrollSelect: FC<Props> = ({notFetchedUsers, onChange, init
     let [currentPage, setCurrentPage] = useState(0)
     let [usersPageSize, setUsersPageSize] = useState(10)
 
-    console.log(initialValues)
-
     useEffect(() => {
         dispatch(usersActions.fetchUsersInfinityLoad({
             filter: {email: ''},
