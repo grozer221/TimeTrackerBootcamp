@@ -168,6 +168,7 @@ export const UsersPage = React.memo(() => {
         }
         <Table
             columns={columns}
+            size={"middle"}
             dataSource={users}
             loading={loadingUsers}
             rowKey={"id"}
