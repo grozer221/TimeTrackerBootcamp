@@ -1,5 +1,5 @@
-import React, {useEffect, useRef, useState} from 'react';
-import {isAuthenticated} from "../../../../utils/permissions";
+import React, {useEffect} from 'react';
+import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
 import {useDispatch} from "react-redux";
 import {useAppSelector} from "../../../../store/store";
 import {Link, useLocation, useNavigate} from "react-router-dom";
@@ -14,6 +14,7 @@ import {usersActions} from "../../store/users.slice";
 import {ExcelExportButton} from "../../../../components/ExcelExportButton";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {getColumnSearchProps} from "../../components/parrtial/ColumnSerach";
+import {ItemType} from "antd/lib/menu/hooks/useItems";
 
 export const UsersPage = React.memo(() => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
@@ -53,19 +54,26 @@ export const UsersPage = React.memo(() => {
     };
 
     //menu on every user row
-    const menu = (userEmail: string, userId: string) => (
-        <Menu
-            items={[
+    const menu = (userEmail: string, userId: string) => {
+        let items: ItemType[] = []
+
+        if (isAdministratorOrHavePermissions([Permission.UpdateUsers])) {
+            items.push(
                 {key: '1', label: (<Link to={"update/" + userEmail} state={{popup: location}}>Update</Link>)},
                 {key: '2', label: (<Link to={"remove/" + userEmail} state={{popup: location}}>Remove</Link>)},
                 {
                     key: '3',
-                    label: (<Link to={"reset-password/" + userId} state={{popup: location}}>Reset password</Link>)
-                },
-                {key: '4', label: 'View'}
-            ]}
-        />
-    )
+                    label: (
+                        <Link to={"reset-password/" + userId} state={{popup: location}}>Reset password</Link>)
+                }
+            )
+        }
+
+        items.push({key: '4', label: 'View'})
+
+
+        return <Menu items={items}/>
+    }
 
     // columns structure for table
     const columns: ColumnsType<User> = [
@@ -134,9 +142,11 @@ export const UsersPage = React.memo(() => {
     return <>
         <Row justify="space-between" align={'middle'}>
             <Col>
-                <Link to={"create"} state={{popup: location}}>
-                    <Button type="primary" icon={<UserAddOutlined/>}> Add User</Button>
-                </Link>
+                {isAdministratorOrHavePermissions([Permission.UpdateUsers]) &&
+                    <Link to={"create"} state={{popup: location}}>
+                        <Button type="primary" icon={<UserAddOutlined/>}> Add User</Button>
+                    </Link>
+                }
             </Col>
             <Col>
                 <Link to={"createReport"} state={{popup: location}}>
