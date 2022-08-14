@@ -1,5 +1,10 @@
 import React, {useEffect} from 'react';
-import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
+import {
+    isAdministrator,
+    isAdministratorOrHavePermissions,
+    isAuthenticated,
+    isHavePermission
+} from "../../../../utils/permissions";
 import {useDispatch} from "react-redux";
 import {useAppSelector} from "../../../../store/store";
 import {Link, useLocation, useNavigate} from "react-router-dom";
@@ -140,21 +145,27 @@ export const UsersPage = React.memo(() => {
         }];
 
     return <>
-        <Row justify="space-between" align={'middle'}>
-            <Col>
-                {isAdministratorOrHavePermissions([Permission.UpdateUsers]) &&
-                    <Link to={"create"} state={{popup: location}}>
-                        <Button type="primary" icon={<UserAddOutlined/>}> Add User</Button>
-                    </Link>
-                }
-            </Col>
-            <Col>
-                <Link to={"createReport"} state={{popup: location}}>
-                    <ExcelExportButton/>
-                </Link>
-            </Col>
-        </Row>
-        <Divider/>
+        {(isAdministrator() || isHavePermission([Permission.ExportUsersToExcel]) || isHavePermission([Permission.UpdateUsers])) &&
+            <>
+                <Row justify="space-between" align={'middle'}>
+                    <Col>
+                        {isAdministratorOrHavePermissions([Permission.UpdateUsers]) &&
+                            <Link to={"create"} state={{popup: location}}>
+                                <Button type="primary" icon={<UserAddOutlined/>}> Add User</Button>
+                            </Link>
+                        }
+                    </Col>
+                    <Col>
+                        {isAdministratorOrHavePermissions([Permission.ExportUsersToExcel]) &&
+                            <Link to={"createReport"} state={{popup: location}}>
+                                <ExcelExportButton/>
+                            </Link>
+                        }
+                    </Col>
+                </Row>
+                <Divider/>
+            </>
+        }
         <Table
             columns={columns}
             dataSource={users}

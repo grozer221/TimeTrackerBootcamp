@@ -8,5 +8,6 @@
         UpdateCalendar,
         UpdateSettings,
         UpdateFileManager,
+        ExportUsersToExcel,
     }
 }
