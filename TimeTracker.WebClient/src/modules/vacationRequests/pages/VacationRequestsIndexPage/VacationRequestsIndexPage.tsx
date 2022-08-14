@@ -25,7 +25,7 @@ export const VacationRequestsIndexPage: FC = () => {
     const dispatch = useAppDispatch();
     const authedUser = useAppSelector(s => s.auth.authedUser)
     const settings = useAppSelector(s => s.settings.settings)
-    const usersForVacation = useAppSelector(s => s.users.usersForVacation)
+    const usersInfinityLoad = useAppSelector(s => s.users.usersInfinityLoad)
     const vacationRequestsGetInputType = useAppSelector(s => s.vacationRequests.vacationRequestsGetInputType)
     const vacationRequests = useAppSelector(s => s.vacationRequests.vacationRequests)
     const loadingGet = useAppSelector(s => s.vacationRequests.loadingGet)
@@ -40,7 +40,7 @@ export const VacationRequestsIndexPage: FC = () => {
 
     useEffect(() => {
         dispatch(vacationRequestsActions.getAvailableDaysAsync())
-        dispatch(usersActions.fetchUsersForVacationsSelect({
+        dispatch(usersActions.fetchUsersInfinityLoad({
             take: 10,
             skip: 0,
             filter: {email: '', roles: [], permissions: []}
@@ -108,14 +108,14 @@ export const VacationRequestsIndexPage: FC = () => {
                 defaultValue={userIds}
                 onChange={userIds => setParams(pageNumber, pageSize, statuses, userIds, kind)}
                 filterOption={_ => true}
-                onSearch={value => dispatch(usersActions.fetchUsersForVacationsSelect({
+                onSearch={value => dispatch(usersActions.fetchUsersInfinityLoad({
                     take: 10,
                     skip: 0,
                     filter: {email: value, roles: [], permissions: []}
                 }))}
                 maxTagCount={'responsive'}
             >
-                {usersForVacation.map(user => (
+                {usersInfinityLoad?.entities.map(user => (
                     <Select.Option key={user.id}>
                         <Text>{user.lastName} {user.firstName} </Text>
                         <Text type={'secondary'}>{user.email}</Text>
