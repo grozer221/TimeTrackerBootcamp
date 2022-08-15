@@ -61,10 +61,10 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task<TrackModel> CreateAsync(TrackModel model)
         {
-            model.CreatedAt = model.UpdatedAt = DateTime.Now;
+            model.CreatedAt = model.UpdatedAt = DateTime.UtcNow;
             if (model.StartTime == null)
             {
-                model.StartTime = DateTime.Now;
+                model.StartTime = DateTime.UtcNow;
             }
             await StopAllAsync();
             using (IDbConnection db = dapperContext.CreateConnection())

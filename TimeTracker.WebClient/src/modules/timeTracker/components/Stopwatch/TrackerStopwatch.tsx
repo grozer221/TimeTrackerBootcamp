@@ -6,6 +6,7 @@ import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import moment from "moment";
 import {useTimer} from "use-timer";
+import {toUTCDateTime} from "../../../../convertors/toUTCDateTime";
 
 type stopwatchProps = {
     track: Track
@@ -17,8 +18,9 @@ type panelProps = {
 
 const Panel: FC<panelProps> = ({time}) => {
     const totalMilliseconds = time * 1000
-    const totalDate = new Date(totalMilliseconds - 3 * 60 * 60 * 1000)
-    const clockTime = moment(totalDate).format("HH:mm:ss")
+    const totalDate = new Date(totalMilliseconds)
+    const totalDateUTC = toUTCDateTime(totalDate)
+    const clockTime = moment(totalDateUTC).format("HH:mm:ss")
     return (
         <>
             <span>{clockTime}</span>
@@ -51,12 +53,13 @@ const Stopwatch: FC<stopwatchProps> = ({track}) => {
         reset()
         if(track.endTime)
             return
+        const endTimeUTC = toUTCDateTime(endDate)
         dispatch(tracksAction.updateTrack({
             id: track.id,
             title: track.title,
             kind: track.kind,
             startTime: track.startTime,
-            endTime: moment(new Date()).format('YYYY-MM-DDTHH:mm:ss')
+            endTime: moment(endTimeUTC).format('YYYY-MM-DDTHH:mm:ss')
         }))
     }
     return (

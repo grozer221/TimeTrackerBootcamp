@@ -37,9 +37,9 @@ export const TrackTitle: FC<Props> = ({track}) => {
 
     const onSubmit = () => {
         setBordered(false)
-        if(content === track.title)
-            return
         const newTitle = (content == '. . .' ? '' : content)
+        if(content === track.title || content === '. . .')
+            return
         dispatch(tracksAction.updateTrack({
             id: track.id,
             title: newTitle,
