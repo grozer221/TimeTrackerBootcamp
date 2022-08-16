@@ -5,4 +5,5 @@ export enum Permission {
     UpdateCalendar = 'UPDATE_CALENDAR',
     UpdateSettings = 'UPDATE_SETTINGS',
     UpdateFileManager = 'UPDATE_FILE_MANAGER',
+    ExportUsersToExcel = 'EXPORT_USERS_TO_EXCEL',
 }

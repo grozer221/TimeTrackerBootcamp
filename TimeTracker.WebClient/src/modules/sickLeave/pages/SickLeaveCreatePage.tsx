@@ -28,11 +28,11 @@ export const SickLeaveCreatePage: FC = () => {
     const dispatch = useAppDispatch();
     const [form] = useForm<FormValues>();
     const navigate = useNavigate();
-    let users = useAppSelector(s => s.users.usersForVacation)
+    let usersInfinityLoad = useAppSelector(s => s.users.usersInfinityLoad)
     const loadingCreate = useAppSelector(s => s.sickLeave.loadingCreate)
 
     useEffect(() => {
-        dispatch(usersActions.fetchUsersForVacationsSelect({
+        dispatch(usersActions.fetchUsersInfinityLoad({
             filter: {email: '', permissions: [], roles: []},
             take: 100,
             skip: 0,
@@ -102,14 +102,14 @@ export const SickLeaveCreatePage: FC = () => {
                         placeholder="User"
                         filterOption={false}
                         onSearch={(email) => {
-                            dispatch(usersActions.fetchUsersForVacationsSelect({
+                            dispatch(usersActions.fetchUsersInfinityLoad({
                                 filter: {email, permissions: [], roles: []},
                                 take: 100,
                                 skip: 0,
                             }))
                         }}
                     >
-                        {users.map((user) => (
+                        {usersInfinityLoad?.entities.map((user) => (
                             <Select.Option key={user.id} value={user.id}>
                                 {user.email}
                             </Select.Option>

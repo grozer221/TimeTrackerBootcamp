@@ -9,6 +9,7 @@ import {useDispatch} from "react-redux";
 import {nameof} from "../../../utils/stringUtils";
 import {excelExportActions} from "../store/excelExport.slice";
 import {useAppSelector} from "../../../store/store";
+import moment, {now} from "moment";
 
 type FormValues = {
     month: string
@@ -64,7 +65,7 @@ export const CreateReportModal: FC<Props> = () => {
                 <Form.Item name={nameof<FormValues>("month")}
                            label={"Month:"}
                            rules={[{required: true, message: 'Please, input report month!'}]}>
-                    <DatePicker picker="month"/>
+                    <DatePicker  defaultValue={moment(now())} picker="month"/>
                 </Form.Item>
             </Form>
         </Modal>

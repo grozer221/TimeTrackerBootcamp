@@ -13,7 +13,7 @@ import {RootState, useAppSelector} from "../../../../store/store";
 import {UpdateUserInput} from "../../graphQL/users.mutations";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {navigateActions} from "../../../navigate/store/navigate.slice";
-import {notificationsActions} from "../../../notifications/store/notifications.slice";
+import {InfiniteScrollSelect} from "../../../../components/InfiniteScrollSelect";
 
 type FormValues = {
     firstName: string,
@@ -23,7 +23,6 @@ type FormValues = {
     password: string,
     repeatPassword: string,
     permissions: Permission[],
-    usersWhichCanApproveVacationRequest: string[],
     employment: Employment,
 }
 
@@ -35,22 +34,21 @@ export const UpdateUserModal: FC<Props> = () => {
     const email = params['email']
 
     let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
-    let usersForVacation = useSelector((s: RootState) => s.users.usersForVacation)
+    let usersInfinityLoad = useSelector((s: RootState) => s.users.usersInfinityLoad)
     let crudLoading = useSelector((s: RootState) => s.users.crudLoading)
 
+    let [usersWhichCanApproveVacationRequest, setUsersWhichCanApproveVacationRequest] = useState<string[]>(
+        user.usersWhichCanApproveVacationRequest.map(u => u.id)
+    )
+
     let notFetchedUsers = user.usersWhichCanApproveVacationRequest.filter(user => {
-        return !usersForVacation.find(u => u.id === user.id);
+        return !usersInfinityLoad?.entities.find(u => u.id === user.id);
     }) as User[]
 
-    let usersForVacationLoading = useAppSelector(s => s.users.usersForVacationLoading)
-    let [usersForVacationEmail, setUsersForVacationEmail] = useState('')
-    let [currentPage, setCurrentPage] = useState(0)
     let [usersPageSize, setUsersPageSize] = useState(10)
-    let totalUsersForVacation = useAppSelector(s => s.users.totalUsersForVacation)
-
 
     useEffect(() => {
-        dispatch(usersActions.fetchUsersForVacationsSelect({filter: {email: ""}, skip: 0, take: usersPageSize}))
+        dispatch(usersActions.fetchUsersInfinityLoad({filter: {email: ""}, skip: 0, take: usersPageSize}))
     }, [])
 
     const handleOk = async () => {
@@ -62,13 +60,11 @@ export const UpdateUserModal: FC<Props> = () => {
             const email = form.getFieldValue(nameof<FormValues>("email"))
             const employment = form.getFieldValue(nameof<FormValues>("employment"))
             const permissions = form.getFieldValue(nameof<FormValues>("permissions")) ?? []
-            const usersWhichCanApproveVacationRequestIds =
-                form.getFieldValue(nameof<FormValues>("usersWhichCanApproveVacationRequest")) ?? []
 
             let updatedUser: UpdateUserInput = {
                 id: user.id,
                 firstName, lastName, middleName, email, permissions, employment,
-                usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequestIds
+                usersWhichCanApproveVacationRequestIds: usersWhichCanApproveVacationRequest
             } as UpdateUserInput
 
             dispatch(usersActions.updateUser(updatedUser))
@@ -101,7 +97,6 @@ export const UpdateUserModal: FC<Props> = () => {
                     email: user.email,
                     permissions: user.permissions,
                     employment: user.employment,
-                    usersWhichCanApproveVacationRequest: user.usersWhichCanApproveVacationRequest.map(u => u.id)
                 } as FormValues}
             >
                 <Form.Item name={nameof<FormValues>("firstName")}
@@ -161,51 +156,11 @@ export const UpdateUserModal: FC<Props> = () => {
                 </Form.Item>
 
                 <Form.Item
-                    name={nameof<FormValues>("usersWhichCanApproveVacationRequest")}
                     label={'Users which can approve vacation request'}
                 >
-                    <Select
-                        className={'w-100'}
-                        mode="multiple"
-                        allowClear
-                        placeholder="Users"
-                        filterOption={false}
-                        onPopupScroll={(e) => {
-                            let target = e.target as HTMLSelectElement
-                            if (!usersForVacationLoading && target.scrollTop + target.offsetHeight === target.scrollHeight) {
-                                if (currentPage < totalUsersForVacation) {
-                                    target.scrollTo(0, target.scrollHeight)
-                                    dispatch(usersActions.fetchUsersForVacationsSelect({
-                                        filter: {email: usersForVacationEmail},
-                                        take: usersPageSize,
-                                        skip: currentPage + 1,
-                                    }))
-                                    setCurrentPage(currentPage + 1)
-                                }
-                            }
-                        }}
-                        onSearch={(email) => {
-                            setUsersForVacationEmail(email)
-                            dispatch(usersActions.fetchUsersForVacationsSelect({
-                                filter: {email},
-                                take: usersPageSize,
-                                skip: 0,
-                            }))
-                            setCurrentPage(0)
-                        }}
-                    >
-                        {usersForVacation.map((user) => (
-                            <Select.Option key={user.id} value={user.id}>
-                                {user.email}
-                            </Select.Option>
-                        ))}
-
-                        {notFetchedUsers.map((user) => (
-                            <Select.Option key={user.id} value={user.id}>
-                                {user.email}
-                            </Select.Option>
-                        ))}
-                    </Select>
+                    <InfiniteScrollSelect notFetchedUsers={notFetchedUsers}
+                                          initialValues={usersWhichCanApproveVacationRequest}
+                                          onChange={setUsersWhichCanApproveVacationRequest}/>
                 </Form.Item>
             </Form>
         </Modal>
