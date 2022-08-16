@@ -1,4 +1,4 @@
-import React, {FC, useEffect, useState} from "react";
+import React, {FC, useState} from "react";
 import {Button, Col, Divider, Form, Input, Row} from "antd";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {useDispatch} from "react-redux";
@@ -11,7 +11,7 @@ import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {useForm} from "antd/es/form/Form";
 import {CreateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
 import {TrackerPanel} from "./TrackerPanel";
-import s from './/src/modules/timeTracker/components/Stopwatch/TrackerStopwatch.module.css'
+import s from './TrackerStopwatch.module.css'
 
 type FormValues = {
     title: string,

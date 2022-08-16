@@ -15,7 +15,8 @@ export const TrackStartTime: FC<Props> = ({track}) => {
 
     return (
         <>
-                <CalendarOutlined className={s.icons}/>{startTimeLabel}
+            <div className={s.start_time_panel}><CalendarOutlined className={s.icons}/>{startTimeLabel}</div>
+
         </>
     )
 }

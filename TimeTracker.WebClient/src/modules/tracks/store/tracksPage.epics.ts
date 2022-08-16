@@ -94,7 +94,7 @@ export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, 
                     return [
                         tracksInputData && tracksAction.getAsync(tracksInputData),
                         tracksAction.getCurrentAsync(),
-                        notificationsActions.addSuccess("Track removed!")
+                        notificationsActions.addWarning('Track removed')
                     ]
                 })
             )
@@ -118,7 +118,7 @@ export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, 
                     return [
                         tracksInputData && tracksAction.getAsync(tracksInputData),
                         tracksAction.getCurrentAsync(),
-                        notificationsActions.addSuccess("Track deleted!")
+                        notificationsActions.addInfo("Track update!")
                     ]
                 })
             )

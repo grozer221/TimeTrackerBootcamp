@@ -1,5 +1,5 @@
 import React, {FC, useEffect} from "react";
-import {Divider} from "antd";
+import {Card, Divider} from "antd";
 import s from './TrackerStopwatch.module.css'
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import moment from "moment";
@@ -22,7 +22,7 @@ const Panel: FC<panelProps> = ({time}) => {
     const clockTime = moment(totalDateUTC).format("HH:mm:ss")
     return (
         <>
-            <span>{clockTime}</span>
+                <span>{clockTime}</span>
         </>
     )
 }
@@ -46,13 +46,14 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track}) => {
 
     return (
         <>
-            <div className={s.current_track_panel}>
-                <div className={s.stopwatch}>
-                    <Panel time={time}/>
+                <div className={s.current_track_panel}>
+                    <div className={s.stopwatch}>
+                        <Panel time={time}/>
+                    </div>
+                    <div className={s.current_track}><CurrentTrackInfo track={track}/></div>
                 </div>
-                <div className={s.current_track}><CurrentTrackInfo track={track}/></div>
-            </div>
-            <Divider/>
+            <Divider></Divider>
+
         </>
     )
 }

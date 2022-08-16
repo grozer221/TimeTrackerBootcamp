@@ -15,12 +15,7 @@ export const TrackEndTime: FC<Props> = ({track}) => {
     const endTimeLabel = moment(endTimeDate).format('YYYY/MM/DD HH:mm:ss')
     return (
         <>
-                {endTime ?
-                    <><CalendarOutlined className={s.icons}/>{endTimeLabel}</> :
-                    <Tag icon={<SyncOutlined spin/>} color="processing">
-                        PROCESSING
-                    </Tag>
-                }
+            <CalendarOutlined className={s.icons}/>{endTimeLabel}
         </>
     )
 }

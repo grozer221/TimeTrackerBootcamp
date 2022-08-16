@@ -1,6 +1,7 @@
 
 
 .container{
+    margin-top: 20px;
     position: relative;
     display: flex;
     flex-direction: column;
@@ -82,4 +83,12 @@
 
 .form_item{
     justify-content: center;
+}
+
+.start_time_panel{
+    word-wrap: break-word;
+    display: flex;
+    background-color: white;
+    border-radius: 2px;
+    padding: 5px;
 }
