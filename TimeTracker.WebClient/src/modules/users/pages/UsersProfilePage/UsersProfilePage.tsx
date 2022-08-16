@@ -1,11 +1,11 @@
 import React, {useEffect} from "react";
-import {isAuthenticated} from "../../../../utils/permissions";
+import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
 import {RootState, useAppSelector} from "../../../../store/store";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {usersActions} from "../../store/users.slice";
 import {Loading} from "../../../../components/Loading/Loading";
-import {Card, Descriptions, Dropdown, Space, Table, Tag} from "antd";
+import {Card, Col, DatePicker, Descriptions, Dropdown, Menu, Row, Space, Table, Tag} from "antd";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
@@ -18,6 +18,7 @@ import {DownCircleFilled} from "@ant-design/icons";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import Title from "antd/lib/typography/Title";
 import {Divider} from "antd/es";
+import {ItemType} from "antd/lib/menu/hooks/useItems";
 
 
 export const UsersProfilePage = () => {
@@ -40,7 +41,18 @@ export const UsersProfilePage = () => {
         dispatch(usersActions.getUserByEmailAsync(email))
     }, [])
 
-    if (userProfile == null) return <Loading/>
+
+    const menu = (trackId: string) => {
+        let items: ItemType[] = []
+
+        if (isAdministratorOrHavePermissions([Permission.UpdateUsers])) {
+            items.push(
+                {key: '1', label: (<Link to={"update/" + trackId} state={{popup: location}}>Update</Link>)},
+                {key: '2', label: (<Link to={"remove/" + trackId} state={{popup: location}}>Remove</Link>)},
+            )
+        }
+        return <Menu items={items}/>
+    }
 
     const columns: ColumnsType<Track> = [
         {title: 'Title', dataIndex: 'title', key: 'title'},
@@ -52,7 +64,19 @@ export const UsersProfilePage = () => {
         },
         {title: 'Start Time', dataIndex: 'startTime', key: 'startTime'},
         {title: 'End Time', dataIndex: 'endTime', key: 'endTime'},
+        {
+            title: 'Action', dataIndex: 'operation', key: 'operation',
+            render: (text, record, index) => (
+                <Space size="middle">
+                    <Dropdown overlay={menu(record.id)}>
+                        <DownCircleFilled/>
+                    </Dropdown>
+                </Space>
+            ),
+        }
     ];
+
+    if (userProfile == null) return <Loading/>
 
     return <>
         <Card size={"small"}>
@@ -73,12 +97,18 @@ export const UsersProfilePage = () => {
                 </Descriptions.Item>
             </Descriptions>
         </Card>
-        <Card size={"small"}>
+        <Row style={{marginTop: 10, marginBottom: 10}}>
+            <Col span={20}></Col>
+            <Col span={4}>
+                    <DatePicker picker={"month"}/>
+            </Col>
+        </Row>
+            <Card size={"small"}>
             <Table columns={columns}
                    dataSource={tracks}
                    rowKey={record => record.id}
-                   title={() => <Title
-                       level={5}>{userProfile.firstName + " " + userProfile.lastName + " tracks: "}</Title>}/>
+                   pagination={false}
+                   title={() => <Title level={5}>{userProfile.firstName + " " + userProfile.lastName + " tracks: "}</Title>}/>
         </Card>
     </>
 }
