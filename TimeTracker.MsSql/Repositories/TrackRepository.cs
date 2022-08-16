@@ -41,7 +41,7 @@ namespace TimeTracker.MsSql.Repositories
 
             string query = @"SELECT * 
                              FROM Tracks 
-                             WHERE Title LIKE @like and UserId LIKE @userId and Kind LIKE @kind 
+                             WHERE Title LIKE @like and UserId LIKE @userId and Kind LIKE @kind and EndTime is not null
                              ORDER BY StartTime DESC 
                              OFFSET @skip ROWS FETCH NEXT @take ROWS ONLY";
 
@@ -62,10 +62,10 @@ namespace TimeTracker.MsSql.Repositories
 
         public IEnumerable<Command> GetCommandsForCreate(TrackModel model)
         {
-            model.CreatedAt = model.UpdatedAt = DateTime.Now;
+            model.CreatedAt = model.UpdatedAt = DateTime.UtcNow;
             if (model.StartTime == null)
             {
-                model.StartTime = DateTime.Now;
+                model.StartTime = DateTime.UtcNow;
             }
             return new List<Command>
             {
@@ -140,17 +140,18 @@ namespace TimeTracker.MsSql.Repositories
             }
             foreach (var track in tracks)
             {
-                track.EndTime = DateTime.Now;
+                track.EndTime = DateTime.UtcNow;
                 await UpdateAsync(track);
             }
         }
 
-        public async Task<TrackModel> GetCurrentAsync()
+        public async Task<TrackModel> GetCurrentAsync(Guid userId)
         {
             TrackModel track;
+            string userIdString = userId.ToString();
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                track = await db.QueryFirstOrDefaultAsync<TrackModel>("SELECT * FROM Tracks WHERE EndTime is null");
+                track = await db.QueryFirstOrDefaultAsync<TrackModel>("SELECT * FROM Tracks WHERE EndTime is null and UserId = @userId", new { userId = userIdString });
             }
             return track;
         }

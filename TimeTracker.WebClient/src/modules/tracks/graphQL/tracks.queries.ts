@@ -27,3 +27,16 @@ export const TRACKS_GET_QUERY = gql`
         }  
     }
 `
+
+export type GetCurrentTrackData = { tracks: { getCurrentTrack:  Track}  }
+
+export const TRACKS_GET_CURRENT_QUERY = gql`
+    ${TRACK_FRAGMENT}
+    query GetCurrentTrack {
+        tracks {
+            getCurrentTrack {
+                ...TrackFragment
+            }
+        }
+    }
+`
