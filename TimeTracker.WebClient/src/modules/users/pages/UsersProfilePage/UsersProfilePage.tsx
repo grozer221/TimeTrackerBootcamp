@@ -5,9 +5,20 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {usersActions} from "../../store/users.slice";
 import {Loading} from "../../../../components/Loading/Loading";
-import {Card, Descriptions, Space, Tag} from "antd";
+import {Card, Descriptions, Dropdown, Space, Table, Tag} from "antd";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {Employment} from "../../../../graphQL/enums/Employment";
+import {TrackKind} from "../../../../graphQL/enums/TrackKind";
+import {ColumnsType} from "antd/es/table";
+import {User} from "../../graphQL/users.types";
+import {getColumnSearchProps} from "../../components/parrtial/ColumnSerach";
+import {Role} from "../../../../graphQL/enums/Role";
+import {Permission} from "../../../../graphQL/enums/Permission";
+import {DownCircleFilled} from "@ant-design/icons";
+import {Track} from "../../../tracks/graphQL/tracks.types";
+import Title from "antd/lib/typography/Title";
+import {Divider} from "antd/es";
+
 
 export const UsersProfilePage = () => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
@@ -17,6 +28,8 @@ export const UsersProfilePage = () => {
     const email = params['email'] as string
 
     const userProfile = useSelector((s: RootState) => s.users.userProfile)
+
+    let tracks = useSelector((s: RootState) => s.tracks.tracks)
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -29,9 +42,21 @@ export const UsersProfilePage = () => {
 
     if (userProfile == null) return <Loading/>
 
+    const columns: ColumnsType<Track> = [
+        {title: 'Title', dataIndex: 'title', key: 'title'},
+        {
+            title: 'Kind', dataIndex: 'kind', key: 'kind',
+            render: (value, record, index) => {
+                return uppercaseToWords(value)
+            }
+        },
+        {title: 'Start Time', dataIndex: 'startTime', key: 'startTime'},
+        {title: 'End Time', dataIndex: 'endTime', key: 'endTime'},
+    ];
+
     return <>
         <Card size={"small"}>
-            <Descriptions title={userProfile.email + " info"}>
+            <Descriptions title={userProfile.firstName + " " + userProfile.lastName}>
                 <Descriptions.Item label={"First name"}>{userProfile.firstName}</Descriptions.Item>
                 <Descriptions.Item label={"Last name"}>{userProfile.lastName}</Descriptions.Item>
                 <Descriptions.Item label={"Middle name"}>{userProfile.middleName}</Descriptions.Item>
@@ -47,6 +72,13 @@ export const UsersProfilePage = () => {
                     </Space>
                 </Descriptions.Item>
             </Descriptions>
+        </Card>
+        <Card size={"small"}>
+            <Table columns={columns}
+                   dataSource={tracks}
+                   rowKey={record => record.id}
+                   title={() => <Title
+                       level={5}>{userProfile.firstName + " " + userProfile.lastName + " tracks: "}</Title>}/>
         </Card>
     </>
 }
