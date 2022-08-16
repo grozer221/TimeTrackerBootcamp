@@ -5,6 +5,7 @@ using Dapper;
 using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business;
+using TimeTracker.MsSql.Extensions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -60,39 +61,12 @@ namespace TimeTracker.MsSql.Repositories
             };
         }
 
-        public IEnumerable<Command> GetCommandsForCreate(TrackModel model)
-        {
-            model.CreatedAt = model.UpdatedAt = DateTime.UtcNow;
-            if (model.StartTime == null)
-            {
-                model.StartTime = DateTime.UtcNow;
-            }
-            return new List<Command>
-            {
-                new Command
-                {
-                    CommandText = @"INSERT INTO Tracks 
-                              (Id, Title, UserId, Kind, StartTime, EndTime, CreatedAt, UpdatedAt)
-                              VALUES (@Id, @Title, @UserId, @Kind, 
-                              @StartTime, @EndTime, @CreatedAt, @UpdatedAt)",
-                    Parameters = model,
-                }
-            };
-        }
-
         public async Task<TrackModel> CreateAsync(TrackModel model)
         {
-            await StopAllAsync();
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                var commands = GetCommandsForCreate(model);
-                foreach (var command in commands)
-                {
-                    await db.QuerySingleOrDefaultAsync<Guid>(command.CommandText, command.Parameters);
-                }
+                return await this.CreateAsync(model, db);
             }
-
-            return model;
         }
 
         public async Task<TrackModel> RemoveAsync(Guid id)
@@ -129,7 +103,8 @@ namespace TimeTracker.MsSql.Repositories
 
             return tracks;
         }
-        private async Task StopAllAsync()
+
+        public async Task StopAllAsync()
         {
             IEnumerable<TrackModel> tracks;
             string query = "SELECT * FROM Tracks WHERE EndTime is null";

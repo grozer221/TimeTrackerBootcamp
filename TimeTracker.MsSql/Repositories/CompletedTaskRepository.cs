@@ -1,7 +1,7 @@
 ﻿using Dapper;
-using TimeTracker.Business;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.MsSql.Extensions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -27,31 +27,8 @@ namespace TimeTracker.MsSql.Repositories
         {
             using (var connection = dapperContext.CreateConnection())
             {
-                var commands = GetCommandsForCreate(model);
-                foreach(var command in commands)
-                {
-                    await connection.ExecuteAsync(command.CommandText, command.Parameters);
-                }
-                return model;
+                return await this.CreateAsync(model, connection);
             }
-        }
-
-        public IEnumerable<Command> GetCommandsForCreate(CompletedTaskModel model)
-        {
-            model.Id = Guid.NewGuid();
-            DateTime dateTimeNow = DateTime.UtcNow;
-            model.CreatedAt = dateTimeNow;
-            model.UpdatedAt = dateTimeNow;
-            return new List<Command>
-            {
-                new Command
-                {
-                    CommandText = @"insert into CompletedTasks 
-                                    (Id,   DateExecute,  Name,  CreatedAt,  UpdatedAt) values 
-                                    (@Id, @DateExecute, @Name, @CreatedAt, @UpdatedAt)",
-                    Parameters = model,
-                },
-            };
         }
     }
 }

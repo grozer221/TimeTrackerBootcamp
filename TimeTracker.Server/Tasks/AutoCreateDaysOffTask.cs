@@ -5,6 +5,7 @@ using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.MsSql;
+using TimeTracker.MsSql.Extensions;
 using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.Tasks
@@ -57,35 +58,33 @@ namespace TimeTracker.Server.Tasks
                 .Select(x => mondayDate.AddDays(x))
                 .ToList();
             var datesForCreateDayOff = currentWeekDates.Where(date => settings.Tasks.AutoCreateDaysOff.DaysOfWeek.Contains(date.DayOfWeek)).ToList();
-            var commands = new List<Command>();
-            foreach (var dateForCreateDayOff in datesForCreateDayOff)
+            using (var connection = dapperContext.CreateConnection())
             {
-                var calendarDay = await calendarDayManager.GetByDateAsync(dateForCreateDayOff);
-                if (calendarDay == null)
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    commands.AddRange(calendarDayManager.GetCommandsForCreate(new CalendarDayModel
+                    foreach (var dateForCreateDayOff in datesForCreateDayOff)
                     {
-                        Date = dateForCreateDayOff,
-                        Kind = DayKind.DayOff,
-                    }));
-                    //await calendarDayManager.CreateAsync(new CalendarDayModel
-                    //{
-                    //    Date = dateForCreateDayOff,
-                    //    Kind = DayKind.DayOff,
-                    //});
+                        var calendarDay = await calendarDayManager.GetByDateAsync(dateForCreateDayOff);
+                        if (calendarDay == null)
+                        {
+                            var newCalendarDay = new CalendarDayModel
+                            {
+                                Date = dateForCreateDayOff,
+                                Kind = DayKind.DayOff,
+                            };
+                            await calendarDayManager.CreateAsync(newCalendarDay, connection, transaction);
+                        }
+                    }
+                    var completedTask = new CompletedTaskModel
+                    {
+                        DateExecute = dateTimeNow,
+                        Name = JobName,
+                    };
+                    await completedTaskRepository.CreateAsync(completedTask, connection, transaction);
                 }
             }
-            commands.AddRange(completedTaskRepository.GetCommandsForCreate(new CompletedTaskModel
-            {
-                DateExecute = dateTimeNow,
-                Name = JobName,
-            }));
-            dapperContext.ExecuteInTransaction(commands);
-            //await completedTaskRepository.CreateAsync(new CompletedTaskModel
-            //{
-            //    DateExecute = dateTimeNow,
-            //    Name = JobName,
-            //});
+            
             Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {mondayDate} - {saturdayDate}");
         }
 
