@@ -4,6 +4,7 @@ using TimeTracker.Business.Repositories;
 using Dapper;
 using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -37,7 +38,7 @@ namespace TimeTracker.MsSql.Repositories
 
             int total;
             int skip = (pageNumber - 1) * pageSize;
-            
+
             string query = @"SELECT * 
                              FROM Tracks 
                              WHERE Title LIKE @like and UserId LIKE @userId and Kind LIKE @kind 
@@ -46,7 +47,7 @@ namespace TimeTracker.MsSql.Repositories
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                tracks = await db.QueryAsync<TrackModel>(query, new { like, userId = userIdReg, kind = kindReg, skip,  take = pageSize});
+                tracks = await db.QueryAsync<TrackModel>(query, new { like, userId = userIdReg, kind = kindReg, skip, take = pageSize });
                 total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like and UserId LIKE @userId and Kind LIKE @kind", new { like, userId = userIdReg, kind = kindReg });
             }
 
@@ -59,21 +60,36 @@ namespace TimeTracker.MsSql.Repositories
             };
         }
 
-        public async Task<TrackModel> CreateAsync(TrackModel model)
+        public IEnumerable<Command> GetCommandsForCreate(TrackModel model)
         {
             model.CreatedAt = model.UpdatedAt = DateTime.Now;
             if (model.StartTime == null)
             {
                 model.StartTime = DateTime.Now;
             }
+            return new List<Command>
+            {
+                new Command
+                {
+                    CommandText = @"INSERT INTO Tracks 
+                              (Id, Title, UserId, Kind, StartTime, EndTime, CreatedAt, UpdatedAt)
+                              VALUES (@Id, @Title, @UserId, @Kind, 
+                              @StartTime, @EndTime, @CreatedAt, @UpdatedAt)",
+                    Parameters = model,
+                }
+            };
+        }
+
+        public async Task<TrackModel> CreateAsync(TrackModel model)
+        {
             await StopAllAsync();
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                string query = @"INSERT INTO Tracks 
-                              (Id, Title, UserId, Kind, StartTime, CreatedAt, UpdatedAt)
-                              VALUES (@Id, @Title, @UserId, @Kind, 
-                              @StartTime, @CreatedAt, @UpdatedAt)";
-                await db.QuerySingleOrDefaultAsync<Guid>(query, model);
+                var commands = GetCommandsForCreate(model);
+                foreach (var command in commands)
+                {
+                    await db.QuerySingleOrDefaultAsync<Guid>(command.CommandText, command.Parameters);
+                }
             }
 
             return model;

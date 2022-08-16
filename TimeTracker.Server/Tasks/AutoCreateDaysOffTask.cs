@@ -1,8 +1,10 @@
 ﻿using Quartz;
+using TimeTracker.Business;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.MsSql;
 using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.Tasks
@@ -18,13 +20,21 @@ namespace TimeTracker.Server.Tasks
         private readonly ICalendarDayManager calendarDayManager;
         private readonly IServiceProvider serviceProvider;
         private readonly ICompletedTaskRepository completedTaskRepository;
+        private readonly DapperContext dapperContext;
 
-        public AutoCreateDaysOffTask(ISettingsManager settingsManager, ICalendarDayManager calendarDayManager, IServiceProvider serviceProvider, ICompletedTaskRepository completedTaskRepository)
+        public AutoCreateDaysOffTask(
+            ISettingsManager settingsManager, 
+            ICalendarDayManager calendarDayManager, 
+            IServiceProvider serviceProvider, 
+            ICompletedTaskRepository completedTaskRepository,
+            DapperContext dapperContext
+            )
         {
             this.settingsManager = settingsManager;
             this.calendarDayManager = calendarDayManager;
             this.serviceProvider = serviceProvider;
             this.completedTaskRepository = completedTaskRepository;
+            this.dapperContext = dapperContext;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -47,23 +57,35 @@ namespace TimeTracker.Server.Tasks
                 .Select(x => mondayDate.AddDays(x))
                 .ToList();
             var datesForCreateDayOff = currentWeekDates.Where(date => settings.Tasks.AutoCreateDaysOff.DaysOfWeek.Contains(date.DayOfWeek)).ToList();
+            var commands = new List<Command>();
             foreach (var dateForCreateDayOff in datesForCreateDayOff)
             {
                 var calendarDay = await calendarDayManager.GetByDateAsync(dateForCreateDayOff);
                 if (calendarDay == null)
                 {
-                    await calendarDayManager.CreateAsync(new CalendarDayModel
+                    commands.AddRange(calendarDayManager.GetCommandsForCreate(new CalendarDayModel
                     {
                         Date = dateForCreateDayOff,
                         Kind = DayKind.DayOff,
-                    });
+                    }));
+                    //await calendarDayManager.CreateAsync(new CalendarDayModel
+                    //{
+                    //    Date = dateForCreateDayOff,
+                    //    Kind = DayKind.DayOff,
+                    //});
                 }
             }
-            await completedTaskRepository.CreateAsync(new CompletedTaskModel
+            commands.AddRange(completedTaskRepository.GetCommandsForCreate(new CompletedTaskModel
             {
                 DateExecute = dateTimeNow,
                 Name = JobName,
-            });
+            }));
+            dapperContext.ExecuteInTransaction(commands);
+            //await completedTaskRepository.CreateAsync(new CompletedTaskModel
+            //{
+            //    DateExecute = dateTimeNow,
+            //    Name = JobName,
+            //});
             Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {mondayDate} - {saturdayDate}");
         }
 

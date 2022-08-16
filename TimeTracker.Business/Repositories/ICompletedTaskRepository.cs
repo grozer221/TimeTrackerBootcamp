@@ -7,5 +7,6 @@ namespace TimeTracker.Business.Repositories
     {
         Task<CompletedTaskModel?> GetLastExecutedAsync(string kind);
         Task<CompletedTaskModel> CreateAsync(CompletedTaskModel model);
+        IEnumerable<Command> GetCommandsForCreate(CompletedTaskModel model);
     }
 }
