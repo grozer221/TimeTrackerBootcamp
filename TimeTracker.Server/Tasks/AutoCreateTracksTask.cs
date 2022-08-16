@@ -24,6 +24,7 @@ namespace TimeTracker.Server.Tasks
         private readonly IVacationRequestRepository vacationRequestRepository;
         private readonly ISickLeaveRepository sickLeaveRepository;
         private readonly DapperContext dapperContext;
+        private readonly ICalendarDayManager calendarDayManager;
 
         public AutoCreateTracksTask(
             ISettingsManager settingsManager, 
@@ -33,7 +34,8 @@ namespace TimeTracker.Server.Tasks
             ICompletedTaskRepository completedTaskRepository, 
             IVacationRequestRepository vacationRequestRepository,
             ISickLeaveRepository sickLeaveRepository,
-            DapperContext dapperContext
+            DapperContext dapperContext,
+            ICalendarDayManager calendarDayManager
             )
         {
             this.settingsManager = settingsManager;
@@ -44,6 +46,7 @@ namespace TimeTracker.Server.Tasks
             this.vacationRequestRepository = vacationRequestRepository;
             this.sickLeaveRepository = sickLeaveRepository;
             this.dapperContext = dapperContext;
+            this.calendarDayManager = calendarDayManager;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -58,7 +61,12 @@ namespace TimeTracker.Server.Tasks
             var hoursInWorkday = settings.Employment.HoursInWorkday;
             var workdayStartAt = settings.Employment.WorkdayStartAt;
             var workdayStartAtDateTime = new DateTime(dateTimeNow.Year, dateTimeNow.Month, dateTimeNow.Day, workdayStartAt.Hour, workdayStartAt.Minute, workdayStartAt.Second);
-            var workdayEndAtDateTime = workdayStartAtDateTime.AddHours(hoursInWorkday);
+            var currentCalendarDay = await calendarDayManager.GetByDateAsync(dateTimeNow);
+            var workHours = currentCalendarDay != null ? currentCalendarDay.WorkHours : hoursInWorkday;
+            if (workHours == 0)
+                return;
+
+            var workdayEndAtDateTime = workdayStartAtDateTime.AddHours(workHours);
             var users = await userRepository.GetAsync();
             var commands = new List<Command>();
             foreach (var user in users)
