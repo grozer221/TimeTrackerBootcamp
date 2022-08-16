@@ -2,6 +2,7 @@
 using TimeTracker.Business;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.MsSql.Extensions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -44,34 +45,11 @@ namespace TimeTracker.MsSql.Repositories
             }
         }
 
-        public IEnumerable<Command> GetCommandsForCreate(CalendarDayModel model)
-        {
-            model.Id = Guid.NewGuid();
-            DateTime dateTimeNow = DateTime.Now;
-            model.CreatedAt = dateTimeNow;
-            model.UpdatedAt = dateTimeNow;
-            return new List<Command>
-            {
-                new Command
-                {
-                    CommandText = @"insert into CalendarDays 
-                            ( Id,  Title,  Date,  Kind,  WorkHours,  CreatedAt,  UpdatedAt) values 
-                            (@Id, @Title, @Date, @Kind, @WorkHours, @CreatedAt, @UpdatedAt)",
-                    Parameters = model,
-                }
-            };
-        }
-
         public async Task<CalendarDayModel> CreateAsync(CalendarDayModel model)
         {
             using (var connection = dapperContext.CreateConnection())
             {
-                var commands = GetCommandsForCreate(model);
-                foreach (var command in commands)
-                {
-                    await connection.ExecuteAsync(command.CommandText, command.Parameters);
-                }
-                return model;
+                return await this.CreateAsync(model, connection);
             }
         }
 

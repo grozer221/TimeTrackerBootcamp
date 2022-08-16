@@ -5,6 +5,7 @@ using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.MsSql;
+using TimeTracker.MsSql.Extensions;
 using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.Tasks
@@ -68,52 +69,53 @@ namespace TimeTracker.Server.Tasks
 
             var workdayEndAtDateTime = workdayStartAtDateTime.AddHours(workHours);
             var users = await userRepository.GetAsync();
-            var commands = new List<Command>();
-            foreach (var user in users)
+            using (var connection = dapperContext.CreateConnection())
             {
-                var trackKinds = new List<TrackKind>();
-                var todayVacationRequest = await vacationRequestRepository.GetByDateAsync(dateTimeNow, user.Id);
-                if (todayVacationRequest != null)
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    trackKinds.Add(TrackKind.Vacation);
-                }
-
-                var todaySickLeave = await sickLeaveRepository.GetByDateAsync(dateTimeNow, user.Id);
-                if (todaySickLeave != null)
-                {
-                    trackKinds.Add(TrackKind.Sick);
-                }
-
-                if (trackKinds.Count == 0 && user.Employment == Employment.FullTime)
-                {
-                    trackKinds.Add(TrackKind.Working);
-                }
-                foreach (var trackKind in trackKinds)
-                {
-                    var track = new TrackModel
+                    foreach (var user in users)
                     {
-                        Id = Guid.NewGuid(),
-                        Title = "Auto created",
-                        StartTime = workdayStartAtDateTime,
-                        EndTime = workdayEndAtDateTime,
-                        Kind = trackKind,
-                        UserId = user.Id,
+                        var trackKinds = new List<TrackKind>();
+                        var todayVacationRequest = await vacationRequestRepository.GetByDateAsync(dateTimeNow, user.Id);
+                        if (todayVacationRequest != null)
+                        {
+                            trackKinds.Add(TrackKind.Vacation);
+                        }
+
+                        var todaySickLeave = await sickLeaveRepository.GetByDateAsync(dateTimeNow, user.Id);
+                        if (todaySickLeave != null)
+                        {
+                            trackKinds.Add(TrackKind.Sick);
+                        }
+
+                        if (trackKinds.Count == 0 && user.Employment == Employment.FullTime)
+                        {
+                            trackKinds.Add(TrackKind.Working);
+                        }
+                        foreach (var trackKind in trackKinds)
+                        {
+                            var track = new TrackModel
+                            {
+                                Id = Guid.NewGuid(),
+                                Title = "Auto created",
+                                StartTime = workdayStartAtDateTime,
+                                EndTime = workdayEndAtDateTime,
+                                Kind = trackKind,
+                                UserId = user.Id,
+                            };
+                            await trackRepository.CreateAsync(track, connection, transaction);
+                        }
+                    }
+                    var compeltedTask = new CompletedTaskModel
+                    {
+                        DateExecute = dateTimeNow,
+                        Name = JobName,
                     };
-                    commands.AddRange(trackRepository.GetCommandsForCreate(track));
-                    //await trackRepository.CreateAsync(track);
+                    await completedTaskRepository.CreateAsync(compeltedTask, connection, transaction);
                 }
             }
-            commands.AddRange(completedTaskRepository.GetCommandsForCreate(new CompletedTaskModel
-            {
-                DateExecute = dateTimeNow,
-                Name = JobName,
-            }));
-            dapperContext.ExecuteInTransaction(commands);
-            //await completedTaskRepository.CreateAsync(new CompletedTaskModel
-            //{
-            //    DateExecute = dateTimeNow,
-            //    Name = JobName,
-            //});
+            
             Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {dateTimeNow}");
         }
 

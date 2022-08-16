@@ -16,8 +16,8 @@ namespace TimeTracker.Business.Repositories
         Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int pageSize, int pageNumber, TrackKind? kind, Guid? userId = null);
         Task<TrackModel> GetCurrentAsync();
         Task<TrackModel> CreateAsync(TrackModel model);
-        IEnumerable<Command> GetCommandsForCreate(TrackModel model);
         Task<TrackModel> UpdateAsync(TrackModel model);
         Task<TrackModel> RemoveAsync(Guid id);
+        Task StopAllAsync();
     }
 }

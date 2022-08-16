@@ -66,12 +66,6 @@ namespace TimeTracker.Caching.Managers
             });
         }
 
-        public IEnumerable<Command> GetCommandsForCreate(CalendarDayModel model)
-        {
-            ResetCache();
-            return calendarDayRepository.GetCommandsForCreate(model);
-        }
-
         public async Task<CalendarDayModel> CreateAsync(CalendarDayModel model)
         {
             ResetCache();
