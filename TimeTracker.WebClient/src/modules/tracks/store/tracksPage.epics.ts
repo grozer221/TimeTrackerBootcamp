@@ -1,8 +1,14 @@
 import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
-import {catchError, endWith, from, mergeMap, of, startWith} from "rxjs";
+import {catchError, endWith, from, map, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
-import {GetTracksData, GetTracksInputData, TRACKS_GET_QUERY} from "../graphQL/tracks.queries";
+import {
+    GetCurrentTrackData,
+    GetTracksData,
+    GetTracksInputData,
+    TRACKS_GET_CURRENT_QUERY,
+    TRACKS_GET_QUERY
+} from "../graphQL/tracks.queries";
 import {
     CreateTrack,
     CreateTrackInputType,
@@ -16,6 +22,7 @@ import {
 } from "../graphQL/tracks.mutations";
 import {tracksAction} from "./tracks.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
+import {calendarDaysActions} from "../../calendarDays/store/calendarDays.slice";
 
 export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, RootState> = (action$, state$) => {
     return action$.pipe(
@@ -61,6 +68,7 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
                         tracksInputData && tracksAction.getAsync(tracksInputData),
+                        tracksAction.getCurrentAsync(),
                         notificationsActions.addSuccess("Track created!")
                     ]
                 })
@@ -85,7 +93,8 @@ export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, 
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
                         tracksInputData && tracksAction.getAsync(tracksInputData),
-                        notificationsActions.addWarning("Track deleted!")
+                        tracksAction.getCurrentAsync(),
+                        notificationsActions.addSuccess("Track removed!")
                     ]
                 })
             )
@@ -108,7 +117,8 @@ export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, 
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
                         tracksInputData && tracksAction.getAsync(tracksInputData),
-                        notificationsActions.addInfo("Track updated!")
+                        tracksAction.getCurrentAsync(),
+                        notificationsActions.addSuccess("Track deleted!")
                     ]
                 })
             )
@@ -117,10 +127,25 @@ export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, 
     )
 }
 
+export const getCurrentTrackEpic: Epic<ReturnType<typeof tracksAction.getCurrentAsync>, any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(tracksAction.getCurrentAsync.type),
+        mergeMap(action=>
+            from(client.query<GetCurrentTrackData>({
+                query: TRACKS_GET_CURRENT_QUERY
+            })).pipe(
+                map(response => tracksAction.setCurrentTrack(response.data?.tracks.getCurrentTrack)),
+                catchError(error => of(notificationsActions.addError(error.message))),
+            )
+        ),
+    )
+}
+
 export const tracksPageEpics = combineEpics(
     getTracksEpic,
     // @ts-ignore
     createTrackEpic,
     removeTrackEpic,
-    updateTrackEpic
+    updateTrackEpic,
+    getCurrentTrackEpic,
 )

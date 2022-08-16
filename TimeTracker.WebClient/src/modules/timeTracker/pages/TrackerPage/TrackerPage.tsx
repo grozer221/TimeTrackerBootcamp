@@ -11,21 +11,16 @@ import {useForm} from "antd/es/form/Form";
 import {CreateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
 import s from './TrackerPage.module.css'
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import Stopwatch from "../../components/Stopwatch/TrackerStopwatch";
+import {Stopwatch} from "../../components/Stopwatch/TrackerStopwatch";
 import {TracksPanel} from "../../components/Table/TracksPanel";
-
-type FormValues = {
-    title: string,
-    kind: TrackKind
-}
-
 
 export const TrackerPage: React.FC = () => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-    const [form] = useForm()
+
     const tracks = useAppSelector(s => s.tracks.tracks)
+    const currentTrack = useAppSelector(s=>s.tracks.currentTrack)
 
     const [searchParams, setSearchParams] = useSearchParams({});
     const like = searchParams.get('like') || ''
@@ -34,14 +29,7 @@ export const TrackerPage: React.FC = () => {
     const trackKind = searchParams.get('kind') || ''
     const indexOfS = Object.values(TrackKind).indexOf(trackKind as unknown as TrackKind)
 
-    const onCreate = async (values: FormValues) => {
-        let newTrack: CreateTrackInput = {
-            title: values.title || "",
-            kind: TrackKind.Working
-        }
-        dispatch(tracksAction.createTrack(newTrack))
-        form.resetFields()
-    };
+
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -50,6 +38,7 @@ export const TrackerPage: React.FC = () => {
 
 
     useEffect( () => {
+        dispatch(tracksAction.getCurrentAsync())
         dispatch(tracksAction.getAsync({
             like: like,
             pageSize: parseInt(pageSize),
@@ -60,33 +49,9 @@ export const TrackerPage: React.FC = () => {
 
     return (
         <>
-            <Form
-                form={form}
-                name="trackForm"
-                onFinish={onCreate}
-                size={'large'}
-            >
-                <Row gutter={24}>
-                    <Col span={20}>
-                        <Form.Item name={nameof<FormValues>('title')}>
-                            <Input placeholder={'Title'}/>
-                        </Form.Item>
-                    </Col>
-                    <Col span={4}>
-                        <Button
-                            htmlType={'submit'}
-                            type={'primary'}
-                            shape={'round'}
-                            icon={<PlusCircleOutlined/>}
-                            size={'large'}
-                            className={s.start_button}
-                        >Start </Button>
-                    </Col>
-                </Row>
-            </Form>
+            <Stopwatch track={currentTrack}/>
             {tracks.length ? (
                 <>
-                    <Stopwatch track={tracks[0]}/>
                     <TracksPanel tracks={tracks} searchParams={searchParams}/>
                 </>
             ) : (

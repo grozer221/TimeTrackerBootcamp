@@ -1,10 +1,29 @@
 .stopwatch_container{
-    display: flex;
-    align-items: center;
 }
-.element{
-    font-size: 96px;
-    margin-right: 20px;
+.stopwatch{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px;
+    width: 49%;
+    height: 95%;
+    background-color: lightgray;
+    border-radius: 10px;
+    font-size: 124px;
+}
+
+.current_track{
+    display: flex;
+    flex-direction: column;
+    margin: 15px;
+    width: 49%;
+    height: 95%;
+    background-color: lightgray;
+    border-radius: 10px;
+}
+
+.start_button{
+    width: 100%;
 }
 
 .stop_button{
@@ -18,7 +37,22 @@
     margin-top: 10px;
 }
 
+.current_track_panel{
+    display: flex;
+    align-items: center;
+    height: 250px;
+}
+
 .stop_button:hover{
     opacity: 0.8;
     cursor: pointer;
 }
+
+.current_track_info_container{
+    display: flex;
+}
+
+.current_track_item{
+    margin: 10px;
+}
+

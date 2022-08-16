@@ -1,59 +1,54 @@
-import React, {FC, useEffect} from "react";
-import {Divider} from "antd";
-import s from './TrackerStopwatch.module.css'
+import React, {FC, useEffect, useState} from "react";
+import {Button, Col, Divider, Form, Input, Row} from "antd";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import moment from "moment";
-import {useTimer} from "use-timer";
 import {toUTCDateTime} from "../../../../convertors/toUTCDateTime";
+import {nameof} from "../../../../utils/stringUtils";
+import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
+import {TrackKind} from "../../../../graphQL/enums/TrackKind";
+import {useForm} from "antd/es/form/Form";
+import {CreateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
+import {TrackerPanel} from "./TrackerPanel";
+import s from './/src/modules/timeTracker/components/Stopwatch/TrackerStopwatch.module.css'
+
+type FormValues = {
+    title: string,
+    kind: TrackKind
+}
 
 type stopwatchProps = {
     track: Track
 }
 
-type panelProps = {
-    time: number
-}
 
-const Panel: FC<panelProps> = ({time}) => {
-    const totalMilliseconds = time * 1000
-    const totalDate = new Date(totalMilliseconds)
-    const totalDateUTC = toUTCDateTime(totalDate)
-    const clockTime = moment(totalDateUTC).format("HH:mm:ss")
-    return (
-        <>
-            <span>{clockTime}</span>
-        </>
-    )
-}
 
-const Stopwatch: FC<stopwatchProps> = ({track}) => {
-    let firstTrack = track
+
+export const Stopwatch: FC<stopwatchProps> = ({track}) => {
     const dispatch = useDispatch()
-    const startDate = new Date(firstTrack.startTime)
-    const endDate = new Date()
-    let timerStartTime = (endDate.getTime() - startDate.getTime()) / 1000
-    const {time, start, pause, reset, status, advanceTime} = useTimer({});
+    const [stopDisable, setStopDisable] = useState(false)
+    const [form] = useForm()
 
 
 
-    useEffect(()=>{
-        if(track.endTime)
-            reset()
-        if(time != timerStartTime && !track.endTime ) {
-            reset()
-            start()
-            advanceTime(timerStartTime)
+    const onCreate = async (values: FormValues) => {
+        let newTrack: CreateTrackInput;
+        newTrack = {
+            title: values.title || "",
+            kind: TrackKind.Working
         }
-
-    }, [track])
+        dispatch(tracksAction.createTrack(newTrack))
+        setStopDisable(false)
+        form.resetFields()
+    }
 
     const OnEndTrack = () => {
-        reset()
         if(track.endTime)
             return
-        const endTimeUTC = toUTCDateTime(endDate)
+        setStopDisable(true)
+        const endTime = new Date()
+        const endTimeUTC = toUTCDateTime(endTime)
         dispatch(tracksAction.updateTrack({
             id: track.id,
             title: track.title,
@@ -64,19 +59,49 @@ const Stopwatch: FC<stopwatchProps> = ({track}) => {
     }
     return (
         <>
+            <Form
+                form={form}
+                name="trackForm"
+                onFinish={onCreate}
+                size={'large'}
+            >
+                <Row gutter={24}>
+                    <Col span={16}>
+                        <Form.Item name={nameof<FormValues>('title')}>
+                            <Input placeholder={'Title'}/>
+                        </Form.Item>
+                    </Col>
+                    <Col span={4}>
+                        <Button
+                            htmlType={'submit'}
+                            type={'primary'}
+                            shape={'round'}
+                            icon={<PlusCircleOutlined/>}
+                            size={'large'}
+                            className={s.start_button}
+                        >Start </Button>
+                    </Col>
+                    <Col span={4}>
+                        <Button
+                            type={'primary'}
+                            shape={"round"}
+                            size={"large"}
+                            disabled={stopDisable}
+                            icon={<MinusCircleOutlined />}
+                            className={s.start_button}
+                            danger={true}
+                            onClick={OnEndTrack}
+                        >End</Button>
+
+                    </Col>
+                </Row>
+            </Form>
             <Divider/>
-            <div className={s.stopwatch_container}>
-                <div className={s.element}>
-                    <Panel time={time}/>
-                </div>
-                <div>
-                    <button className={s.stop_button} onClick={OnEndTrack}>End Track</button>
-                </div>
-            </div>
-            <Divider/>
+            {track ? (
+                <TrackerPanel track={track}/>
+            ) : (<></>)}
+
         </>
 
     )
-};
-
-export default Stopwatch;
+}

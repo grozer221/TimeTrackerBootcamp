@@ -15,10 +15,7 @@ export const TrackStartTime: FC<Props> = ({track}) => {
 
     return (
         <>
-            <div className={s.cell} style={{width: '20%'}}>
                 <CalendarOutlined className={s.icons}/>{startTimeLabel}
-            </div>
-            <div className={s.divider}/>
         </>
     )
 }

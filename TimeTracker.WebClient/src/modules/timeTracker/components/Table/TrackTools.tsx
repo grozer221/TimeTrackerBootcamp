@@ -22,10 +22,8 @@ export const TrackTools: FC<Props> = ({track}) =>{
         dispatch(tracksAction.removeTrack(removeTrackId))
     }
     return(
-        <div className={s.cell} style={{width: '10%'}}>
             <Form onFinish={onRemove}>
                 <Button htmlType={'submit'} shape={'round'} icon={<DeleteOutlined/>} danger/>
             </Form>
-        </div>
     )
 }
