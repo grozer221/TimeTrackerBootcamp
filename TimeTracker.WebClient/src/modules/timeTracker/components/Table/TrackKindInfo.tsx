@@ -19,12 +19,9 @@ export const TrackKindInfo: FC<Props> = ({track}) => {
 
     return (
         <>
-            <div className={s.cell} style={{width: '20%'}}>
                 <Tag icon={trackKindIcon[kind]} style={{padding: '6px'}}>
                     {kind}
                 </Tag>
-            </div>
-            <div className={s.divider}/>
         </>
     )
 }

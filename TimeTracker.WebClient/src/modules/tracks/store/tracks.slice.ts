@@ -2,6 +2,9 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Track} from "../graphQL/tracks.types";
 import {CreateTrackInput, RemoveTrackInput, UpdateTrackInput} from "../graphQL/tracks.mutations";
 import {GetTracksInputData} from "../graphQL/tracks.queries";
+import {TrackKind} from "../../../graphQL/enums/TrackKind";
+import {CalendarDay} from "../../calendarDays/graphQL/calendarDays.types";
+
 
 type InitialState = {
     tracks: Track[],
@@ -10,6 +13,7 @@ type InitialState = {
     trackKind: string,
     getTracksInputData: GetTracksInputData | null,
     loadingGet: boolean,
+    currentTrack: Track
 }
 
 const initialState: InitialState = {
@@ -18,7 +22,17 @@ const initialState: InitialState = {
     pageSize: 10,
     trackKind: "",
     getTracksInputData: null,
-    loadingGet: false
+    loadingGet: false,
+    currentTrack: {
+        id: "",
+        userId: "",
+        title: "",
+        kind: TrackKind.Working,
+        startTime: "",
+        endTime: "",
+        createdAt: "",
+        updatedAt: ""
+    }
 }
 
 export  const  tracksSlice = createSlice({
@@ -26,11 +40,15 @@ export  const  tracksSlice = createSlice({
     initialState,
     reducers: {
         getAsync: (state, action: PayloadAction<GetTracksInputData>) => state,
+        getCurrentAsync: (state, action: PayloadAction<void> ) => state,
         addTracks: (state, action: PayloadAction<Track[]>) =>{
             state.tracks = action.payload
         },
         setLoadingGet: (state, action: PayloadAction<boolean>) => {
             state.loadingGet = action.payload
+        },
+        setCurrentTrack: (state, action: PayloadAction<Track>) => {
+            state.currentTrack = action.payload
         },
         updateTracksMetrics: (state, action: PayloadAction<{total: number, pageSize: number, trackKind: string}>) => {
             state.total = action.payload.total
