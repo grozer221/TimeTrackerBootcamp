@@ -18,3 +18,16 @@ export const GET_USERS_QUERY = gql`
             }
         }
     }`
+
+export type GetUserByEmailResponseType = { users: { getByEmail: User } }
+export type GetUserByEmailInputType = { UserEmail: string }
+
+export const GET_USER_BY_EMAIL_QUERY = gql`
+    ${USER_WITH_USERS_WHICH_CAN_APPROVE_VACATION_REQUESTS_FRAGMENT}
+    query GetUserByEmail($UserEmail: String!){
+        users{
+            getByEmail(email: $UserEmail){
+                ...UserWithUsersWhichCanApproveVacationRequestsFragment
+            }
+        }
+    }`

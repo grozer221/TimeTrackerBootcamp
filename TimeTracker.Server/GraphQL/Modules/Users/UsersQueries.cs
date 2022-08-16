@@ -40,6 +40,21 @@ namespace TimeTracker.Server.GraphQL.Modules.Users
                     return user;
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
+
+
+            Field<NonNullGraphType<UserType>, UserModel>()
+                .Name("GetByEmail")
+                .Argument<NonNullGraphType<StringGraphType>, string>("Email", "Email of user")
+                .ResolveAsync(async context =>
+                {
+                    var email = context.GetArgument<string>("Email");
+                    var user = await userRepository.GetByEmailAsync(email);
+                    if (user == null)
+                        throw new ExecutionError("User not found");
+                    return user;
+                })
+                .AuthorizeWith(AuthPolicies.Authenticated);
+
         }
     }
 }

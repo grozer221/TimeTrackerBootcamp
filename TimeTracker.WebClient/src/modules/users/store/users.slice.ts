@@ -14,6 +14,7 @@ type InitialState = {
     usersLoading: boolean,
     usersInfinityLoadLoading: boolean,
     crudLoading: boolean,
+    userProfile: User |null,
 }
 
 const initialState: InitialState = {
@@ -35,6 +36,7 @@ const initialState: InitialState = {
     usersLoading: false,
     usersInfinityLoadLoading: false,
     crudLoading: false,
+    userProfile: null,
 }
 
 export const usersSlice = createSlice({
@@ -80,7 +82,14 @@ export const usersSlice = createSlice({
         },
         clearUsersForVacationData: (state) => {
             state.usersInfinityLoad = null
-        }
+        },
+        getUserByEmailAsync: (state, action: PayloadAction<string>) => state,
+        setUserProfile: (state, action: PayloadAction<User>) => {
+            state.userProfile = action.payload
+        },
+        clearUserProfile: (state, action) => {
+            state.userProfile = null
+        },
     }
 })
 

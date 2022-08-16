@@ -74,8 +74,7 @@ export const UsersPage = React.memo(() => {
             )
         }
 
-        items.push({key: '4', label: 'View'})
-
+        items.push({key: '4', label: <Link to={"profile/" + userEmail}>Profile</Link>})
 
         return <Menu items={items}/>
     }

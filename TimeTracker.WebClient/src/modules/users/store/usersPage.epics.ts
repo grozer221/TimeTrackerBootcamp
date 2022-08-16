@@ -2,7 +2,13 @@ import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
 import {catchError, debounceTime, endWith, from, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
-import {GET_USERS_QUERY, GetUsersDataType, GetUsersInputType} from "../graphQL/users.queries";
+import {
+    GET_USER_BY_EMAIL_QUERY,
+    GET_USERS_QUERY, GetUserByEmailInputType,
+    GetUserByEmailResponseType,
+    GetUsersDataType,
+    GetUsersInputType
+} from "../graphQL/users.queries";
 import {
     CreateUserData,
     CreateUserInputType,
