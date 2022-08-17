@@ -14,9 +14,10 @@ namespace TimeTracker.Business.Repositories
         Task<TrackModel> GetByIdAsync(Guid id);
         Task<IEnumerable<TrackModel>> GetAsync();
         Task<GetEntitiesResponse<TrackModel>> GetAsync(string like, int pageSize, int pageNumber, TrackKind? kind, Guid? userId = null);
-        Task<TrackModel> GetCurrentAsync();
+        Task<TrackModel> GetCurrentAsync(Guid userId);
         Task<TrackModel> CreateAsync(TrackModel model);
         Task<TrackModel> UpdateAsync(TrackModel model);
         Task<TrackModel> RemoveAsync(Guid id);
+        Task StopAllAsync();
     }
 }

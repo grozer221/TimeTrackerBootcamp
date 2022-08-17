@@ -41,19 +41,13 @@ namespace TimeTracker.Server.Services
             var dateTimeOffsetNow = DateTimeOffset.UtcNow;
             foreach(var task in tasks)
             {
+                var lastCompletedTask = await completedTaskRepository.GetLastExecutedAsync(task.JobName);
+                if (lastCompletedTask == null)
+                    continue;
+
                 string cron = await task.GetCronAsync();
                 var cronExpression = new CronExpression(cron);
                 cronExpression.TimeZone = TimeZoneInfo.Utc;
-                var lastCompletedTask = await completedTaskRepository.GetLastExecutedAsync(task.JobName);
-                if (lastCompletedTask == null)
-                {
-                    await completedTaskRepository.CreateAsync(new CompletedTaskModel
-                    {
-                        DateExecute = dateTimeOffsetNow.DateTime,
-                        Name = task.JobName,
-                    });
-                    continue;
-                }
 
                 var lastDateExecute = DateTime.SpecifyKind(lastCompletedTask.DateExecute, DateTimeKind.Utc);
                 DateTimeOffset currentDateExecute = cronExpression.GetTimeAfter(lastDateExecute).Value;

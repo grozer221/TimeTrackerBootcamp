@@ -11,16 +11,30 @@ type Props = {
     track: Track
 }
 
-export const TrackInfo: FC<Props> = ({track}) =>{
+export const TrackInfo: FC<Props> = ({track}) => {
 
 
-    return(
+    return (
         <div className={s.table_row}>
-            <TrackTitle track={track}/>
-            <TrackKindInfo track={track}/>
-            <TrackStartTime track={track}/>
-            <TrackEndTime  track={track}/>
-            <TrackTools  track={track}/>
+            <div className={s.cell} style={{width: '30%'}}>
+                <TrackTitle track={track}/>
+            </div>
+            <div className={s.divider}/>
+            <div className={s.cell} style={{width: '20%'}}>
+                <TrackKindInfo track={track}/>
+            </div>
+            <div className={s.divider}/>
+            <div className={s.cell} style={{width: '20%'}}>
+                <TrackStartTime track={track}/>
+            </div>
+            <div className={s.divider}/>
+            <div className={s.cell} style={{width: '20%'}}>
+                <TrackEndTime track={track}/>
+            </div>
+            <div className={s.divider}/>
+            <div className={s.cell} style={{width: '10%'}}>
+                <TrackTools track={track}/>
+            </div>
         </div>
     )
 }

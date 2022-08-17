@@ -17,11 +17,11 @@ export const TrackTitle: FC<Props> = ({track}) => {
     const [bordered, setBordered] = useState(false)
     const [content, setContent] = useState(title)
 
-    useEffect(()=>{
+    useEffect(() => {
         setContent(title)
     }, [title])
 
-    const onInput = () =>{
+    const onInput = () => {
         setContent(inputRef.current!.input!.value)
     }
 
@@ -30,16 +30,16 @@ export const TrackTitle: FC<Props> = ({track}) => {
     }
 
     const onEnter = (event: React.KeyboardEvent<HTMLInputElement>) => {
-        if(event.key === 'Enter'){
+        if (event.key === 'Enter') {
             inputRef.current!.blur()
         }
     }
 
     const onSubmit = () => {
         setBordered(false)
-        if(content === track.title)
-            return
         const newTitle = (content == '. . .' ? '' : content)
+        if (content === track.title || content === '. . .')
+            return
         dispatch(tracksAction.updateTrack({
             id: track.id,
             title: newTitle,
@@ -51,22 +51,17 @@ export const TrackTitle: FC<Props> = ({track}) => {
 
     return (
         <>
-            <div className={s.cell} style={{width: '30%'}}>
-                <Input
-                    prefix={<EditOutlined className={s.icons}/>}
-                    bordered={bordered}
-                    onFocus={onFocus}
-                    onBlur={onSubmit}
-                    onKeyDown={onEnter}
-                    onInput={onInput}
-                    value={content}
-                    ref={inputRef}
-                    readOnly={false}
-                />
-
-            </div>
-            <div className={s.divider}/>
+            <Input
+                prefix={<EditOutlined className={s.icons}/>}
+                bordered={bordered}
+                onFocus={onFocus}
+                onBlur={onSubmit}
+                onKeyDown={onEnter}
+                onInput={onInput}
+                value={content}
+                ref={inputRef}
+                readOnly={false}
+            />
         </>
-
     )
 }

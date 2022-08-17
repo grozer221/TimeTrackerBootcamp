@@ -1,8 +1,11 @@
 ﻿using Quartz;
+using TimeTracker.Business;
 using TimeTracker.Business.Enums;
 using TimeTracker.Business.Managers;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.MsSql;
+using TimeTracker.MsSql.Extensions;
 using TimeTracker.Server.Abstractions;
 
 namespace TimeTracker.Server.Tasks
@@ -21,6 +24,8 @@ namespace TimeTracker.Server.Tasks
         private readonly ICompletedTaskRepository completedTaskRepository;
         private readonly IVacationRequestRepository vacationRequestRepository;
         private readonly ISickLeaveRepository sickLeaveRepository;
+        private readonly DapperContext dapperContext;
+        private readonly ICalendarDayManager calendarDayManager;
 
         public AutoCreateTracksTask(
             ISettingsManager settingsManager, 
@@ -29,7 +34,9 @@ namespace TimeTracker.Server.Tasks
             ITrackRepository trackRepository, 
             ICompletedTaskRepository completedTaskRepository, 
             IVacationRequestRepository vacationRequestRepository,
-            ISickLeaveRepository sickLeaveRepository
+            ISickLeaveRepository sickLeaveRepository,
+            DapperContext dapperContext,
+            ICalendarDayManager calendarDayManager
             )
         {
             this.settingsManager = settingsManager;
@@ -39,6 +46,8 @@ namespace TimeTracker.Server.Tasks
             this.completedTaskRepository = completedTaskRepository;
             this.vacationRequestRepository = vacationRequestRepository;
             this.sickLeaveRepository = sickLeaveRepository;
+            this.dapperContext = dapperContext;
+            this.calendarDayManager = calendarDayManager;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -53,47 +62,60 @@ namespace TimeTracker.Server.Tasks
             var hoursInWorkday = settings.Employment.HoursInWorkday;
             var workdayStartAt = settings.Employment.WorkdayStartAt;
             var workdayStartAtDateTime = new DateTime(dateTimeNow.Year, dateTimeNow.Month, dateTimeNow.Day, workdayStartAt.Hour, workdayStartAt.Minute, workdayStartAt.Second);
-            var workdayEndAtDateTime = workdayStartAtDateTime.AddHours(hoursInWorkday);
+            var currentCalendarDay = await calendarDayManager.GetByDateAsync(dateTimeNow);
+            var workHours = currentCalendarDay != null ? currentCalendarDay.WorkHours : hoursInWorkday;
+            if (workHours == 0)
+                return;
+
+            var workdayEndAtDateTime = workdayStartAtDateTime.AddHours(workHours);
             var users = await userRepository.GetAsync();
-            foreach (var user in users)
+            using (var connection = dapperContext.CreateConnection())
             {
-                var trackKinds = new List<TrackKind>();
-                var todayVacationRequest = await vacationRequestRepository.GetByDateAsync(dateTimeNow, user.Id);
-                if (todayVacationRequest != null)
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
                 {
-                    trackKinds.Add(TrackKind.Vacation);
-                }
-
-                var todaySickLeave = await sickLeaveRepository.GetByDateAsync(dateTimeNow, user.Id);
-                if (todaySickLeave != null)
-                {
-                    trackKinds.Add(TrackKind.Sick);
-                }
-
-                if (trackKinds.Count == 0 && user.Employment == Employment.FullTime)
-                {
-                    trackKinds.Add(TrackKind.Working);
-                }
-                foreach (var trackKind in trackKinds)
-                {
-                    var track = new TrackModel
+                    foreach (var user in users)
                     {
-                        Id = Guid.NewGuid(),
-                        Title = "Auto created",
-                        StartTime = workdayStartAtDateTime,
-                        Kind = trackKind,
-                        UserId = user.Id,
+                        var trackKinds = new List<TrackKind>();
+                        var todayVacationRequest = await vacationRequestRepository.GetByDateAsync(dateTimeNow, user.Id);
+                        if (todayVacationRequest != null)
+                        {
+                            trackKinds.Add(TrackKind.Vacation);
+                        }
+
+                        var todaySickLeave = await sickLeaveRepository.GetByDateAsync(dateTimeNow, user.Id);
+                        if (todaySickLeave != null)
+                        {
+                            trackKinds.Add(TrackKind.Sick);
+                        }
+
+                        if (trackKinds.Count == 0 && user.Employment == Employment.FullTime)
+                        {
+                            trackKinds.Add(TrackKind.Working);
+                        }
+                        foreach (var trackKind in trackKinds)
+                        {
+                            var track = new TrackModel
+                            {
+                                Id = Guid.NewGuid(),
+                                Title = "Auto created",
+                                StartTime = workdayStartAtDateTime,
+                                EndTime = workdayEndAtDateTime,
+                                Kind = trackKind,
+                                UserId = user.Id,
+                            };
+                            await trackRepository.CreateAsync(track, connection, transaction);
+                        }
+                    }
+                    var compeltedTask = new CompletedTaskModel
+                    {
+                        DateExecute = dateTimeNow,
+                        Name = JobName,
                     };
-                    await trackRepository.CreateAsync(track);
-                    track.EndTime = workdayEndAtDateTime;
-                    await trackRepository.UpdateAsync(track);
+                    await completedTaskRepository.CreateAsync(compeltedTask, connection, transaction);
                 }
             }
-            await completedTaskRepository.CreateAsync(new CompletedTaskModel
-            {
-                DateExecute = dateTimeNow,
-                Name = JobName,
-            });
+            
             Console.WriteLine($"[{DateTime.UtcNow}] -- {JobName} for {dateTimeNow}");
         }
 
