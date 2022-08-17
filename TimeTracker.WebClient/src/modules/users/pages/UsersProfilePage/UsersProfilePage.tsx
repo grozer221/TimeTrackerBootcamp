@@ -10,14 +10,9 @@ import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {ColumnsType} from "antd/es/table";
-import {User} from "../../graphQL/users.types";
-import {getColumnSearchProps} from "../../components/parrtial/ColumnSerach";
-import {Role} from "../../../../graphQL/enums/Role";
 import {Permission} from "../../../../graphQL/enums/Permission";
-import {DownCircleFilled} from "@ant-design/icons";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {CloseOutlined, DownCircleFilled} from "@ant-design/icons";
 import Title from "antd/lib/typography/Title";
-import {Divider} from "antd/es";
 import {ItemType} from "antd/lib/menu/hooks/useItems";
 import moment, {now} from "moment/moment";
 import {getDate, getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
@@ -51,9 +46,9 @@ export const UsersProfilePage = () => {
         } as DataType
     })
 
-    console.log(tableData)
-
     let [date, setDate] = useState(moment(now()).toISOString())
+    let dateObj = new Date(date)
+    const today = new Date();
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -98,13 +93,15 @@ export const UsersProfilePage = () => {
         {title: 'Duration', dataIndex: 'duration', key: 'duration'},
         {
             title: 'Action', dataIndex: 'operation', key: 'operation',
-            render: (text, record, index) => (
-                <Space size="middle">
+            render: (text, record, index) => {
+                if (dateObj.getMonth() != today.getMonth() || dateObj.getFullYear() != today.getFullYear())
+                    return <CloseOutlined />
+                return <Space size="middle">
                     <Dropdown overlay={menu(record.id)}>
                         <DownCircleFilled/>
                     </Dropdown>
                 </Space>
-            ),
+            },
         }
     ];
 
