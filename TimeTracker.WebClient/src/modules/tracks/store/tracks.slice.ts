@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Track} from "../graphQL/tracks.types";
 import {CreateTrackInput, RemoveTrackInput, UpdateTrackInput} from "../graphQL/tracks.mutations";
-import {GetTracksInputData} from "../graphQL/tracks.queries";
+import {GetTracksByUserIdAndDateInputType, GetTracksInputData} from "../graphQL/tracks.queries";
 import {TrackKind} from "../../../graphQL/enums/TrackKind";
 import {CalendarDay} from "../../calendarDays/graphQL/calendarDays.types";
 
@@ -11,7 +11,7 @@ type InitialState = {
     total: number,
     pageSize: number,
     trackKind: string,
-    getTracksInputData: GetTracksInputData | null,
+    getTracksInputData: GetTracksByUserIdAndDateInputType,
     loadingGet: boolean,
     currentTrack: Track
 }
@@ -21,7 +21,10 @@ const initialState: InitialState = {
     total: 0,
     pageSize: 10,
     trackKind: "",
-    getTracksInputData: null,
+    getTracksInputData: {
+        UserId: "",
+        Date: ""
+    },
     loadingGet: false,
     currentTrack: {
         id: "",
@@ -40,6 +43,7 @@ export  const  tracksSlice = createSlice({
     initialState,
     reducers: {
         getAsync: (state, action: PayloadAction<GetTracksInputData>) => state,
+        getTracksByUserIdAndDate: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => state,
         getCurrentAsync: (state, action: PayloadAction<void> ) => state,
         addTracks: (state, action: PayloadAction<Track[]>) =>{
             state.tracks = action.payload
@@ -57,7 +61,7 @@ export  const  tracksSlice = createSlice({
         createTrack: (state, action: PayloadAction<CreateTrackInput>) => state,
         updateTrack: (state, action: PayloadAction<UpdateTrackInput>) => state,
         removeTrack: (state, action: PayloadAction<RemoveTrackInput>) => state,
-        setGetTracksInputData: (state, action: PayloadAction<GetTracksInputData>) => {
+        setGetTracksInputData: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => {
             state.getTracksInputData = action.payload
         }
     }

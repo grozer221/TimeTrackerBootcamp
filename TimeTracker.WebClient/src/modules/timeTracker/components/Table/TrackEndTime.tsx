@@ -6,11 +6,10 @@ import moment from "moment";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 
 type Props = {
-    track: Track
+    endTime: string
 }
 
-export const TrackEndTime: FC<Props> = ({track}) => {
-    const endTime = track.endTime
+export const TrackEndTime: FC<Props> = ({endTime}) => {
     const endTimeDate = new Date(endTime)
     const endTimeLabel = moment(endTimeDate).format('YYYY/MM/DD HH:mm:ss')
     return (

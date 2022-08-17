@@ -5,11 +5,10 @@ import moment from "moment";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 
 type Props = {
-    track: Track
+    startTime: string
 }
 
-export const TrackStartTime: FC<Props> = ({track}) => {
-    const startTime = track.startTime
+export const TrackStartTime: FC<Props> = ({startTime}) => {
     const startTimeDate = new Date(startTime)
     const startTimeLabel = moment(startTimeDate).format('YYYY/MM/DD HH:mm:ss')
 

@@ -10,10 +10,10 @@ namespace TimeTracker.MsSql.Extensions
         public static async Task<TrackModel> CreateAsync(this ITrackRepository trackRepository, TrackModel model, IDbConnection connection, IDbTransaction? transaction = null)
         {
             await trackRepository.StopAllAsync();
-            model.CreatedAt = model.UpdatedAt = DateTime.Now;
+            model.CreatedAt = model.UpdatedAt = DateTime.UtcNow;
             if (model.StartTime == null)
             {
-                model.StartTime = DateTime.Now;
+                model.StartTime = DateTime.UtcNow;
             }
             string query = @"INSERT INTO Tracks 
                               (Id, Title, UserId, Kind, StartTime, EndTime, CreatedAt, UpdatedAt)

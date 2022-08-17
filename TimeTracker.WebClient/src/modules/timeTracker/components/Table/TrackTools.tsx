@@ -8,11 +8,10 @@ import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 
 type Props = {
-    track: Track
+    id: string
 }
 
-export const TrackTools: FC<Props> = ({track}) =>{
-    const id = track.id
+export const TrackTools: FC<Props> = ({id}) =>{
     const dispatch = useDispatch()
 
     const onRemove = async () => {
