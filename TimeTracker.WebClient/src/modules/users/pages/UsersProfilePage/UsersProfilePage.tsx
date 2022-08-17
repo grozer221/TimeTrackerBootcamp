@@ -20,7 +20,16 @@ import Title from "antd/lib/typography/Title";
 import {Divider} from "antd/es";
 import {ItemType} from "antd/lib/menu/hooks/useItems";
 import moment, {now} from "moment/moment";
+import {getDate, getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
 
+type DataType = {
+    id: string
+    userId: string,
+    title: string,
+    kind: TrackKind,
+    date: string,
+    duration: string,
+}
 
 export const UsersProfilePage = () => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
@@ -32,6 +41,17 @@ export const UsersProfilePage = () => {
     const userProfile = useSelector((s: RootState) => s.users.userProfile)
     let tracks = useSelector((s: RootState) => s.users.userTracks)
     let userTracksLoading = useSelector((s: RootState) => s.users.userTracksLoading)
+
+    let tableData = tracks?.map(t => {
+
+        return {
+            ...t,
+            date: getDate(new Date(t.startTime)),
+            duration: getDifferenceBetweenDatesInTime(new Date(t.startTime), new Date(t.endTime))
+        } as DataType
+    })
+
+    console.log(tableData)
 
     let [date, setDate] = useState(moment(now()).toISOString())
 
@@ -66,7 +86,7 @@ export const UsersProfilePage = () => {
         return <Menu items={items}/>
     }
 
-    const columns: ColumnsType<Track> = [
+    const columns: ColumnsType<DataType> = [
         {title: 'Title', dataIndex: 'title', key: 'title'},
         {
             title: 'Kind', dataIndex: 'kind', key: 'kind',
@@ -74,8 +94,8 @@ export const UsersProfilePage = () => {
                 return uppercaseToWords(value)
             }
         },
-        {title: 'Start Time', dataIndex: 'startTime', key: 'startTime'},
-        {title: 'End Time', dataIndex: 'endTime', key: 'endTime'},
+        {title: 'Date', dataIndex: 'date', key: 'date'},
+        {title: 'Duration', dataIndex: 'duration', key: 'duration'},
         {
             title: 'Action', dataIndex: 'operation', key: 'operation',
             render: (text, record, index) => (
@@ -122,7 +142,7 @@ export const UsersProfilePage = () => {
         <Card size={"small"}>
             <Table columns={columns}
                    loading={userTracksLoading}
-                   dataSource={tracks}
+                   dataSource={tableData}
                    rowKey={record => record.id}
                    pagination={false}
                    title={() => <Title
