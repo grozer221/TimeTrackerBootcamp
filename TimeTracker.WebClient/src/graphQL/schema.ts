@@ -111,6 +111,32 @@ export const schema = gql`
             """
             kind: TrackKind
         ): GetTrackResponseType
+        getTracksByUserId(
+            """
+            Argument for a search
+            """
+            like: String!
+
+            """
+            Argument represent count of tracks on page
+            """
+            pageSize: Int! = 0
+
+            """
+            Argument represnt page number
+            """
+            pageNumber: Int! = 0
+
+            """
+            Argument for kind filter
+            """
+            kind: TrackKind
+
+            """
+            Argument for a search iser tracks
+            """
+            userId: Guid! = "00000000-0000-0000-0000-000000000000"
+        ): GetTrackResponseType
         getCurrentTrack: TrackType
         getById(
             """
@@ -118,6 +144,17 @@ export const schema = gql`
             """
             id: Guid! = "00000000-0000-0000-0000-000000000000"
         ): TrackType
+        getTracksByUserIdAndDate(
+            """
+            User id
+            """
+            userId: Guid! = "00000000-0000-0000-0000-000000000000"
+
+            """
+            year and month for tracks
+            """
+            date: DateTime! = "0001-01-01T00:00:00"
+        ): [TrackType]
     }
 
     type GetTrackResponseType {
@@ -868,5 +905,4 @@ export const schema = gql`
         endDate: Date
         comment: String
     }
-
 `

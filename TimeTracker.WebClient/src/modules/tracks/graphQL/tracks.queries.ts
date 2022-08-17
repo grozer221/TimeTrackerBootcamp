@@ -40,3 +40,17 @@ export const TRACKS_GET_CURRENT_QUERY = gql`
         }
     }
 `
+
+export type GetTracksByUserIdAndDateResponseType = { tracks: { getTracksByUserIdAndDate: Track[] } }
+export type GetTracksByUserIdAndDateInputType = { UserId: string, Date: string }
+
+export const GET_TRACKS_BY_USER_ID_AND_DATE = gql`
+    ${TRACK_FRAGMENT}
+    query GetTracksByUserIdAndDate($UserId: Guid!, $Date:DateTime!){
+        tracks{
+            getTracksByUserIdAndDate(userId: $UserId, date: $Date){
+                ...TrackFragment
+            }
+        }
+    }
+`

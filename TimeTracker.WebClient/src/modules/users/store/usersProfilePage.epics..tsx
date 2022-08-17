@@ -9,6 +9,11 @@ import {
     GetUserByEmailResponseType,
 } from "../graphQL/users.queries";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
+import {
+    GET_TRACKS_BY_USER_ID_AND_DATE,
+    GetTracksByUserIdAndDateInputType,
+    GetTracksByUserIdAndDateResponseType
+} from "../../tracks/graphQL/tracks.queries";
 
 
 export const getUserByEmailEpic: Epic<ReturnType<typeof usersActions.getUserByEmailAsync>,
@@ -32,6 +37,32 @@ export const getUserByEmailEpic: Epic<ReturnType<typeof usersActions.getUserByEm
         )
     )
 }
+
+export const getTracksByUserIdAndDateEpic: Epic<ReturnType<typeof usersActions.getTracksByUserIdAndDate>,
+    any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(usersActions.getTracksByUserIdAndDate.type),
+        mergeMap(action =>
+            from(client.query<GetTracksByUserIdAndDateResponseType, GetTracksByUserIdAndDateInputType>({
+                query: GET_TRACKS_BY_USER_ID_AND_DATE,
+                variables: {
+                    UserId: action.payload.UserId,
+                    Date: action.payload.Date
+                }
+            })).pipe(
+                mergeMap(response => [
+                    usersActions.setUserTracks(response.data.tracks.getTracksByUserIdAndDate)
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(usersActions.setUserTracksLoading(true)),
+                endWith(usersActions.setUserTracksLoading(false)),
+            )
+        )
+    )
+}
+
 export const usersProfilePageEpics = combineEpics(
     getUserByEmailEpic,
+    // @ts-ignore
+    getTracksByUserIdAndDateEpic,
 )

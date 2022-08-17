@@ -2,6 +2,8 @@ import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {User, UserFilter} from "../graphQL/users.types";
 import {CreateUserInput, RemoveUserInput, ResetUserPasswordInput, UpdateUserInput} from "../graphQL/users.mutations";
 import {GetEntitiesResponse} from "../../../graphQL/types/getEntitiesResponse";
+import {Track} from "../../tracks/graphQL/tracks.types";
+import {GetTracksByUserIdAndDateInputType} from "../../tracks/graphQL/tracks.queries";
 
 type InitialState = {
     users: User[],
@@ -14,7 +16,9 @@ type InitialState = {
     usersLoading: boolean,
     usersInfinityLoadLoading: boolean,
     crudLoading: boolean,
-    userProfile: User |null,
+    userProfile: User | null,
+    userTracks: Track[] | null,
+    userTracksLoading: boolean,
 }
 
 const initialState: InitialState = {
@@ -37,6 +41,8 @@ const initialState: InitialState = {
     usersInfinityLoadLoading: false,
     crudLoading: false,
     userProfile: null,
+    userTracks: null,
+    userTracksLoading: false,
 }
 
 export const usersSlice = createSlice({
@@ -58,7 +64,7 @@ export const usersSlice = createSlice({
             state.usersInfinityLoad = {
                 entities: [...state.usersInfinityLoad.entities, ...action.payload.entities],
                 total: action.payload.total,
-                pageSize : action.payload.pageSize,
+                pageSize: action.payload.pageSize,
             }
         },
         createUser: (state, action: PayloadAction<CreateUserInput>) => state,
@@ -87,8 +93,16 @@ export const usersSlice = createSlice({
         setUserProfile: (state, action: PayloadAction<User>) => {
             state.userProfile = action.payload
         },
-        clearUserProfile: (state, action) => {
+        clearUserProfile: (state) => {
             state.userProfile = null
+            state.userTracks = null
+        },
+        setUserTracks: (state, action: PayloadAction<Track[]>) => {
+            state.userTracks = action.payload
+        },
+        getTracksByUserIdAndDate: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => state,
+        setUserTracksLoading: (state, action: PayloadAction<boolean>) => {
+            state.userTracksLoading = action.payload
         },
     }
 })

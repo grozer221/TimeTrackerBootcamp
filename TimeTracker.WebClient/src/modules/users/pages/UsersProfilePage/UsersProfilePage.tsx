@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useState} from "react";
 import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
 import {RootState, useAppSelector} from "../../../../store/store";
 import {Link, useNavigate, useParams} from "react-router-dom";
@@ -19,6 +19,7 @@ import {Track} from "../../../tracks/graphQL/tracks.types";
 import Title from "antd/lib/typography/Title";
 import {Divider} from "antd/es";
 import {ItemType} from "antd/lib/menu/hooks/useItems";
+import moment, {now} from "moment/moment";
 
 
 export const UsersProfilePage = () => {
@@ -29,8 +30,10 @@ export const UsersProfilePage = () => {
     const email = params['email'] as string
 
     const userProfile = useSelector((s: RootState) => s.users.userProfile)
+    let tracks = useSelector((s: RootState) => s.users.userTracks)
+    let userTracksLoading = useSelector((s: RootState) => s.users.userTracksLoading)
 
-    let tracks = useSelector((s: RootState) => s.tracks.tracks)
+    let [date, setDate] = useState(moment(now()).toISOString())
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -41,6 +44,15 @@ export const UsersProfilePage = () => {
         dispatch(usersActions.getUserByEmailAsync(email))
     }, [])
 
+    useEffect(() => {
+        if (userProfile != null)
+            dispatch(usersActions.getTracksByUserIdAndDate({UserId: userProfile.id, Date: date}))
+    }, [userProfile])
+
+    useEffect(() => {
+        if (userProfile != null)
+            dispatch(usersActions.getTracksByUserIdAndDate({UserId: userProfile.id, Date: date}))
+    }, [date])
 
     const menu = (trackId: string) => {
         let items: ItemType[] = []
@@ -77,6 +89,7 @@ export const UsersProfilePage = () => {
     ];
 
     if (userProfile == null) return <Loading/>
+    if (tracks == null) tracks = []
 
     return <>
         <Card size={"small"}>
@@ -100,15 +113,20 @@ export const UsersProfilePage = () => {
         <Row style={{marginTop: 10, marginBottom: 10}}>
             <Col span={20}></Col>
             <Col span={4}>
-                    <DatePicker picker={"month"}/>
+                <DatePicker picker={"month"} defaultValue={moment(now())} onChange={e => {
+                    if (e != null)
+                        setDate(e.toISOString())
+                }}/>
             </Col>
         </Row>
-            <Card size={"small"}>
+        <Card size={"small"}>
             <Table columns={columns}
+                   loading={userTracksLoading}
                    dataSource={tracks}
                    rowKey={record => record.id}
                    pagination={false}
-                   title={() => <Title level={5}>{userProfile.firstName + " " + userProfile.lastName + " tracks: "}</Title>}/>
+                   title={() => <Title
+                       level={5}>{userProfile.firstName + " " + userProfile.lastName + " tracks: "}</Title>}/>
         </Card>
     </>
 }
