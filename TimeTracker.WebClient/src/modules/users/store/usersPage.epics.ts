@@ -2,7 +2,13 @@ import {combineEpics, Epic, ofType} from "redux-observable";
 import {RootState} from "../../../store/store";
 import {catchError, debounceTime, endWith, from, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
-import {GET_USERS_QUERY, GetUsersDataType, GetUsersInputType} from "../graphQL/users.queries";
+import {
+    GET_USER_BY_EMAIL_QUERY,
+    GET_USERS_QUERY, GetUserByEmailInputType,
+    GetUserByEmailResponseType,
+    GetUsersDataType,
+    GetUsersInputType
+} from "../graphQL/users.queries";
 import {
     CreateUserData,
     CreateUserInputType,
@@ -48,10 +54,10 @@ export const getUsersEpic: Epic<ReturnType<typeof usersActions.getAsync>, any, R
     )
 }
 
-export const getUsersForVacationsSelectEpic: Epic<ReturnType<typeof usersActions.fetchUsersForVacationsSelect>,
+export const getUsersForVacationsSelectEpic: Epic<ReturnType<typeof usersActions.fetchUsersInfinityLoad>,
     any, RootState> = (action$, state$) => {
     return action$.pipe(
-        ofType(usersActions.fetchUsersForVacationsSelect.type),
+        ofType(usersActions.fetchUsersInfinityLoad.type),
         debounceTime(100),
         mergeMap(action =>
             from(client.query<GetUsersDataType, GetUsersInputType>({
@@ -63,10 +69,8 @@ export const getUsersForVacationsSelectEpic: Epic<ReturnType<typeof usersActions
                 }
             })).pipe(
                 mergeMap(response => [
-                    usersActions.addUsersForVacationsSelect({
-                        users: response.data.users.get.entities,
-                        total: response.data.users.get.total
-                    })]
+                    usersActions.addUsersInfinityLoad(response.data.users.get)
+                    ]
                 ),
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(usersActions.setUsersForVacationLoading(true)),

@@ -4,6 +4,8 @@ using TimeTracker.Business.Repositories;
 using Dapper;
 using TimeTracker.Business.Abstractions;
 using TimeTracker.Business.Enums;
+using TimeTracker.Business;
+using TimeTracker.MsSql.Extensions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -37,7 +39,7 @@ namespace TimeTracker.MsSql.Repositories
 
             int total;
             int skip = (pageNumber - 1) * pageSize;
-            
+
             string query = @"SELECT * 
                              FROM Tracks 
                              WHERE Title LIKE @like and UserId LIKE @userId and Kind LIKE @kind and EndTime is not null
@@ -46,7 +48,7 @@ namespace TimeTracker.MsSql.Repositories
 
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                tracks = await db.QueryAsync<TrackModel>(query, new { like, userId = userIdReg, kind = kindReg, skip,  take = pageSize});
+                tracks = await db.QueryAsync<TrackModel>(query, new { like, userId = userIdReg, kind = kindReg, skip, take = pageSize });
                 total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM Tracks WHERE Title LIKE @like and UserId LIKE @userId and Kind LIKE @kind", new { like, userId = userIdReg, kind = kindReg });
             }
 
@@ -61,22 +63,10 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task<TrackModel> CreateAsync(TrackModel model)
         {
-            model.CreatedAt = model.UpdatedAt = DateTime.UtcNow;
-            if (model.StartTime == null)
-            {
-                model.StartTime = DateTime.UtcNow;
-            }
-            await StopAllAsync();
             using (IDbConnection db = dapperContext.CreateConnection())
             {
-                string query = @"INSERT INTO Tracks 
-                              (Id, Title, UserId, Kind, StartTime, CreatedAt, UpdatedAt)
-                              VALUES (@Id, @Title, @UserId, @Kind, 
-                              @StartTime, @CreatedAt, @UpdatedAt)";
-                await db.QuerySingleOrDefaultAsync<Guid>(query, model);
+                return await this.CreateAsync(model, db);
             }
-
-            return model;
         }
 
         public async Task<TrackModel> RemoveAsync(Guid id)
@@ -113,7 +103,8 @@ namespace TimeTracker.MsSql.Repositories
 
             return tracks;
         }
-        private async Task StopAllAsync()
+
+        public async Task StopAllAsync()
         {
             IEnumerable<TrackModel> tracks;
             string query = "SELECT * FROM Tracks WHERE EndTime is null";
@@ -138,6 +129,20 @@ namespace TimeTracker.MsSql.Repositories
                 track = await db.QueryFirstOrDefaultAsync<TrackModel>("SELECT * FROM Tracks WHERE EndTime is null and UserId = @userId", new { userId = userIdString });
             }
             return track;
+        }
+
+        public async Task<IEnumerable<TrackModel>> GetAsync(Guid userId, DateTime date)
+        {
+            IEnumerable<TrackModel> tracks;
+            var month = date.Month;
+            var year = date.Year;
+
+            using (var connection = dapperContext.CreateConnection())
+            {
+                tracks = await connection.QueryAsync<TrackModel>("SELECT * FROM Tracks WHERE UserId = @userId AND MONTH(StartTime) = @month AND YEAR(StartTime) = @year", new { userId, month, year });
+            }
+
+            return tracks;
         }
     }
 }

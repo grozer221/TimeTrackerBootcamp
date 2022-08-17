@@ -1,6 +1,9 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {User, UserFilter} from "../graphQL/users.types";
 import {CreateUserInput, RemoveUserInput, ResetUserPasswordInput, UpdateUserInput} from "../graphQL/users.mutations";
+import {GetEntitiesResponse} from "../../../graphQL/types/getEntitiesResponse";
+import {Track} from "../../tracks/graphQL/tracks.types";
+import {GetTracksByUserIdAndDateInputType} from "../../tracks/graphQL/tracks.queries";
 
 type InitialState = {
     users: User[],
@@ -8,12 +11,14 @@ type InitialState = {
     pageSize: number,
     currentPage: number,
     loadingUsers: boolean,
-    usersForVacation: User[],
-    totalUsersForVacation: number,
+    usersInfinityLoad: GetEntitiesResponse<User> | null,
     filter: UserFilter,
     usersLoading: boolean,
-    usersForVacationLoading: boolean,
+    usersInfinityLoadLoading: boolean,
     crudLoading: boolean,
+    userProfile: User | null,
+    userTracks: Track[] | null,
+    userTracksLoading: boolean,
 }
 
 const initialState: InitialState = {
@@ -21,9 +26,8 @@ const initialState: InitialState = {
     total: 0,
     pageSize: 10,
     currentPage: 0,
-    usersForVacation: [],
+    usersInfinityLoad: null,
     loadingUsers: false,
-    totalUsersForVacation: 0,
     filter: {
         firstName: "",
         lastName: "",
@@ -34,8 +38,11 @@ const initialState: InitialState = {
         employments: []
     },
     usersLoading: false,
-    usersForVacationLoading: false,
+    usersInfinityLoadLoading: false,
     crudLoading: false,
+    userProfile: null,
+    userTracks: null,
+    userTracksLoading: false,
 }
 
 export const usersSlice = createSlice({
@@ -50,10 +57,15 @@ export const usersSlice = createSlice({
             state.total = action.payload.total;
             state.pageSize = action.payload.pageSize;
         },
-        fetchUsersForVacationsSelect: (state, action: PayloadAction<{ filter: UserFilter, take: number, skip: number }>) => state,
-        addUsersForVacationsSelect: (state, action: PayloadAction<{users: User[], total: number}>) => {
-            action.payload.users.forEach((item) => state.usersForVacation.push(item))
-            state.totalUsersForVacation = action.payload.total
+        fetchUsersInfinityLoad: (state, action: PayloadAction<{ filter: UserFilter, take: number, skip: number }>) => state,
+        addUsersInfinityLoad: (state, action: PayloadAction<GetEntitiesResponse<User>>) => {
+            if (!state.usersInfinityLoad)
+                state.usersInfinityLoad = {entities: [], total: 0, pageSize: 0}
+            state.usersInfinityLoad = {
+                entities: [...state.usersInfinityLoad.entities, ...action.payload.entities],
+                total: action.payload.total,
+                pageSize: action.payload.pageSize,
+            }
         },
         createUser: (state, action: PayloadAction<CreateUserInput>) => state,
         removeUserAsync: (state, action: PayloadAction<RemoveUserInput>) => state,
@@ -66,7 +78,7 @@ export const usersSlice = createSlice({
         updateUser: (state, action: PayloadAction<UpdateUserInput>) => state,
         resetUserPassword: (state, action: PayloadAction<ResetUserPasswordInput>) => state,
         setUsersForVacationLoading: (state, action: PayloadAction<boolean>) => {
-            state.usersForVacationLoading = action.payload
+            state.usersInfinityLoadLoading = action.payload
         },
         setLoadingUsers: (state, action: PayloadAction<boolean>) => {
             state.loadingUsers = action.payload
@@ -75,9 +87,23 @@ export const usersSlice = createSlice({
             state.crudLoading = action.payload
         },
         clearUsersForVacationData: (state) => {
-            state.usersForVacation = []
-            state.totalUsersForVacation = 0
-        }
+            state.usersInfinityLoad = null
+        },
+        getUserByEmailAsync: (state, action: PayloadAction<string>) => state,
+        setUserProfile: (state, action: PayloadAction<User>) => {
+            state.userProfile = action.payload
+        },
+        clearUserProfile: (state) => {
+            state.userProfile = null
+            state.userTracks = null
+        },
+        setUserTracks: (state, action: PayloadAction<Track[]>) => {
+            state.userTracks = action.payload
+        },
+        getTracksByUserIdAndDate: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => state,
+        setUserTracksLoading: (state, action: PayloadAction<boolean>) => {
+            state.userTracksLoading = action.payload
+        },
     }
 })
 

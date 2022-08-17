@@ -1,6 +1,8 @@
 ﻿using Dapper;
+using TimeTracker.Business;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.MsSql.Extensions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -45,17 +47,9 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task<CalendarDayModel> CreateAsync(CalendarDayModel model)
         {
-            model.Id = Guid.NewGuid();
-            DateTime dateTimeNow = DateTime.Now;
-            model.CreatedAt = dateTimeNow;
-            model.UpdatedAt = dateTimeNow;
-            string query = $@"insert into CalendarDays 
-                            ( Id,  Title,  Date,  Kind,  WorkHours,  CreatedAt,  UpdatedAt) values 
-                            (@Id, @Title, @Date, @Kind, @WorkHours, @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, model);
-                return model;
+                return await this.CreateAsync(model, connection);
             }
         }
 

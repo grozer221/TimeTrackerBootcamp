@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
+using TimeTracker.MsSql.Extensions;
 
 namespace TimeTracker.MsSql.Repositories
 {
@@ -24,17 +25,9 @@ namespace TimeTracker.MsSql.Repositories
 
         public async Task<CompletedTaskModel> CreateAsync(CompletedTaskModel model)
         {
-            model.Id = Guid.NewGuid();
-            DateTime dateTimeNow = DateTime.UtcNow;
-            model.CreatedAt = dateTimeNow;
-            model.UpdatedAt = dateTimeNow;
-            string query = $@"insert into CompletedTasks 
-                            (Id,   DateExecute,  Name,  CreatedAt,  UpdatedAt) values 
-                            (@Id, @DateExecute, @Name, @CreatedAt, @UpdatedAt)";
             using (var connection = dapperContext.CreateConnection())
             {
-                await connection.ExecuteAsync(query, model);
-                return model;
+                return await this.CreateAsync(model, connection);
             }
         }
     }

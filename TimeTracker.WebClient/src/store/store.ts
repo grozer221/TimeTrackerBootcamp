@@ -24,6 +24,7 @@ import {excelExportReducer} from "../modules/excelExport/store/excelExport.slice
 import {excelEpics} from "../modules/excelExport/store/excelExport.epics";
 import {sickLeaveReducer} from "../modules/sickLeave/store/sickLeave.slice";
 import {sickLeaveEpics} from "../modules/sickLeave/store/sickLeave.epics";
+import {usersProfilePageEpics} from "../modules/users/store/usersProfilePage.epics.";
 
 
 const epicMiddleware = createEpicMiddleware();
@@ -59,7 +60,8 @@ const rootEpic = combineEpics(
     vacationRequestsEpics,
     tracksPageEpics,
     excelEpics,
-    sickLeaveEpics
+    sickLeaveEpics,
+    usersProfilePageEpics,
 );
 // @ts-ignore
 epicMiddleware.run(rootEpic);
