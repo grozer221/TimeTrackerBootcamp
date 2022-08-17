@@ -1,35 +1,52 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {PlusCircleOutlined, SmileOutlined} from '@ant-design/icons';
-import {Button, Col, DatePicker, Form, Input, Row, Typography} from 'antd';
+import {CloseOutlined, SmileOutlined} from '@ant-design/icons';
+import {DatePicker, Table, Typography} from 'antd';
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useAppSelector} from "../../../../store/store";
 import {isAuthenticated} from "../../../../utils/permissions";
-import {nameof} from "../../../../utils/stringUtils";
-import {useForm} from "antd/es/form/Form";
-import {CreateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
-import s from './TrackerPage.module.css'
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {Stopwatch} from "../../components/Stopwatch/TrackerStopwatch";
-import {TracksPanel} from "../../components/Table/TracksPanel";
+import Title from "antd/lib/typography/Title";
+import {ColumnsType} from "antd/es/table";
+import moment, {now} from "moment";
+import {TrackTitle} from "../../components/Table/TrackTitle";
+import {TrackKindInfo} from "../../components/Table/TrackKindInfo";
+import {TrackEndTime} from "../../components/Table/TrackEndTime";
+import {TrackStartTime} from "../../components/Table/TrackStartTime";
+import {TrackTools} from "../../components/Table/TrackTools";
+import {getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
+import {TracksTable} from "../../components/TracksTable/TracksTable";
+
+type DataType = {
+    id: string
+    userId: string,
+    title: string,
+    kind: TrackKind,
+    startTime: string,
+    endTime: string,
+    duration: string,
+    createdAt: string,
+    updatedAt: string,
+}
 
 export const TrackerPage: React.FC = () => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
+    const loadingGet = useAppSelector(s => s.tracks.loadingGet)
     const navigate = useNavigate()
     const dispatch = useDispatch()
+    const userId = useAppSelector(s => s.auth.authedUser?.id) as string
+
 
     const tracks = useAppSelector(s => s.tracks.tracks)
-    const currentTrack = useAppSelector(s=>s.tracks.currentTrack)
+    const currentTrack = useAppSelector(s => s.tracks.currentTrack)
 
     const [searchParams, setSearchParams] = useSearchParams({});
-    const like = searchParams.get('like') || ''
-    const pageSize = searchParams.get('pageSize') || '10'
-    const pageNumber = searchParams.get('pageNumber') || '1'
     const trackKind = searchParams.get('kind') || ''
     const indexOfS = Object.values(TrackKind).indexOf(trackKind as unknown as TrackKind)
 
-
+    let [date, setDate] = useState(moment(now()).toISOString())
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -37,28 +54,27 @@ export const TrackerPage: React.FC = () => {
     }, [isAuth])
 
 
-    useEffect( () => {
+    useEffect(() => {
         dispatch(tracksAction.getCurrentAsync())
-        dispatch(tracksAction.getAsync({
-            like: like,
-            pageSize: parseInt(pageSize),
-            pageNumber: parseInt(pageNumber),
-            kind: Object.values(TrackKind)[indexOfS]
-        }))
+        dispatch(tracksAction.setGetTracksInputData({UserId: userId, Date: date}))
+        dispatch(tracksAction.getTracksByUserIdAndDate({UserId: userId, Date: date}))
     }, [setSearchParams])
+
+    useEffect(()=>{
+        dispatch(tracksAction.getCurrentAsync())
+        dispatch(tracksAction.setGetTracksInputData({UserId: userId, Date: date}))
+        dispatch(tracksAction.getTracksByUserIdAndDate({UserId: userId, Date: date}))
+    }, [date])
+
 
     return (
         <>
             <Stopwatch track={currentTrack}/>
-            {tracks.length ? (
-                <>
-                    <TracksPanel tracks={tracks} searchParams={searchParams}/>
-                </>
-            ) : (
-                <Typography.Text className="ant-form-text" type="secondary">
-                    ( <SmileOutlined/> No tracks yet. )
-                </Typography.Text>
-            )}
+            <DatePicker picker={"month"} defaultValue={moment(now())} onChange={e => {
+                if (e != null)
+                    setDate(e.toISOString())
+            }}/>
+            <TracksTable tracks={tracks} date={date} loading={loadingGet}/>
         </>
     );
 };

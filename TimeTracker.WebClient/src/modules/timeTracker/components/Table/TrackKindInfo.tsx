@@ -6,11 +6,10 @@ import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 
 type Props = {
-    track: Track
+    kind: TrackKind
 }
 
-export const TrackKindInfo: FC<Props> = ({track}) => {
-    const kind = track.kind
+export const TrackKindInfo: FC<Props> = ({kind}) => {
     let trackKindIcon: { [id: string]: JSX.Element; } = {
         "WORKING": <CodeSandboxOutlined className={s.icons}/>,
         "VACATION": <CarOutlined className={s.icons}/>,

@@ -16,7 +16,7 @@ export const TrackInfo: FC<Props> = ({track}) => {
 
     return (
         <div className={s.table_row}>
-            <div className={s.cell} style={{width: '30%'}}>
+            {/*<div className={s.cell} style={{width: '30%'}}>
                 <TrackTitle track={track}/>
             </div>
             <div className={s.divider}/>
@@ -34,7 +34,7 @@ export const TrackInfo: FC<Props> = ({track}) => {
             <div className={s.divider}/>
             <div className={s.cell} style={{width: '10%'}}>
                 <TrackTools track={track}/>
-            </div>
+            </div>*/}
         </div>
     )
 }

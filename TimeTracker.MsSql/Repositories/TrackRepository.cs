@@ -139,7 +139,10 @@ namespace TimeTracker.MsSql.Repositories
 
             using (var connection = dapperContext.CreateConnection())
             {
-                tracks = await connection.QueryAsync<TrackModel>("SELECT * FROM Tracks WHERE UserId = @userId AND MONTH(StartTime) = @month AND YEAR(StartTime) = @year", new { userId, month, year });
+                tracks = await connection.QueryAsync<TrackModel>(@"SELECT * 
+                                                                   FROM Tracks 
+                                                                   WHERE UserId = @userId AND MONTH(StartTime) = @month AND YEAR(StartTime) = @year AND EndTime is not null 
+                                                                   ORDER BY StartTime DESC", new { userId, month, year });
             }
 
             return tracks;

@@ -3,7 +3,8 @@ import {RootState} from "../../../store/store";
 import {catchError, endWith, from, map, mergeMap, of, startWith} from "rxjs";
 import {client} from "../../../graphQL/client";
 import {
-    GetCurrentTrackData,
+    GET_TRACKS_BY_USER_ID_AND_DATE,
+    GetCurrentTrackData, GetTracksByUserIdAndDateInputType, GetTracksByUserIdAndDateResponseType,
     GetTracksData,
     GetTracksInputData,
     TRACKS_GET_CURRENT_QUERY,
@@ -23,28 +24,28 @@ import {
 import {tracksAction} from "./tracks.slice";
 import {notificationsActions} from "../../notifications/store/notifications.slice";
 import {calendarDaysActions} from "../../calendarDays/store/calendarDays.slice";
+import {usersActions} from "../../users/store/users.slice";
 
-export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getAsync>, any, RootState> = (action$, state$) => {
+export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getTracksByUserIdAndDate>, any, RootState> = (action$, state$) => {
     return action$.pipe(
         ofType(tracksAction.getAsync.type),
         mergeMap(action=>
-            from(client.query<GetTracksData, GetTracksInputData>({
-                query: TRACKS_GET_QUERY,
+            from(client.query<GetTracksByUserIdAndDateResponseType, GetTracksByUserIdAndDateInputType>({
+                query: GET_TRACKS_BY_USER_ID_AND_DATE,
                 variables: {
-                    like: action.payload.like,
-                    pageNumber: action.payload.pageNumber,
-                    pageSize: action.payload.pageSize,
-                    kind: action.payload.kind
+                    UserId: action.payload.UserId,
+                    Date: action.payload.Date
                 }
             })).pipe(
                 mergeMap(response => [
-                    tracksAction.addTracks(response.data.tracks.getUserTracks.entities),
-                    tracksAction.setGetTracksInputData(action.payload),
+                    tracksAction.addTracks(response.data.tracks.getTracksByUserIdAndDate),
+                    tracksAction.setGetTracksInputData(action.payload)
+                    /*,
                     tracksAction.updateTracksMetrics({
                         total: response.data.tracks.getUserTracks.total,
                         pageSize: response.data.tracks.getUserTracks.pageSize,
                         trackKind: response.data.tracks.getUserTracks.trackKind
-                    })
+                    })*/
                 ]),
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(tracksAction.setLoadingGet(true)),
@@ -67,7 +68,7 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
                 mergeMap(response=>{
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
-                        tracksInputData && tracksAction.getAsync(tracksInputData),
+                        tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
                         tracksAction.getCurrentAsync(),
                         notificationsActions.addSuccess("Track created!")
                     ]
@@ -92,7 +93,7 @@ export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, 
                 mergeMap(response=>{
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
-                        tracksInputData && tracksAction.getAsync(tracksInputData),
+                        tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
                         tracksAction.getCurrentAsync(),
                         notificationsActions.addWarning('Track removed')
                     ]
@@ -116,7 +117,7 @@ export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, 
                 mergeMap(response=>{
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
-                        tracksInputData && tracksAction.getAsync(tracksInputData),
+                        tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
                         tracksAction.getCurrentAsync(),
                         notificationsActions.addInfo("Track update!")
                     ]
@@ -141,6 +142,29 @@ export const getCurrentTrackEpic: Epic<ReturnType<typeof tracksAction.getCurrent
     )
 }
 
+export const getTracksByUserIdAndDateEpic: Epic<ReturnType<typeof tracksAction.getTracksByUserIdAndDate>,
+    any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(tracksAction.getTracksByUserIdAndDate.type),
+        mergeMap(action =>
+            from(client.query<GetTracksByUserIdAndDateResponseType, GetTracksByUserIdAndDateInputType>({
+                query: GET_TRACKS_BY_USER_ID_AND_DATE,
+                variables: {
+                    UserId: action.payload.UserId,
+                    Date: action.payload.Date
+                }
+            })).pipe(
+                mergeMap(response => [
+                    tracksAction.addTracks(response.data.tracks.getTracksByUserIdAndDate)
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(tracksAction.setLoadingGet(true)),
+                endWith(tracksAction.setLoadingGet(false)),
+            )
+        )
+    )
+}
+
 export const tracksPageEpics = combineEpics(
     getTracksEpic,
     // @ts-ignore
@@ -148,4 +172,5 @@ export const tracksPageEpics = combineEpics(
     removeTrackEpic,
     updateTrackEpic,
     getCurrentTrackEpic,
+    getTracksByUserIdAndDateEpic,
 )

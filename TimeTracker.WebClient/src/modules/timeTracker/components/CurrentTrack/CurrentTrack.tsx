@@ -24,11 +24,11 @@ export const CurrentTrackInfo: FC<Props> = ({track}) => {
                 <div className={s.current_track_panel_row}>
                     <div className={[s.current_track_item, s.kind_item].join(' ')}>
                         <span>Kind</span>
-                        <TrackKindInfo track={track}/>
+                        <TrackKindInfo kind={track.kind}/>
                     </div>
                     <div className={[s.current_track_item, s.kind_item].join(' ')}>
                         <span>Start Time</span>
-                        <TrackStartTime track={track}/>
+                        <TrackStartTime startTime={track.startTime}/>
                     </div>
                 </div>
                 <div className={s.current_track_panel_row}>
@@ -38,7 +38,7 @@ export const CurrentTrackInfo: FC<Props> = ({track}) => {
                     </div>
                     <div className={[s.current_track_item, s.kind_item].join(' ')}>
                         <div className={s.current_track_delete_tool}>
-                            <TrackTools track={track}/>
+                            <TrackTools id={track.id}/>
                         </div>
                     </div>
                 </div>

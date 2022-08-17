@@ -44,11 +44,12 @@ export const Stopwatch: FC<stopwatchProps> = ({track}) => {
     }
 
     const OnEndTrack = () => {
-        if(track.endTime)
-            return
         setStopDisable(true)
+        console.log('startime', track.startTime)
         const endTime = new Date()
+        console.log(endTime)
         const endTimeUTC = toUTCDateTime(endTime)
+        console.log('utc ', endTimeUTC)
         dispatch(tracksAction.updateTrack({
             id: track.id,
             title: track.title,

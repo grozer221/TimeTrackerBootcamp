@@ -1,3 +1,5 @@
+import moment from "moment";
+
 export const getDateNow = (): string => {
     const today = new Date();
     const dd = String(today.getDate()).padStart(2, '0');
@@ -22,5 +24,7 @@ export const getDifferenceBetweenDatesInTime = (startDate: Date, endDate: Date):
     hours = hours - (days * 24);
     minutes = minutes - (days * 24 * 60) - (hours * 60);
     seconds = seconds - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
-    return `${hours}:${minutes}:${seconds}`;
+    const durationTime = new Date(0,0,0, hours, minutes, seconds);
+    const timeString = moment(durationTime).format('HH:mm:ss');
+    return timeString;
 }
