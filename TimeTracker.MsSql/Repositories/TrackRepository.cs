@@ -130,5 +130,19 @@ namespace TimeTracker.MsSql.Repositories
             }
             return track;
         }
+
+        public async Task<IEnumerable<TrackModel>> GetAsync(Guid userId, DateTime date)
+        {
+            IEnumerable<TrackModel> tracks;
+            var month = date.Month;
+            var year = date.Year;
+
+            using (var connection = dapperContext.CreateConnection())
+            {
+                tracks = await connection.QueryAsync<TrackModel>("SELECT * FROM Tracks WHERE UserId = @userId AND MONTH(StartTime) = @month AND YEAR(StartTime) = @year", new { userId, month, year });
+            }
+
+            return tracks;
+        }
     }
 }
