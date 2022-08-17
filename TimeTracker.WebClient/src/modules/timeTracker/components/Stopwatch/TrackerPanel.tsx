@@ -52,7 +52,7 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track}) => {
                     </div>
                     <div className={s.current_track}><CurrentTrackInfo track={track}/></div>
                 </div>
-            <Divider></Divider>
+            <Divider/>
 
         </>
     )
