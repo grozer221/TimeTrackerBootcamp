@@ -47,6 +47,7 @@ import {ResetPasswordUserModal} from "./modules/users/components/ResetPassword/R
 import {SickLeaveIndexPage} from "./modules/sickLeave/pages/SickLeaveIndexPage";
 import {SickLeaveCreatePage} from "./modules/sickLeave/pages/SickLeaveCreatePage";
 import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage";
+import {UsersProfilePage} from "./modules/users/pages/UsersProfilePage/UsersProfilePage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -76,7 +77,9 @@ export const App = () => {
                         <Route path={'calendar/*'} element={<CalendarPage/>}>
                             <Route path={'*'} element={<Error/>}/>
                         </Route>
-                        <Route path={'users/*'} element={<UsersPage/>}>
+                        <Route path={'users/*'}>
+                            <Route index element={<UsersPage />}/>
+                            <Route path={'profile/:email'}  element={<UsersProfilePage/>}/>
                             <Route path={'*'} element={<Error/>}/>
                         </Route>
                         <Route path={'settings/:tab'} element={<SettingsPage/>}/>

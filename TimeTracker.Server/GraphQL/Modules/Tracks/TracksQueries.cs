@@ -85,6 +85,18 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     var id = context.GetArgument<Guid>("Id");
                     return await trackRepository.GetByIdAsync(id);
                 }).AuthorizeWith(AuthPolicies.Authenticated);
+
+            Field<ListGraphType<TrackType>, IEnumerable<TrackModel>>()
+                .Name("GetTracksByUserIdAndDate")
+                .Argument<NonNullGraphType<GuidGraphType>, Guid>("UserId", "User id")
+                .Argument<NonNullGraphType<DateTimeGraphType>, DateTime>("Date", "year and month for tracks")
+                .ResolveAsync(async context =>
+                {
+                    var userId = context.GetArgument<Guid>("UserId");
+                    var date = context.GetArgument<DateTime>("Date");
+                    var tracks = await trackRepository.GetAsync(userId, date);
+                    return tracks;
+                }).AuthorizeWith(AuthPolicies.Authenticated);
         }
 
 
