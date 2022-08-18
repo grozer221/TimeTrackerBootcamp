@@ -1,27 +1,19 @@
 import React, {useEffect, useState} from "react";
-import {isAuthenticated} from "../../../../utils/permissions";
+import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
 import {RootState, useAppSelector} from "../../../../store/store";
-import {useNavigate, useParams} from "react-router-dom";
+import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {usersActions} from "../../store/users.slice";
 import {Loading} from "../../../../components/Loading/Loading";
 import {Button, Card, Col, DatePicker, Descriptions, Row, Space, Tag} from "antd";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {Employment} from "../../../../graphQL/enums/Employment";
-import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import Title from "antd/lib/typography/Title";
 import moment, {now} from "moment/moment";
 import {TracksTable} from "../../../timeTracker/components/TracksTable/TracksTable";
 import {PlusOutlined} from "@ant-design/icons";
+import {Permission} from "../../../../graphQL/enums/Permission";
 
-type DataType = {
-    id: string
-    userId: string,
-    title: string,
-    kind: TrackKind,
-    date: string,
-    duration: string,
-}
 
 export const UsersProfilePage = () => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
@@ -29,12 +21,18 @@ export const UsersProfilePage = () => {
     const dispatch = useDispatch()
     const params = useParams()
     const email = params['email'] as string
+    const location = useLocation()
 
     const userProfile = useSelector((s: RootState) => s.users.userProfile)
     let tracks = useSelector((s: RootState) => s.users.userTracks)
     let userTracksLoading = useSelector((s: RootState) => s.users.userTracksLoading)
 
     let [date, setDate] = useState(moment(now()).toISOString())
+    const today = new Date()
+    const dateObj = new Date(date)
+
+    const editable = (dateObj.getMonth() == today.getMonth() && dateObj.getFullYear() == today.getFullYear())
+        && isAdministratorOrHavePermissions([Permission.UpdateOthersTimeTracker])
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -94,7 +92,12 @@ export const UsersProfilePage = () => {
                           <Title level={5}>Tracks: </Title>
                       </Col>
                       <Col>
-                          <Button shape={"circle"} type={"primary"} icon={<PlusOutlined />}></Button>
+                          {
+                              editable ?
+                                  <Link to={"create-track"} state={{popup: location}}>
+                                      <Button shape={"circle"} type={"primary"} icon={<PlusOutlined/>}></Button>
+                                  </Link> : ""
+                          }
                       </Col>
                   </Row>
               }>
