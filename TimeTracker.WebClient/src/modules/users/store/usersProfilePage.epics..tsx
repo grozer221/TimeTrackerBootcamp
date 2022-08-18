@@ -14,6 +14,12 @@ import {
     GetTracksByUserIdAndDateInputType,
     GetTracksByUserIdAndDateResponseType
 } from "../../tracks/graphQL/tracks.queries";
+import {tracksAction} from "../../tracks/store/tracks.slice";
+import {
+    CreateTrackForOtherUserInput, CreateTrackForOtherUserInputType, CreateTrackForOtherUserResponseType,
+    TRACK_CREATE_FOR_OTHER_USER_MUTATION
+} from "../../tracks/graphQL/tracks.mutations";
+import {navigateActions} from "../../navigate/store/navigate.slice";
 
 
 export const getUserByEmailEpic: Epic<ReturnType<typeof usersActions.getUserByEmailAsync>,
@@ -61,8 +67,32 @@ export const getTracksByUserIdAndDateEpic: Epic<ReturnType<typeof usersActions.g
     )
 }
 
+export const createTrackForUserEpic: Epic<ReturnType<typeof tracksAction.createTrackForOtherUser>,
+    any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(tracksAction.createTrackForOtherUser.type),
+        mergeMap(action =>
+            from(client.mutate<CreateTrackForOtherUserResponseType, CreateTrackForOtherUserInputType>({
+                mutation: TRACK_CREATE_FOR_OTHER_USER_MUTATION,
+                variables: {TrackData: action.payload}
+            })).pipe(
+                mergeMap(response => [
+                    notificationsActions.addSuccess("Track was created"),
+                    usersActions.getTracksByUserIdAndDate({UserId: response.data?.tracks.createOther.userId as string,
+                        Date: new Date().toISOString()}),
+                    navigateActions.navigate(-1),
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(usersActions.setUserTracksCreating(true)),
+                endWith(usersActions.setUserTracksCreating(false)),
+            )
+        )
+    )
+}
+
 export const usersProfilePageEpics = combineEpics(
     getUserByEmailEpic,
     // @ts-ignore
     getTracksByUserIdAndDateEpic,
+    createTrackForUserEpic,
 )

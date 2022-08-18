@@ -29,7 +29,7 @@ import {usersActions} from "../../users/store/users.slice";
 export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getTracksByUserIdAndDate>, any, RootState> = (action$, state$) => {
     return action$.pipe(
         ofType(tracksAction.getAsync.type),
-        mergeMap(action=>
+        mergeMap(action =>
             from(client.query<GetTracksByUserIdAndDateResponseType, GetTracksByUserIdAndDateInputType>({
                 query: GET_TRACKS_BY_USER_ID_AND_DATE,
                 variables: {
@@ -65,7 +65,7 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
                     TrackData: action.payload
                 }
             })).pipe(
-                mergeMap(response=>{
+                mergeMap(response => {
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
                         tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
@@ -76,11 +76,10 @@ export const createTrackEpic: Epic<ReturnType<typeof tracksAction.createTrack>, 
             )
         ),
         catchError(error => of(notificationsActions.addError(error.message))),
-
     )
 }
 
-export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, any, RootState> = (action$, state$) =>{
+export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, any, RootState> = (action$, state$) => {
     return action$.pipe(
         ofType(tracksAction.removeTrack.type),
         mergeMap(action =>
@@ -90,7 +89,7 @@ export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, 
                     TrackData: action.payload
                 }
             })).pipe(
-                mergeMap(response=>{
+                mergeMap(response => {
                     const tracksInputData = state$.value.tracks.getTracksInputData
                     return [
                         tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
@@ -104,7 +103,7 @@ export const removeTrackEpic: Epic<ReturnType<typeof tracksAction.removeTrack>, 
     )
 }
 
-export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, any, RootState> = (action$, state$) =>{
+export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, any, RootState> = (action$, state$) => {
     return action$.pipe(
         ofType(tracksAction.updateTrack.type),
         mergeMap(action =>
@@ -114,11 +113,16 @@ export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, 
                     TrackData: action.payload
                 }
             })).pipe(
-                mergeMap(response=>{
+                mergeMap(response => {
                     const tracksInputData = state$.value.tracks.getTracksInputData
+                    if (tracksInputData.UserId !== '')
+                        return [
+                            tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
+                            tracksAction.getCurrentAsync(),
+                            notificationsActions.addInfo("Track update!")
+                        ]
                     return [
                         tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
-                        tracksAction.getCurrentAsync(),
                         notificationsActions.addInfo("Track update!")
                     ]
                 })
@@ -131,7 +135,7 @@ export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, 
 export const getCurrentTrackEpic: Epic<ReturnType<typeof tracksAction.getCurrentAsync>, any, RootState> = (action$, state$) => {
     return action$.pipe(
         ofType(tracksAction.getCurrentAsync.type),
-        mergeMap(action=>
+        mergeMap(action =>
             from(client.query<GetCurrentTrackData>({
                 query: TRACKS_GET_CURRENT_QUERY
             })).pipe(

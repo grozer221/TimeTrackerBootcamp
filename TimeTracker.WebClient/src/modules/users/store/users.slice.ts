@@ -19,6 +19,7 @@ type InitialState = {
     userProfile: User | null,
     userTracks: Track[] | null,
     userTracksLoading: boolean,
+    trackCreating: boolean,
 }
 
 const initialState: InitialState = {
@@ -43,6 +44,7 @@ const initialState: InitialState = {
     userProfile: null,
     userTracks: null,
     userTracksLoading: false,
+    trackCreating: false,
 }
 
 export const usersSlice = createSlice({
@@ -103,6 +105,9 @@ export const usersSlice = createSlice({
         getTracksByUserIdAndDate: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => state,
         setUserTracksLoading: (state, action: PayloadAction<boolean>) => {
             state.userTracksLoading = action.payload
+        },
+        setUserTracksCreating: (state, action: PayloadAction<boolean>) => {
+            state.trackCreating = action.payload
         },
     }
 })

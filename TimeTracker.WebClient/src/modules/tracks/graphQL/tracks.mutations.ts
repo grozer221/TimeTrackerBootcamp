@@ -55,3 +55,23 @@ export const TRACK_UPDATE_MUTATION = gql`
         }
     }
 `
+export type CreateTrackForOtherUserResponseType = { tracks: {createOther: Track} }
+export type CreateTrackForOtherUserInput = {
+    userId: string,
+    title: String,
+    kind: TrackKind,
+    startTime: string,
+    endTime: string,
+}
+export type CreateTrackForOtherUserInputType = { TrackData: CreateTrackForOtherUserInput}
+
+export const TRACK_CREATE_FOR_OTHER_USER_MUTATION = gql`
+    ${TRACK_FRAGMENT}
+    mutation CreateTrackForOtherUser($TrackData: TrackOtherInputType!){
+        tracks{
+            createOther(trackInput: $TrackData){
+                ...TrackFragment
+            }
+        }
+    }
+`
