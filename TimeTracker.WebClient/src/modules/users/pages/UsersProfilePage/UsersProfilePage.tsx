@@ -1,21 +1,18 @@
 import React, {useEffect, useState} from "react";
-import {isAdministratorOrHavePermissions, isAuthenticated} from "../../../../utils/permissions";
+import {isAuthenticated} from "../../../../utils/permissions";
 import {RootState, useAppSelector} from "../../../../store/store";
-import {Link, useNavigate, useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {usersActions} from "../../store/users.slice";
 import {Loading} from "../../../../components/Loading/Loading";
-import {Card, Col, DatePicker, Descriptions, Dropdown, Menu, Row, Space, Table, Tag} from "antd";
+import {Button, Card, Col, DatePicker, Descriptions, Row, Space, Tag} from "antd";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import {ColumnsType} from "antd/es/table";
-import {Permission} from "../../../../graphQL/enums/Permission";
-import {CloseOutlined, DownCircleFilled} from "@ant-design/icons";
 import Title from "antd/lib/typography/Title";
-import {ItemType} from "antd/lib/menu/hooks/useItems";
 import moment, {now} from "moment/moment";
-import {getDate, getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
+import {TracksTable} from "../../../timeTracker/components/TracksTable/TracksTable";
+import {PlusOutlined} from "@ant-design/icons";
 
 type DataType = {
     id: string
@@ -37,18 +34,7 @@ export const UsersProfilePage = () => {
     let tracks = useSelector((s: RootState) => s.users.userTracks)
     let userTracksLoading = useSelector((s: RootState) => s.users.userTracksLoading)
 
-    let tableData = tracks?.map(t => {
-
-        return {
-            ...t,
-            date: getDate(new Date(t.startTime)),
-            duration: getDifferenceBetweenDatesInTime(new Date(t.startTime), new Date(t.endTime))
-        } as DataType
-    })
-
     let [date, setDate] = useState(moment(now()).toISOString())
-    let dateObj = new Date(date)
-    const today = new Date();
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -69,41 +55,6 @@ export const UsersProfilePage = () => {
             dispatch(usersActions.getTracksByUserIdAndDate({UserId: userProfile.id, Date: date}))
     }, [date])
 
-    const menu = (trackId: string) => {
-        let items: ItemType[] = []
-
-        if (isAdministratorOrHavePermissions([Permission.UpdateUsers])) {
-            items.push(
-                {key: '1', label: (<Link to={"update/" + trackId} state={{popup: location}}>Update</Link>)},
-                {key: '2', label: (<Link to={"remove/" + trackId} state={{popup: location}}>Remove</Link>)},
-            )
-        }
-        return <Menu items={items}/>
-    }
-
-    const columns: ColumnsType<DataType> = [
-        {title: 'Title', dataIndex: 'title', key: 'title'},
-        {
-            title: 'Kind', dataIndex: 'kind', key: 'kind',
-            render: (value, record, index) => {
-                return uppercaseToWords(value)
-            }
-        },
-        {title: 'Date', dataIndex: 'date', key: 'date'},
-        {title: 'Duration', dataIndex: 'duration', key: 'duration'},
-        {
-            title: 'Action', dataIndex: 'operation', key: 'operation',
-            render: (text, record, index) => {
-                if (dateObj.getMonth() != today.getMonth() || dateObj.getFullYear() != today.getFullYear())
-                    return <CloseOutlined />
-                return <Space size="middle">
-                    <Dropdown overlay={menu(record.id)}>
-                        <DownCircleFilled/>
-                    </Dropdown>
-                </Space>
-            },
-        }
-    ];
 
     if (userProfile == null) return <Loading/>
     if (tracks == null) tracks = []
@@ -136,14 +87,18 @@ export const UsersProfilePage = () => {
                 }}/>
             </Col>
         </Row>
-        <Card size={"small"}>
-            <Table columns={columns}
-                   loading={userTracksLoading}
-                   dataSource={tableData}
-                   rowKey={record => record.id}
-                   pagination={false}
-                   title={() => <Title
-                       level={5}>{userProfile.firstName + " " + userProfile.lastName + " tracks: "}</Title>}/>
+        <Card size={"small"}
+              title={
+                  <Row justify="space-between" align={'middle'}>
+                      <Col>
+                          <Title level={5}>Tracks: </Title>
+                      </Col>
+                      <Col>
+                          <Button shape={"circle"} type={"primary"} icon={<PlusOutlined />}></Button>
+                      </Col>
+                  </Row>
+              }>
+            <TracksTable tracks={tracks} date={date} loading={userTracksLoading}/>
         </Card>
     </>
 }
