@@ -18,6 +18,7 @@ import {TrackStartTime} from "../../components/Table/TrackStartTime";
 import {TrackTools} from "../../components/Table/TrackTools";
 import {getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
 import {TracksTable} from "../../components/TracksTable/TracksTable";
+import s from "./TrackerPage.module.css"
 
 type DataType = {
     id: string
@@ -37,6 +38,7 @@ export const TrackerPage: React.FC = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const userId = useAppSelector(s => s.auth.authedUser?.id) as string
+    const canEditDateOrKind = false
 
 
     const tracks = useAppSelector(s => s.tracks.tracks)
@@ -70,11 +72,11 @@ export const TrackerPage: React.FC = () => {
     return (
         <>
             <Stopwatch track={currentTrack}/>
-            <DatePicker picker={"month"} defaultValue={moment(now())} onChange={e => {
+            <DatePicker className={s.date_picker} picker={"month"} defaultValue={moment(now())} onChange={e => {
                 if (e != null)
                     setDate(e.toISOString())
             }}/>
-            <TracksTable tracks={tracks} date={date} loading={loadingGet}/>
+            <TracksTable tracks={tracks} date={date} loading={loadingGet} canEditDateOrKind={canEditDateOrKind}/>
         </>
     );
 };

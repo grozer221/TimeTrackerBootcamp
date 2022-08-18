@@ -30,10 +30,11 @@ type DataType = {
 type Props = {
     tracks: Track[],
     date: string,
-    loading: boolean
+    loading: boolean,
+    canEditDateOrKind: boolean
 }
 
-export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading}) => {
+export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, canEditDateOrKind}) => {
     let dateObj = new Date(date)
     const today = new Date()
     const ownerId =(tracks[0]) ? tracks[0].id : ''
