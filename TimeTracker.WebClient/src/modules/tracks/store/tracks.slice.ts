@@ -1,6 +1,11 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {Track} from "../graphQL/tracks.types";
-import {CreateTrackInput, RemoveTrackInput, UpdateTrackInput} from "../graphQL/tracks.mutations";
+import {
+    CreateTrackForOtherUserInput,
+    CreateTrackInput,
+    RemoveTrackInput,
+    UpdateTrackInput
+} from "../graphQL/tracks.mutations";
 import {GetTracksByUserIdAndDateInputType, GetTracksInputData} from "../graphQL/tracks.queries";
 import {TrackKind} from "../../../graphQL/enums/TrackKind";
 import {CalendarDay} from "../../calendarDays/graphQL/calendarDays.types";
@@ -63,7 +68,8 @@ export  const  tracksSlice = createSlice({
         removeTrack: (state, action: PayloadAction<RemoveTrackInput>) => state,
         setGetTracksInputData: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => {
             state.getTracksInputData = action.payload
-        }
+        },
+        createTrackForOtherUser: (state, action: PayloadAction<CreateTrackForOtherUserInput>) => state,
     }
 
 })

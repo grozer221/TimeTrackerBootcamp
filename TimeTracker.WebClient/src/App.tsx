@@ -48,6 +48,7 @@ import {SickLeaveIndexPage} from "./modules/sickLeave/pages/SickLeaveIndexPage";
 import {SickLeaveCreatePage} from "./modules/sickLeave/pages/SickLeaveCreatePage";
 import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage";
 import {UsersProfilePage} from "./modules/users/pages/UsersProfilePage/UsersProfilePage";
+import {CreateTrackModal} from "./modules/users/components/CreateTrackModal/CreateTrackModal";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -116,6 +117,7 @@ export const App = () => {
                                 <Route path="remove/:email" element={<RemoveUserModal/>}/>
                                 <Route path="update/:email" element={<UpdateUserModal/>}/>
                                 <Route path="reset-password/:id" element={<ResetPasswordUserModal/>}/>
+                                <Route path="profile/:email/create-track" element={<CreateTrackModal/>}/>
                                 <Route path="createReport" element={<CreateReportModal/>}/>
                             </Route>
                             <Route path={"tools/*"}>
