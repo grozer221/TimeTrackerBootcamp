@@ -86,6 +86,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                         model.StartTime = track.StartTime;
                     if (track.EndTime != null)
                         model.EndTime = track.EndTime;
+                    model.Kind = track.Kind;
                     
                     if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateOthersTimeTracker) && model.UserId != userId)
                         throw new ExecutionError("You do not have permissions for update others tracks");

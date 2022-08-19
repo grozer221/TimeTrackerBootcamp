@@ -6,19 +6,21 @@ import {useDispatch} from "react-redux";
 import {RemoveTrackInput} from "../../../tracks/graphQL/tracks.mutations";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {Track} from "../../../tracks/graphQL/tracks.types";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 type Props = {
-    id: string
+    id: string,
+    removeCallback: (removeTrackInput: RemoveTrackInput) => PayloadAction<RemoveTrackInput, string>
 }
 
-export const TrackTools: FC<Props> = ({id}) =>{
+export const TrackTools: FC<Props> = ({id, removeCallback}) =>{
     const dispatch = useDispatch()
 
-    const onRemove = async () => {
-        let removeTrackId: RemoveTrackInput = {
+    const onRemove = () => {
+        let removeTrackObject = {
             id: id
         }
-        dispatch(tracksAction.removeTrack(removeTrackId))
+        dispatch(removeCallback(removeTrackObject))
     }
     return(
             <Form onFinish={onRemove}>

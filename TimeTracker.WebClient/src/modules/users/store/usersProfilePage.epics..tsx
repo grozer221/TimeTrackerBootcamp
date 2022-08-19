@@ -16,8 +16,15 @@ import {
 } from "../../tracks/graphQL/tracks.queries";
 import {tracksAction} from "../../tracks/store/tracks.slice";
 import {
-    CreateTrackForOtherUserInput, CreateTrackForOtherUserInputType, CreateTrackForOtherUserResponseType,
-    TRACK_CREATE_FOR_OTHER_USER_MUTATION
+    CreateTrackForOtherUserInput,
+    CreateTrackForOtherUserInputType,
+    CreateTrackForOtherUserResponseType,
+    RemoveTrack,
+    RemoveTrackInputType,
+    TRACK_CREATE_FOR_OTHER_USER_MUTATION, TRACK_REMOVE_MUTATION,
+    TRACK_UPDATE_MUTATION,
+    UpdateTrack,
+    UpdateTrackInputType
 } from "../../tracks/graphQL/tracks.mutations";
 import {navigateActions} from "../../navigate/store/navigate.slice";
 
@@ -90,9 +97,57 @@ export const createTrackForUserEpic: Epic<ReturnType<typeof tracksAction.createT
     )
 }
 
+export const updateUserTrackEpic: Epic<ReturnType<typeof usersActions.updateUserTrack>, any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(usersActions.updateUserTrack.type),
+        mergeMap(action =>
+            from(client.mutate<UpdateTrack, UpdateTrackInputType>({
+                mutation: TRACK_UPDATE_MUTATION,
+                variables: {
+                    TrackData: action.payload
+                }
+            })).pipe(
+                mergeMap(response => {
+                    const tracksInputData = state$.value.tracks.getTracksInputData
+                    return [
+                        tracksInputData && usersActions.getTracksByUserIdAndDate(tracksInputData),
+                        notificationsActions.addInfo("Track update!")
+                    ]
+                })
+            )
+        ),
+        catchError(error => of(notificationsActions.addError(error.message))),
+    )
+}
+
+export const removeTrackEpic: Epic<ReturnType<typeof usersActions.deleteUserTrack>, any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(usersActions.deleteUserTrack.type),
+        mergeMap(action =>
+            from(client.mutate<RemoveTrack, RemoveTrackInputType>({
+                mutation: TRACK_REMOVE_MUTATION,
+                variables: {
+                    TrackData: action.payload
+                }
+            })).pipe(
+                mergeMap(response => {
+                    const tracksInputData = state$.value.tracks.getTracksInputData
+                    return [
+                        tracksInputData && usersActions.getTracksByUserIdAndDate(tracksInputData),
+                        notificationsActions.addWarning('Track removed')
+                    ]
+                })
+            )
+        ),
+        catchError(error => of(notificationsActions.addError(error.message))),
+    )
+}
+
 export const usersProfilePageEpics = combineEpics(
     getUserByEmailEpic,
     // @ts-ignore
     getTracksByUserIdAndDateEpic,
     createTrackForUserEpic,
+    updateUserTrackEpic,
+    removeTrackEpic,
 )

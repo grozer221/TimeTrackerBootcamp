@@ -5,12 +5,15 @@ import s from '../../pages/TrackerPage/TrackerPage.module.css'
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useDispatch} from "react-redux";
+import {UpdateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 type Props = {
-    track: Track
+    track: Track,
+    updateCallback: (updateTrackInput: UpdateTrackInput) => PayloadAction<UpdateTrackInput, string>
 }
 
-export const TrackTitle: FC<Props> = ({track}) => {
+export const TrackTitle: FC<Props> = ({track, updateCallback}) => {
     const title = track.title == '' ? '. . .' : track.title
     const inputRef = createRef<InputRef>()
     const dispatch = useDispatch()
@@ -40,13 +43,14 @@ export const TrackTitle: FC<Props> = ({track}) => {
         const newTitle = (content == '. . .' ? '' : content)
         if (content === track.title || content === '. . .')
             return
-        dispatch(tracksAction.updateTrack({
+        const newTrack = {
             id: track.id,
             title: newTitle,
             kind: track.kind,
             startTime: track.startTime,
             endTime: track.endTime
-        }))
+        }
+        dispatch(updateCallback(newTrack))
     }
 
     return (
