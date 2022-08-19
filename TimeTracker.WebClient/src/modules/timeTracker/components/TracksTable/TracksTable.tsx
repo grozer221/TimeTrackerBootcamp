@@ -14,6 +14,16 @@ import s from "../../pages/TrackerPage/TrackerPage.module.css";
 import {useAppSelector} from "../../../../store/store";
 import {isAdministratorOrHavePermissions} from "../../../../utils/permissions";
 import {Permission} from "../../../../graphQL/enums/Permission";
+import {TrackKindEdit} from "../Table/TrackKindEdit";
+import {TrackStartTimeEdit} from "../Table/TrackStartTimeEdit";
+import {TrackEndTimeEdit} from "../Table/TrackEndTimeEdit";
+import {
+    CreateTrackForOtherUserInput,
+    CreateTrackInput,
+    RemoveTrackInput,
+    UpdateTrackInput
+} from "../../../tracks/graphQL/tracks.mutations";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 type DataType = {
     id: string
@@ -30,10 +40,16 @@ type DataType = {
 type Props = {
     tracks: Track[],
     date: string,
-    loading: boolean
+    loading: boolean,
+    canEditDateOrKind: boolean,
+    crudCallbacks: {
+        create: ((createTrackInput: CreateTrackInput | CreateTrackForOtherUserInput) => PayloadAction<CreateTrackInput | CreateTrackForOtherUserInput, string>),
+        update: ((updateTrackInput: UpdateTrackInput) => PayloadAction<UpdateTrackInput, string>),
+        remove: ((removeTrackInput: RemoveTrackInput) => PayloadAction<RemoveTrackInput, string>)
+    }
 }
 
-export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading}) => {
+export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, canEditDateOrKind, crudCallbacks}) => {
     let dateObj = new Date(date)
     const today = new Date()
     const ownerId =(tracks[0]) ? tracks[0].id : ''
@@ -54,7 +70,7 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading})
             title: 'Title', dataIndex: 'title', key: 'title',
             render: (value, record, index) => {
                 if (editable)
-                    return <TrackTitle track={record}/>
+                    return <TrackTitle track={record} updateCallback={crudCallbacks.update}/>
                 return <Typography.Paragraph>
                     <EditOutlined className={s.icons}/>{' ' + value}
                 </Typography.Paragraph>
@@ -63,12 +79,16 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading})
         {
             title: 'Kind', dataIndex: 'kind', key: 'kind',
             render: (value, record, index) => {
+                if(canEditDateOrKind)
+                    return <TrackKindEdit track={record} updateCallback={crudCallbacks.update}/>
                 return <TrackKindInfo kind={value}/>
             }
         },
         {
             title: 'StartTime', dataIndex: 'startTime', key: 'startTime',
             render: (value, record, index) => {
+                if(canEditDateOrKind)
+                    return <TrackStartTimeEdit track={record} updateCallback={crudCallbacks.update}/>
                 return <TrackStartTime startTime={value}/>
 
             }
@@ -76,6 +96,8 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading})
         {
             title: 'EndTime', dataIndex: 'endTime', key: 'endTime',
             render: (value, record, index) => {
+                if(canEditDateOrKind)
+                    return <TrackEndTimeEdit track={record} updateCallback={crudCallbacks.update}/>
                 return <TrackEndTime endTime={value}/>
 
             }
@@ -85,7 +107,7 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading})
             title: 'Tools', dataIndex: 'operation', key: 'id',
             render: (text, record, index) => {
                 if (editable)
-                    return <TrackTools id={record.id}/>
+                    return <TrackTools id={record.id} removeCallback={crudCallbacks.remove}/>
                 return <CloseOutlined/>
             },
         }

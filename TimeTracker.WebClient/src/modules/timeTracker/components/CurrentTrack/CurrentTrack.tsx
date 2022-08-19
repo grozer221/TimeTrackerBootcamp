@@ -8,18 +8,24 @@ import {TrackTools} from "../Table/TrackTools";
 import s from '../Stopwatch/TrackerStopwatch.module.css'
 import {SyncOutlined} from "@ant-design/icons";
 import {Card, Tag} from "antd";
+import {RemoveTrackInput, UpdateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 type Props = {
-    track: Track
+    track: Track,
+    crudCallbacks: {
+        update: ((updateTrackInput: UpdateTrackInput) => PayloadAction<UpdateTrackInput, string>),
+        remove: ((removeTrackInput: RemoveTrackInput) => PayloadAction<RemoveTrackInput, string>)
+    }
 }
 
-export const CurrentTrackInfo: FC<Props> = ({track}) => {
+export const CurrentTrackInfo: FC<Props> = ({track, crudCallbacks}) => {
 
     return (
         <>
             <Card><span className={s.current_track_panel_title}><b>Current track</b></span>
                 <div className={s.current_track_item}>
-                    <TrackTitle track={track}/>
+                    <TrackTitle track={track} updateCallback={crudCallbacks.update}/>
                 </div>
                 <div className={s.current_track_panel_row}>
                     <div className={[s.current_track_item, s.kind_item].join(' ')}>
@@ -38,7 +44,7 @@ export const CurrentTrackInfo: FC<Props> = ({track}) => {
                     </div>
                     <div className={[s.current_track_item, s.kind_item].join(' ')}>
                         <div className={s.current_track_delete_tool}>
-                            <TrackTools id={track.id}/>
+                            <TrackTools id={track.id} removeCallback={crudCallbacks.remove}/>
                         </div>
                     </div>
                 </div>

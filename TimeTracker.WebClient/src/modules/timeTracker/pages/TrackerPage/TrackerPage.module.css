@@ -92,3 +92,7 @@
     border-radius: 2px;
     padding: 5px;
 }
+
+.date_picker{
+    width: 10%;
+}
