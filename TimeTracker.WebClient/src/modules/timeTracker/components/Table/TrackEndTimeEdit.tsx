@@ -1,4 +1,4 @@
-import React, {FC} from 'react';
+import React, {FC, useState} from 'react';
 import {DatePicker, DatePickerProps} from 'antd';
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useDispatch} from "react-redux";
@@ -6,6 +6,7 @@ import {Track} from "../../../tracks/graphQL/tracks.types";
 import moment from "moment";
 import {UpdateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
+import {notificationsActions} from "../../../notifications/store/notifications.slice";
 
 type Props = {
     track: Track,
@@ -15,8 +16,10 @@ type Props = {
 
 export const TrackEndTimeEdit: FC<Props> = ({track, updateCallback}) => {
     let endTime = track.endTime
+    const endTimeMoment = moment(new Date(endTime))
     const today = new Date()
     const dispatch = useDispatch()
+    const [pickerValue, setPickerValue] = useState(endTimeMoment)
 
     const onChange = (value: DatePickerProps['value']) => {
         const newTrack = {
@@ -25,6 +28,13 @@ export const TrackEndTimeEdit: FC<Props> = ({track, updateCallback}) => {
             kind: track.kind,
             startTime: track.startTime,
             endTime: value!.utc().format('YYYY-MM-DDTHH:mm:ss')
+        }
+        const startTime = new Date(track.startTime)
+        const endTime = value!.toDate()
+        if(startTime > endTime){
+            dispatch(notificationsActions.addError("Start time can't be upper than end time!"))
+            setPickerValue(endTimeMoment)
+            return
         }
         dispatch(updateCallback(newTrack))
     }
@@ -37,7 +47,7 @@ export const TrackEndTimeEdit: FC<Props> = ({track, updateCallback}) => {
                 showTime={{ format: 'HH:mm:ss' }}
                 format={"YYYY/MM/DD HH:mm:ss"}
                 onChange={onChange}
-                defaultValue={moment(new Date(endTime))}
+                value={pickerValue}
                 disabledDate={(currentDate) =>
                     today.getMonth() !== +currentDate.month() || today.getFullYear() !== +currentDate.year()
                 }

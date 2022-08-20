@@ -1,22 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {CloseOutlined, SmileOutlined} from '@ant-design/icons';
-import {DatePicker, Table, Typography} from 'antd';
+import {DatePicker} from 'antd';
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useAppSelector} from "../../../../store/store";
 import {isAuthenticated} from "../../../../utils/permissions";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {Stopwatch} from "../../components/Stopwatch/TrackerStopwatch";
-import Title from "antd/lib/typography/Title";
-import {ColumnsType} from "antd/es/table";
 import moment, {now} from "moment";
-import {TrackTitle} from "../../components/Table/TrackTitle";
-import {TrackKindInfo} from "../../components/Table/TrackKindInfo";
-import {TrackEndTime} from "../../components/Table/TrackEndTime";
-import {TrackStartTime} from "../../components/Table/TrackStartTime";
-import {TrackTools} from "../../components/Table/TrackTools";
-import {getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
 import {TracksTable} from "../../components/TracksTable/TracksTable";
 import s from "./TrackerPage.module.css"
 import {
