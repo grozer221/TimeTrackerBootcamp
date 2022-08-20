@@ -112,6 +112,10 @@ export const usersSlice = createSlice({
         },
         updateUserTrack: (state, action: PayloadAction<UpdateTrackInput>) => state,
         deleteUserTrack: (state, action: PayloadAction<RemoveTrackInput>) => state,
+        clearUsersPage: (state) => {
+            state.users = []
+            state.usersInfinityLoad = null
+        },
     }
 })
 
