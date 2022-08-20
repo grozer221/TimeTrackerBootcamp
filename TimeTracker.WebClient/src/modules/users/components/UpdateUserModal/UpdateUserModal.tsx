@@ -14,6 +14,7 @@ import {UpdateUserInput} from "../../graphQL/users.mutations";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {navigateActions} from "../../../navigate/store/navigate.slice";
 import {InfiniteScrollSelect} from "../../../../components/InfiniteScrollSelect";
+import {Loading} from "../../../../components/Loading/Loading";
 
 type FormValues = {
     firstName: string,
@@ -31,25 +32,28 @@ export const UpdateUserModal: FC<Props> = () => {
     const [form] = useForm()
     const dispatch = useDispatch()
     const params = useParams();
-    const email = params['email']
-
-    let user = useSelector((s: RootState) => s.users.users.find(x => x.email === email)) as User
-    let usersInfinityLoad = useSelector((s: RootState) => s.users.usersInfinityLoad)
-    let crudLoading = useSelector((s: RootState) => s.users.crudLoading)
-
-    let [usersWhichCanApproveVacationRequest, setUsersWhichCanApproveVacationRequest] = useState<string[]>(
-        user.usersWhichCanApproveVacationRequest.map(u => u.id)
-    )
-
-    let notFetchedUsers = user.usersWhichCanApproveVacationRequest.filter(user => {
-        return !usersInfinityLoad?.entities.find(u => u.id === user.id);
-    }) as User[]
+    const email = params['email'] as string
 
     let [usersPageSize, setUsersPageSize] = useState(10)
 
     useEffect(() => {
+        dispatch(usersActions.getUserByEmailAsync(email))
         dispatch(usersActions.fetchUsersInfinityLoad({filter: {email: ""}, skip: 0, take: usersPageSize}))
     }, [])
+
+    let user = useSelector((s: RootState) => s.users.userProfile) as User
+    let usersInfinityLoad = useSelector((s: RootState) => s.users.usersInfinityLoad)
+    let crudLoading = useSelector((s: RootState) => s.users.crudLoading)
+
+    let [usersWhichCanApproveVacationRequest, setUsersWhichCanApproveVacationRequest] = useState<string[]>(
+        user ? user.usersWhichCanApproveVacationRequest.map(u => u.id) : []
+    )
+
+    if (user === null || usersInfinityLoad === null) return <Loading/>
+
+    let notFetchedUsers = user.usersWhichCanApproveVacationRequest.filter(user => {
+        return !usersInfinityLoad?.entities.find(u => u.id === user.id);
+    }) as User[]
 
     const handleOk = async () => {
         try {
