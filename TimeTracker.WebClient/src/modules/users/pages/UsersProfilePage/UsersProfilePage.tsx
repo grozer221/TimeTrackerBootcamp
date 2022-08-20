@@ -80,6 +80,12 @@ export const UsersProfilePage = () => {
             dispatch(usersActions.getTracksByUserIdAndDate({UserId: userProfile.id, Date: date}))
     }, [date])
 
+    useEffect(() => {
+        return () => {
+            dispatch(usersActions.clearUserProfile())
+        }
+    }, []);
+
     if (userProfile == null) return <Loading/>
     if (tracks == null) tracks = []
 

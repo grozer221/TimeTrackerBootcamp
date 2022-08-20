@@ -7,7 +7,7 @@ import {
 } from "../../../../utils/permissions";
 import {useDispatch} from "react-redux";
 import {useAppSelector} from "../../../../store/store";
-import {Link, useLocation, useNavigate} from "react-router-dom";
+import {Link, useLocation} from "react-router-dom";
 import {Role} from "../../../../graphQL/enums/Role";
 import {Permission} from "../../../../graphQL/enums/Permission";
 import {User} from "../../graphQL/users.types";
@@ -20,10 +20,11 @@ import {ExcelExportButton} from "../../../../components/ExcelExportButton";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {getColumnSearchProps} from "../../components/parrtial/ColumnSerach";
 import {ItemType} from "antd/lib/menu/hooks/useItems";
+import {navigateActions} from "../../../navigate/store/navigate.slice";
+import moment from "moment/moment";
 
 export const UsersPage = React.memo(() => {
     const isAuth = useAppSelector(s => s.auth.isAuth)
-    const navigate = useNavigate()
     const dispatch = useDispatch()
     const location = useLocation()
 
@@ -33,10 +34,11 @@ export const UsersPage = React.memo(() => {
     let filter = useAppSelector(s => s.users.filter)
     let currentPage = useAppSelector(s => s.users.currentPage)
     let loadingUsers = useAppSelector(s => s.users.loadingUsers)
+    let authedUser = useAppSelector(s => s.auth.authedUser)
 
     useEffect(() => {
         if (!isAuthenticated())
-            navigate('/auth/login');
+            navigateActions.navigate("/auth/login")
     }, [isAuth])
 
     useEffect(() => {
@@ -45,6 +47,12 @@ export const UsersPage = React.memo(() => {
             skip: currentPage,
         }));
     }, [filter])
+
+    useEffect(() => {
+        return () => {
+            dispatch(usersActions.clearUsersPage())
+        }
+    }, [])
 
     // handle functions for filter dropdowns
     const handleChange: TableProps<User>['onChange'] = (pagination, filters, sorter) => {
@@ -63,15 +71,15 @@ export const UsersPage = React.memo(() => {
         let items: ItemType[] = []
 
         if (isAdministratorOrHavePermissions([Permission.UpdateUsers])) {
-            items.push(
-                {key: '1', label: (<Link to={"update/" + userEmail} state={{popup: location}}>Update</Link>)},
-                {key: '2', label: (<Link to={"remove/" + userEmail} state={{popup: location}}>Remove</Link>)},
-                {
-                    key: '3',
-                    label: (
-                        <Link to={"reset-password/" + userId} state={{popup: location}}>Reset password</Link>)
-                }
-            )
+            if (userId !== authedUser!.id) {
+                items.push(
+                    {key: '1', label: (<Link to={"update/" + userEmail} state={{popup: location}}>Update</Link>)},
+                    {key: '2', label: (<Link to={"remove/" + userEmail} state={{popup: location}}>Remove</Link>)})
+            }
+            items.push({
+                key: '3',
+                label: (<Link to={"reset-password/" + userId} state={{popup: location}}>Reset password</Link>)
+            })
         }
 
         items.push({key: '4', label: <Link to={"profile/" + userEmail}>Profile</Link>})
@@ -130,12 +138,18 @@ export const UsersPage = React.memo(() => {
                 </Tag>
             )
         },
-        {title: 'CreatedAt', dataIndex: 'createdAt', key: 'createdAt'},
-        {title: 'UpdatedAt', dataIndex: 'updatedAt', key: 'updatedAt'},
+        {
+            title: 'CreatedAt', dataIndex: 'createdAt', key: 'createdAt',
+            render: (text, record, index) => (moment(text).format('YYYY/MM/DD HH:mm:ss'))
+        },
+        {
+            title: 'UpdatedAt', dataIndex: 'updatedAt', key: 'updatedAt',
+            render: (text, record, index) => (moment(text).format('YYYY/MM/DD HH:mm:ss'))
+        },
         {
             title: 'Action', dataIndex: 'operation', key: 'operation',
             render: (text, record, index) => (
-                <Space size="middle">
+                <Space size="middle" wrap>
                     <Dropdown overlay={menu(record.email, record.id)}>
                         <DownCircleFilled/>
                     </Dropdown>
