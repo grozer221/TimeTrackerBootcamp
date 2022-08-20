@@ -4,6 +4,7 @@ import {CreateUserInput, RemoveUserInput, ResetUserPasswordInput, UpdateUserInpu
 import {GetEntitiesResponse} from "../../../graphQL/types/getEntitiesResponse";
 import {Track} from "../../tracks/graphQL/tracks.types";
 import {GetTracksByUserIdAndDateInputType} from "../../tracks/graphQL/tracks.queries";
+import {RemoveTrackInput, UpdateTrackInput} from "../../tracks/graphQL/tracks.mutations";
 
 type InitialState = {
     users: User[],
@@ -109,6 +110,8 @@ export const usersSlice = createSlice({
         setUserTracksCreating: (state, action: PayloadAction<boolean>) => {
             state.trackCreating = action.payload
         },
+        updateUserTrack: (state, action: PayloadAction<UpdateTrackInput>) => state,
+        deleteUserTrack: (state, action: PayloadAction<RemoveTrackInput>) => state,
     }
 })
 

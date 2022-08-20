@@ -9,9 +9,14 @@ import {nameof} from "../../../../utils/stringUtils";
 import {MinusCircleOutlined, PlusCircleOutlined} from "@ant-design/icons";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {useForm} from "antd/es/form/Form";
-import {CreateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
+import {
+    CreateTrackForOtherUserInput,
+    CreateTrackInput, RemoveTrackInput,
+    UpdateTrackInput
+} from "../../../tracks/graphQL/tracks.mutations";
 import {TrackerPanel} from "./TrackerPanel";
 import s from './TrackerStopwatch.module.css'
+import {PayloadAction} from "@reduxjs/toolkit";
 
 type FormValues = {
     title: string,
@@ -19,13 +24,18 @@ type FormValues = {
 }
 
 type stopwatchProps = {
-    track: Track
+    track: Track,
+    crudCallbacks: {
+        create: ((createTrackInput: CreateTrackInput | CreateTrackForOtherUserInput) => PayloadAction<CreateTrackInput, string>),
+        update: ((updateTrackInput: UpdateTrackInput) => PayloadAction<UpdateTrackInput, string>),
+        remove: ((removeTrackInput: RemoveTrackInput) => PayloadAction<RemoveTrackInput, string>)
+    }
 }
 
 
 
 
-export const Stopwatch: FC<stopwatchProps> = ({track}) => {
+export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
     const dispatch = useDispatch()
     const [stopDisable, setStopDisable] = useState(false)
     const [form] = useForm()
@@ -33,12 +43,12 @@ export const Stopwatch: FC<stopwatchProps> = ({track}) => {
 
 
     const onCreate = async (values: FormValues) => {
-        let newTrack: CreateTrackInput;
-        newTrack = {
+        let newTrack = {
             title: values.title || "",
             kind: TrackKind.Working
         }
-        dispatch(tracksAction.createTrack(newTrack))
+
+        dispatch(crudCallbacks.create(newTrack))
         setStopDisable(false)
         form.resetFields()
     }
@@ -50,13 +60,15 @@ export const Stopwatch: FC<stopwatchProps> = ({track}) => {
         console.log(endTime)
         const endTimeUTC = toUTCDateTime(endTime)
         console.log('utc ', endTimeUTC)
-        dispatch(tracksAction.updateTrack({
+        document.title = "Time Tracker"
+        const newTrack = {
             id: track.id,
             title: track.title,
             kind: track.kind,
             startTime: track.startTime,
             endTime: moment(endTimeUTC).format('YYYY-MM-DDTHH:mm:ss')
-        }))
+        }
+        dispatch(crudCallbacks.update(newTrack))
     }
     return (
         <>
@@ -99,7 +111,7 @@ export const Stopwatch: FC<stopwatchProps> = ({track}) => {
             </Form>
             <Divider/>
             {track ? (
-                <TrackerPanel track={track}/>
+                <TrackerPanel track={track} crudCallbacks={{update: crudCallbacks.update, remove: crudCallbacks.remove}}/>
             ) : (<></>)}
 
         </>

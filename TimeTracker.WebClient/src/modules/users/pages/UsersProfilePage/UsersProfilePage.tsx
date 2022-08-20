@@ -13,6 +13,12 @@ import moment, {now} from "moment/moment";
 import {TracksTable} from "../../../timeTracker/components/TracksTable/TracksTable";
 import {PlusOutlined} from "@ant-design/icons";
 import {Permission} from "../../../../graphQL/enums/Permission";
+import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {
+    CreateTrackForOtherUserInput, CreateTrackInput,
+    RemoveTrackInput,
+    UpdateTrackInput
+} from "../../../tracks/graphQL/tracks.mutations";
 
 
 export const UsersProfilePage = () => {
@@ -30,6 +36,26 @@ export const UsersProfilePage = () => {
     let [date, setDate] = useState(moment(now()).toISOString())
     const today = new Date()
     const dateObj = new Date(date)
+    const canEditDateOrKind = isAdministratorOrHavePermissions([Permission.UpdateOthersTimeTracker])
+        && (today.getMonth() == dateObj.getMonth() && today.getFullYear() == dateObj.getFullYear())
+
+    const update = (updateTrackInput: UpdateTrackInput) => {
+        return usersActions.updateUserTrack(updateTrackInput)
+    }
+
+    const create = (createTrackInput: CreateTrackInput | CreateTrackForOtherUserInput) => {
+        return tracksAction.createTrackForOtherUser(createTrackInput as CreateTrackForOtherUserInput);
+    }
+
+    const remove = (removeTrackInput: RemoveTrackInput) => {
+        return usersActions.deleteUserTrack(removeTrackInput)
+    }
+
+    if (userProfile != null)
+        dispatch(tracksAction.setGetTracksInputData({
+            UserId: userProfile!.id,
+            Date: date
+        }))
 
     const editable = (dateObj.getMonth() == today.getMonth() && dateObj.getFullYear() == today.getFullYear())
         && isAdministratorOrHavePermissions([Permission.UpdateOthersTimeTracker])
@@ -40,6 +66,7 @@ export const UsersProfilePage = () => {
     }, [isAuth])
 
     useEffect(() => {
+
         dispatch(usersActions.getUserByEmailAsync(email))
     }, [])
 
@@ -106,7 +133,11 @@ export const UsersProfilePage = () => {
                       </Col>
                   </Row>
               }>
-            <TracksTable tracks={tracks} date={date} loading={userTracksLoading}/>
+            <TracksTable tracks={tracks}
+                         date={date} loading={userTracksLoading}
+                         canEditDateOrKind={canEditDateOrKind}
+                         crudCallbacks={{create, update, remove}}
+            />
         </Card>
     </>
 }

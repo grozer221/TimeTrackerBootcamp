@@ -115,16 +115,15 @@ export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, 
             })).pipe(
                 mergeMap(response => {
                     const tracksInputData = state$.value.tracks.getTracksInputData
-                    if (tracksInputData.UserId !== '')
-                        return [
-                            tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
-                            tracksAction.getCurrentAsync(),
-                            notificationsActions.addInfo("Track update!")
-                        ]
+                    console.log(tracksInputData)
                     return [
                         tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
+                        tracksAction.getCurrentAsync(),
                         notificationsActions.addInfo("Track update!")
                     ]
+                    /*return[
+                        notificationsActions.addInfo("Track update!")
+                    ]*/
                 })
             )
         ),
@@ -159,7 +158,8 @@ export const getTracksByUserIdAndDateEpic: Epic<ReturnType<typeof tracksAction.g
                 }
             })).pipe(
                 mergeMap(response => [
-                    tracksAction.addTracks(response.data.tracks.getTracksByUserIdAndDate)
+                    tracksAction.addTracks(response.data.tracks.getTracksByUserIdAndDate),
+
                 ]),
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(tracksAction.setLoadingGet(true)),

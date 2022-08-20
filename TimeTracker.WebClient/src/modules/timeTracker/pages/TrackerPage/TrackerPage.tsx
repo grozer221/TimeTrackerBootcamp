@@ -18,6 +18,13 @@ import {TrackStartTime} from "../../components/Table/TrackStartTime";
 import {TrackTools} from "../../components/Table/TrackTools";
 import {getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
 import {TracksTable} from "../../components/TracksTable/TracksTable";
+import s from "./TrackerPage.module.css"
+import {
+    CreateTrackForOtherUserInput,
+    CreateTrackInput,
+    RemoveTrackInput,
+    UpdateTrackInput
+} from "../../../tracks/graphQL/tracks.mutations";
 
 type DataType = {
     id: string
@@ -37,6 +44,7 @@ export const TrackerPage: React.FC = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
     const userId = useAppSelector(s => s.auth.authedUser?.id) as string
+    const canEditDateOrKind = false
 
 
     const tracks = useAppSelector(s => s.tracks.tracks)
@@ -47,6 +55,18 @@ export const TrackerPage: React.FC = () => {
     const indexOfS = Object.values(TrackKind).indexOf(trackKind as unknown as TrackKind)
 
     let [date, setDate] = useState(moment(now()).toISOString())
+
+    const update = (updateTrackInput: UpdateTrackInput) => {
+        return tracksAction.updateTrack(updateTrackInput)
+    }
+
+    const create = (createTrackInput: CreateTrackInput | CreateTrackForOtherUserInput) => {
+        return tracksAction.createTrack(createTrackInput as CreateTrackInput)
+    }
+
+    const remove = (removeTrackInput: RemoveTrackInput) => {
+        return tracksAction.removeTrack(removeTrackInput)
+    }
 
     useEffect(() => {
         if (!isAuthenticated())
@@ -69,12 +89,12 @@ export const TrackerPage: React.FC = () => {
 
     return (
         <>
-            <Stopwatch track={currentTrack}/>
-            <DatePicker picker={"month"} defaultValue={moment(now())} onChange={e => {
+            <Stopwatch track={currentTrack} crudCallbacks={{create, update, remove}}/>
+            <DatePicker className={s.date_picker} picker={"month"} defaultValue={moment(now())} onChange={e => {
                 if (e != null)
                     setDate(e.toISOString())
             }}/>
-            <TracksTable tracks={tracks} date={date} loading={loadingGet}/>
+            <TracksTable tracks={tracks} date={date} loading={loadingGet} canEditDateOrKind={canEditDateOrKind} crudCallbacks={{create, update, remove}}/>
         </>
     );
 };
