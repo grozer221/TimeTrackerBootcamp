@@ -12,6 +12,6 @@ namespace TimeTracker.Business.Models.SettingsCategories.SettingsTasksCategories
             get => timeWhenCreate.AsUtc();
             set => timeWhenCreate = value;
         }
-        public List<DayOfWeek> DaysOfWeek { get; set; }
+        public List<DayOfWeek> DaysOfWeek { get; set; } = new List<DayOfWeek>();
     }
 }
