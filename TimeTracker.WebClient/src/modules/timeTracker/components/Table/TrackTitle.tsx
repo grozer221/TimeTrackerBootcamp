@@ -1,7 +1,7 @@
 import React, {createRef, FC, FormEvent, useEffect, useState} from 'react';
 import {EditOutlined} from '@ant-design/icons';
 import {Input, InputRef} from 'antd';
-import s from '../../pages/TrackerPage/TrackerPage.module.css'
+import s from './TrackerTable.module.css'
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useDispatch} from "react-redux";
@@ -54,7 +54,7 @@ export const TrackTitle: FC<Props> = ({track, updateCallback}) => {
     }
 
     return (
-        <>
+        < >
             <Input
                 prefix={<EditOutlined className={s.icons}/>}
                 bordered={bordered}

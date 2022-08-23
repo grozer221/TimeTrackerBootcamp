@@ -1,0 +1,7 @@
+.edit_info{
+    display: flex;
+    right: 2px;
+    bottom: 2px;
+    opacity: 50%;
+    font-size: 10px;
+}

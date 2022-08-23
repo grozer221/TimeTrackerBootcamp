@@ -1,5 +1,5 @@
-import React, {FC, useState} from "react";
-import {Button, Col, Divider, Form, Input, Row} from "antd";
+import React, {FC, useEffect, useState} from "react";
+import {Button, ButtonProps, Col, Divider, Form, Input, Row} from "antd";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
@@ -37,30 +37,19 @@ type stopwatchProps = {
 
 export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
     const dispatch = useDispatch()
-    const [stopDisable, setStopDisable] = useState(false)
+    const [button, setButton] = useState<ButtonProps>()
+    const [buttonText, setButtonText] = useState('')
     const [form] = useForm()
 
-
-
-    const onCreate = async (values: FormValues) => {
-        let newTrack = {
-            title: values.title || "",
-            kind: TrackKind.Working
-        }
-
-        dispatch(crudCallbacks.create(newTrack))
-        setStopDisable(false)
-        form.resetFields()
-    }
+    const StartButton = {
+        htmlType: 'submit',
+        icon: <PlusCircleOutlined/>
+    } as ButtonProps
 
     const OnEndTrack = () => {
-        setStopDisable(true)
-        console.log('startime', track.startTime)
+        localStorage.removeItem('clockTime')
         const endTime = new Date()
-        console.log(endTime)
         const endTimeUTC = toUTCDateTime(endTime)
-        console.log('utc ', endTimeUTC)
-        document.title = "Time Tracker"
         const newTrack = {
             id: track.id,
             title: track.title,
@@ -70,6 +59,28 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
         }
         dispatch(crudCallbacks.update(newTrack))
     }
+
+    const StopButton = {
+        danger: true,
+        icon: <MinusCircleOutlined/>,
+        onClick: OnEndTrack
+    } as ButtonProps
+
+    useEffect(()=>{
+        track ? setButton(StopButton) : setButton(StartButton)
+        track ? setButtonText('Stop') : setButtonText('Start')
+    }, [track])
+
+    const onCreate = async (values: FormValues) => {
+        let newTrack = {
+            title: values.title || "",
+            kind: TrackKind.Working
+        }
+        dispatch(crudCallbacks.create(newTrack))
+        form.resetFields()
+    }
+
+
     return (
         <>
             <Form
@@ -79,33 +90,19 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
                 size={'large'}
             >
                 <Row gutter={24}>
-                    <Col span={16}>
+                    <Col span={18}>
                         <Form.Item name={nameof<FormValues>('title')}>
                             <Input placeholder={'Title'}/>
                         </Form.Item>
                     </Col>
-                    <Col span={4}>
+                    <Col span={6}>
                         <Button
-                            htmlType={'submit'}
                             type={'primary'}
                             shape={'round'}
-                            icon={<PlusCircleOutlined/>}
                             size={'large'}
                             className={s.start_button}
-                        >Start </Button>
-                    </Col>
-                    <Col span={4}>
-                        <Button
-                            type={'primary'}
-                            shape={"round"}
-                            size={"large"}
-                            disabled={stopDisable}
-                            icon={<MinusCircleOutlined />}
-                            className={s.start_button}
-                            danger={true}
-                            onClick={OnEndTrack}
-                        >End</Button>
-
+                            {...button}
+                        >{buttonText}</Button>
                     </Col>
                 </Row>
             </Form>
@@ -113,8 +110,6 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
             {track ? (
                 <TrackerPanel track={track} crudCallbacks={{update: crudCallbacks.update, remove: crudCallbacks.remove}}/>
             ) : (<></>)}
-
         </>
-
     )
 }

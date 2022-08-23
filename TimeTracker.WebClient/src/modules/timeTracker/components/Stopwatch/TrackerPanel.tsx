@@ -12,6 +12,8 @@ import {
     UpdateTrackInput
 } from "../../../tracks/graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
+import {TrackTools} from "../Table/TrackTools";
+import {TrackTitle} from "../Table/TrackTitle";
 
 type panelProps = {
     time: number
@@ -26,18 +28,13 @@ type trackerPanelProps = {
 }
 
 const Panel: FC<panelProps> = ({time}) => {
-    const totalMilliseconds = time * 1000
-    const totalDate = new Date(totalMilliseconds)
-    const totalDateUTC = toUTCDateTime(totalDate)
-    const clockTime = moment(totalDateUTC).format("HH:mm:ss")
 
-    useEffect(() => {
-        document.title = "Time Tracker " + clockTime
-    })
+
+
 
     return (
         <>
-            <span>{clockTime}</span>
+
         </>
     )
 }
@@ -47,12 +44,23 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track, crudCallbacks}) => {
     const endDate = new Date()
     let timerStartTime = (endDate.getTime() - startDate.getTime()) / 1000
     const {time, start, pause, reset, status, advanceTime} = useTimer({});
-
+    const totalMilliseconds = time * 1000
+    const totalDate = new Date(totalMilliseconds)
+    const totalDateUTC = toUTCDateTime(totalDate)
+    const clockTime = moment(totalDateUTC).format("HH:mm:ss")
 
     useEffect(() => {
-        if (track.endTime)
+        if(time > 0)
+            console.log(track)
+            localStorage.setItem('clockTime', totalDateUTC.toString())
+    }, [time])
+
+    useEffect(() => {
+        if (track.endTime) {
             reset()
-        if (time != timerStartTime && !track.endTime) {
+            pause()
+        }
+        if (track && time != timerStartTime && !track.endTime) {
             reset()
             start()
             advanceTime(timerStartTime)
@@ -67,12 +75,14 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track, crudCallbacks}) => {
         <>
             <div className={s.current_track_panel}>
                 <div className={s.stopwatch}>
-                    <Panel time={time}/>
+                    {clockTime}
+                    {/*<Panel time={time}/>*/}
+
+                    <div className={s.current_track_panel_row}>
+                        <TrackTitle track={track} updateCallback={crudCallbacks.update}/>
+                        <TrackTools id={track.id} removeCallback={crudCallbacks.remove}/>
+                    </div>
                 </div>
-                <div className={s.current_track}><CurrentTrackInfo track={track} crudCallbacks={{
-                    update: crudCallbacks.update,
-                    remove: crudCallbacks.remove
-                }}/></div>
             </div>
             <Divider/>
 
