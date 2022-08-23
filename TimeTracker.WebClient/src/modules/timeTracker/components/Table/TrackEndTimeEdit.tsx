@@ -36,6 +36,7 @@ export const TrackEndTimeEdit: FC<Props> = ({track, updateCallback}) => {
             setPickerValue(endTimeMoment)
             return
         }
+        setPickerValue(value!)
         dispatch(updateCallback(newTrack))
     }
 

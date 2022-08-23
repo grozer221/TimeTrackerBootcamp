@@ -24,9 +24,7 @@ export const CurrentTrackInfo: FC<Props> = ({track, crudCallbacks}) => {
     return (
         <>
             <Card><span className={s.current_track_panel_title}><b>Current track</b></span>
-                <div className={s.current_track_item}>
-                    <TrackTitle track={track} updateCallback={crudCallbacks.update}/>
-                </div>
+
                 <div className={s.current_track_panel_row}>
                     <div className={[s.current_track_item, s.kind_item].join(' ')}>
                         <span>Kind</span>
@@ -43,9 +41,7 @@ export const CurrentTrackInfo: FC<Props> = ({track, crudCallbacks}) => {
                         <Tag icon={<SyncOutlined spin/>} color="processing" className={s.processing_tag}>PROCESSING</Tag>
                     </div>
                     <div className={[s.current_track_item, s.kind_item].join(' ')}>
-                        <div className={s.current_track_delete_tool}>
-                            <TrackTools id={track.id} removeCallback={crudCallbacks.remove}/>
-                        </div>
+
                     </div>
                 </div>
             </Card>

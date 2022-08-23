@@ -49,6 +49,7 @@ import {SickLeaveCreatePage} from "./modules/sickLeave/pages/SickLeaveCreatePage
 import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage";
 import {UsersProfilePage} from "./modules/users/pages/UsersProfilePage/UsersProfilePage";
 import {CreateTrackModal} from "./modules/users/components/CreateTrackModal/CreateTrackModal";
+import {TitleClock} from "./modules/timeTracker/components/TitleClock/TitleClock";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -68,6 +69,7 @@ export const App = () => {
 
     return (
         <>
+            {/*<TitleClock clockTime={localStorage.getItem('clockTime')}/>*/}
             <Settings/>
             <Notifications/>
             <NavigateTo/>

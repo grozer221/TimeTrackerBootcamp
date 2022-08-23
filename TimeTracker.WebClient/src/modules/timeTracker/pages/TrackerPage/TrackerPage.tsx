@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useNavigate, useSearchParams} from "react-router-dom";
-import {DatePicker} from 'antd';
+import {Col, DatePicker, Row} from 'antd';
 import {useDispatch} from "react-redux";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 import {useAppSelector} from "../../../../store/store";
@@ -71,7 +71,7 @@ export const TrackerPage: React.FC = () => {
         dispatch(tracksAction.getTracksByUserIdAndDate({UserId: userId, Date: date}))
     }, [setSearchParams])
 
-    useEffect(()=>{
+    useEffect(() => {
         dispatch(tracksAction.getCurrentAsync())
         dispatch(tracksAction.setGetTracksInputData({UserId: userId, Date: date}))
         dispatch(tracksAction.getTracksByUserIdAndDate({UserId: userId, Date: date}))
@@ -81,11 +81,18 @@ export const TrackerPage: React.FC = () => {
     return (
         <>
             <Stopwatch track={currentTrack} crudCallbacks={{create, update, remove}}/>
-            <DatePicker className={s.date_picker} picker={"month"} defaultValue={moment(now())} onChange={e => {
-                if (e != null)
-                    setDate(e.toISOString())
-            }}/>
-            <TracksTable tracks={tracks} date={date} loading={loadingGet} canEditDateOrKind={canEditDateOrKind} crudCallbacks={{create, update, remove}}/>
+            <Row style={{marginTop: 10, marginBottom: 10}}>
+                <Col span={20}></Col>
+                <Col span={4}>
+                    <DatePicker className={s.date_picker} picker={"month"} defaultValue={moment(now())} onChange={e => {
+                        if (e != null)
+                            setDate(e.toISOString())
+                    }}/>
+
+                </Col>
+            </Row>
+            <TracksTable tracks={tracks} date={date} loading={loadingGet} canEditDateOrKind={canEditDateOrKind}
+                         crudCallbacks={{create, update, remove}}/>
         </>
     );
 };
