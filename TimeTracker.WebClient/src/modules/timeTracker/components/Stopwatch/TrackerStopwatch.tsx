@@ -47,7 +47,7 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
     } as ButtonProps
 
     const OnEndTrack = () => {
-        localStorage.removeItem('clockTime')
+        localStorage.removeItem('currentTrackStartTime')
         const endTime = new Date()
         const endTimeUTC = toUTCDateTime(endTime)
         const newTrack = {
@@ -67,6 +67,8 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
     } as ButtonProps
 
     useEffect(()=>{
+        if(track)
+            localStorage.setItem('currentTrackStartTime', track.startTime)
         track ? setButton(StopButton) : setButton(StartButton)
         track ? setButtonText('Stop') : setButtonText('Start')
     }, [track])

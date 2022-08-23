@@ -1,53 +1,32 @@
-import React, {FC, useEffect} from 'react';
-import {useTimer} from "use-timer";
-import {toUTCDateTime} from "../../../../convertors/toUTCDateTime";
+import React, {FC, useEffect, useState} from 'react';
 import moment from "moment";
+import {render} from "react-dom";
 
-type Props = {
-    clockTime: string | null
-}
 
-type TimerProps = {
-    time: number
-}
+export const TitleClock: FC = () => {
+    const [time, setTime] = useState('')
 
-const Timer: FC<TimerProps> = ({time})=>{
-    const totalMilliseconds = time * 1000
-    const totalDate = new Date(totalMilliseconds)
-    /*const totalDateUTC = toUTCDateTime(totalDate)*/
-    const totalTime = moment(totalDate).format("HH:mm:ss")
+    const sleep = (ms: number) => {
+        let now = new Date().getTime();
+        while (new Date().getTime() < now + ms) { /* Do nothing */
+        }
+    }
 
-    useEffect(()=>{
-        localStorage.setItem('clockTime', totalTime)
-        document.title = "Time Tracker " + totalTime
+    useEffect(() => {
+        console.log('a')
+        document.title = 'Time Tracker' + time
+        const startTime = localStorage.getItem('currentTrackStartTime')
+        if (!startTime)
+            return
+        const startTimeDate = new Date(startTime)
+        const now = new Date()
+        const totalMillisecond = now.getTime() - startTimeDate.getTime()
+        const totalDate = new Date(totalMillisecond)
+        console.log(totalDate)
+        setTime(moment(totalDate).format("HH:mm:ss"))
     }, [time])
 
-    return(<></>)
+    return (
+        <></>
+    )
 }
-
-export const TitleClock: FC<Props> = React.memo(({clockTime}) =>
-    {
-        if(clockTime === 'Invalid Date')
-            return(<></>)
-        const startDate = new Date(clockTime as string)
-        const initialTime = startDate.getTime()/1000
-        const {time, start, pause, reset, status, advanceTime} = useTimer({initialTime});
-
-        useEffect(()=>{
-            if(clockTime === 'Invalid Date') {
-                clockTime=''
-                reset()
-                return
-            }
-
-            if(clockTime)
-                console.log('Поехали')
-                start()
-
-        }, [clockTime])
-
-        return (
-            <><Timer time={time}/></>
-        )
-    }
-)

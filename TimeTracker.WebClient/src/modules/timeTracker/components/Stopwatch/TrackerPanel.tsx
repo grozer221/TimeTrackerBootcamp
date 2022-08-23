@@ -5,7 +5,6 @@ import {Track} from "../../../tracks/graphQL/tracks.types";
 import moment from "moment";
 import {useTimer} from "use-timer";
 import {toUTCDateTime} from "../../../../convertors/toUTCDateTime";
-import {CurrentTrackInfo} from "../CurrentTrack/CurrentTrack";
 import {
     CreateTrackForOtherUserInput,
     CreateTrackInput, RemoveTrackInput,
@@ -15,28 +14,12 @@ import {PayloadAction} from "@reduxjs/toolkit";
 import {TrackTools} from "../Table/TrackTools";
 import {TrackTitle} from "../Table/TrackTitle";
 
-type panelProps = {
-    time: number
-}
-
 type trackerPanelProps = {
     track: Track,
     crudCallbacks: {
         update: ((updateTrackInput: UpdateTrackInput) => PayloadAction<UpdateTrackInput, string>),
         remove: ((removeTrackInput: RemoveTrackInput) => PayloadAction<RemoveTrackInput, string>)
     }
-}
-
-const Panel: FC<panelProps> = ({time}) => {
-
-
-
-
-    return (
-        <>
-
-        </>
-    )
 }
 
 export const TrackerPanel: FC<trackerPanelProps> = ({track, crudCallbacks}) => {
@@ -48,12 +31,6 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track, crudCallbacks}) => {
     const totalDate = new Date(totalMilliseconds)
     const totalDateUTC = toUTCDateTime(totalDate)
     const clockTime = moment(totalDateUTC).format("HH:mm:ss")
-
-    useEffect(() => {
-        if(time > 0)
-            console.log(track)
-            localStorage.setItem('clockTime', totalDateUTC.toString())
-    }, [time])
 
     useEffect(() => {
         if (track.endTime) {
@@ -76,7 +53,6 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track, crudCallbacks}) => {
             <div className={s.current_track_panel}>
                 <div className={s.stopwatch}>
                     {clockTime}
-                    {/*<Panel time={time}/>*/}
 
                     <div className={s.current_track_panel_row}>
                         <TrackTitle track={track} updateCallback={crudCallbacks.update}/>
