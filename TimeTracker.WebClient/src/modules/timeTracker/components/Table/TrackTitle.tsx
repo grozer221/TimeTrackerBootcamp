@@ -47,6 +47,7 @@ export const TrackTitle: FC<Props> = ({track, updateCallback}) => {
             id: track.id,
             title: newTitle,
             kind: track.kind,
+            creation: track.creation,
             startTime: track.startTime,
             endTime: track.endTime
         }

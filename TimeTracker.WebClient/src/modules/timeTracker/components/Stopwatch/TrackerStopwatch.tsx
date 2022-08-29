@@ -2,7 +2,6 @@ import React, {FC, useEffect, useState} from "react";
 import {Button, ButtonProps, Col, Divider, Form, Input, Row} from "antd";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {useDispatch} from "react-redux";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
 import moment from "moment";
 import {toUTCDateTime} from "../../../../convertors/toUTCDateTime";
 import {nameof} from "../../../../utils/stringUtils";
@@ -11,12 +10,14 @@ import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {useForm} from "antd/es/form/Form";
 import {
     CreateTrackForOtherUserInput,
-    CreateTrackInput, RemoveTrackInput,
+    CreateTrackInput,
+    RemoveTrackInput,
     UpdateTrackInput
 } from "../../../tracks/graphQL/tracks.mutations";
 import {TrackerPanel} from "./TrackerPanel";
 import s from './TrackerStopwatch.module.css'
 import {PayloadAction} from "@reduxjs/toolkit";
+import {TrackCreation} from "../../../../graphQL/enums/TrackCreation";
 
 type FormValues = {
     title: string,
@@ -47,13 +48,13 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
     } as ButtonProps
 
     const OnEndTrack = () => {
-        localStorage.removeItem('currentTrackStartTime')
         const endTime = new Date()
         const endTimeUTC = toUTCDateTime(endTime)
         const newTrack = {
             id: track.id,
             title: track.title,
             kind: track.kind,
+            creation: track.creation || TrackCreation.Manually,
             startTime: track.startTime,
             endTime: moment(endTimeUTC).format('YYYY-MM-DDTHH:mm:ss')
         }
@@ -67,9 +68,6 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
     } as ButtonProps
 
     useEffect(()=>{
-        console.log('aaaa')
-        if(track.startTime)
-            localStorage.setItem('currentTrackStartTime', track.startTime)
         track ? setButton(StopButton) : setButton(StartButton)
         track ? setButtonText('Stop') : setButtonText('Start')
     }, [track])
@@ -77,7 +75,8 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
     const onCreate = async (values: FormValues) => {
         let newTrack = {
             title: values.title || "",
-            kind: TrackKind.Working
+            kind: TrackKind.Working,
+            creation: TrackCreation.Manually,
         }
         dispatch(crudCallbacks.create(newTrack))
         form.resetFields()

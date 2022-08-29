@@ -82,7 +82,7 @@ namespace TimeTracker.MsSql.Repositories
         {
             model.UpdatedAt = DateTime.Now;
             string query = @"UPDATE Tracks 
-                            SET Title = @Title, Kind = @Kind, StartTime = @StartTime, 
+                            SET Title = @Title, Kind = @Kind, Creation = @Creation, StartTime = @StartTime, 
                             EndTime = @EndTime, UpdatedAt = @UpdatedAt WHERE Id = @Id";
 
             using (IDbConnection db = dapperContext.CreateConnection())

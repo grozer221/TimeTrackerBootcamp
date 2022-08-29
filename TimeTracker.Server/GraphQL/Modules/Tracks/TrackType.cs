@@ -22,6 +22,10 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                 .Name("Kind")
                 .Resolve(context => context.Source.Kind);
 
+            Field<NonNullGraphType<TrackCreationType>, TrackCreation>()
+                .Name("Creation")
+                .Resolve(context => context.Source.Creation);
+
             Field<DateTimeGraphType, DateTime?>()
                 .Name("StartTime")
                 .Resolve(context => context.Source.StartTime);

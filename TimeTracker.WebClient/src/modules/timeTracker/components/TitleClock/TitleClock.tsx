@@ -15,7 +15,7 @@ export const TitleClock: FC = () => {
     useEffect(() => {
         console.log('a')
         sleep(200)
-        document.title = 'Time Tracker' + time
+        /*document.title = 'Time Tracker' + time*/
         const startTime = localStorage.getItem('currentTrackStartTime')
         if (!startTime) {
             console.log('...')

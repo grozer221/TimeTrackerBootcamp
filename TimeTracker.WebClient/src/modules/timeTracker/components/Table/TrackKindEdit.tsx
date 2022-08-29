@@ -27,6 +27,7 @@ export const TrackKindEdit: FC<Props> = ({track, updateCallback}) => {
             id: track.id,
             title: track.title,
             kind: value,
+            creation: track.creation,
             startTime: track.startTime,
             endTime: track.endTime
         }

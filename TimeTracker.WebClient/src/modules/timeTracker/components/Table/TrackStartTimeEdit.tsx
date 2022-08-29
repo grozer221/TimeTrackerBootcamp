@@ -25,6 +25,7 @@ export const TrackStartTimeEdit: FC<Props> = ({track, updateCallback}) => {
             id: track.id,
             title: track.title,
             kind: track.kind,
+            creation: track.creation,
             startTime: value!.utc().format('YYYY-MM-DDTHH:mm:ss'),
             endTime: track.endTime
         }

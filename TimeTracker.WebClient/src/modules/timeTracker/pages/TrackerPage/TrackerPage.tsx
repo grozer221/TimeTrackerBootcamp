@@ -16,6 +16,7 @@ import {
     RemoveTrackInput,
     UpdateTrackInput
 } from "../../../tracks/graphQL/tracks.mutations";
+import {Employment} from "../../../../graphQL/enums/Employment";
 
 type DataType = {
     id: string
@@ -43,6 +44,7 @@ export const TrackerPage: React.FC = () => {
 
     const [searchParams, setSearchParams] = useSearchParams({});
     const trackKind = searchParams.get('kind') || ''
+    const employment = useAppSelector(s => s.auth.authedUser?.employment)
     const indexOfS = Object.values(TrackKind).indexOf(trackKind as unknown as TrackKind)
 
     let [date, setDate] = useState(moment(now()).toISOString())
@@ -80,7 +82,9 @@ export const TrackerPage: React.FC = () => {
 
     return (
         <>
-            <Stopwatch track={currentTrack} crudCallbacks={{create, update, remove}}/>
+            {employment === Employment.PartTime ?
+                <Stopwatch track={currentTrack} crudCallbacks={{create, update, remove}}/> :
+                <></>}
             <Row style={{marginTop: 10, marginBottom: 10}}>
                 <Col span={20}></Col>
                 <Col span={4}>

@@ -17,7 +17,7 @@ namespace TimeTracker.MsSql.Extensions
             }
             string query = @"INSERT INTO Tracks 
                               (Id, Title, UserId, Kind, StartTime, EndTime, CreatedAt, UpdatedAt)
-                              VALUES (@Id, @Title, @UserId, @Kind, 
+                              VALUES (@Id, @Title, @UserId, @Kind, @Creation, 
                               @StartTime, @EndTime, @CreatedAt, @UpdatedAt)";
 
             await connection.QuerySingleOrDefaultAsync(query, model, transaction);

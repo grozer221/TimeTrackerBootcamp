@@ -24,12 +24,15 @@ import {
     UpdateTrackInput
 } from "../../../tracks/graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
+import {TrackCreation} from "../../../../graphQL/enums/TrackCreation";
+import {TrackCreationInfo} from "../Table/TrackCreationInfo";
 
 type DataType = {
     id: string
     userId: string,
     title: string,
     kind: TrackKind,
+    creation: TrackCreation,
     startTime: string,
     endTime: string,
     duration: string,
@@ -56,6 +59,7 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
     const isMe = useAppSelector(s => s.auth.authedUser?.id) as string == ownerId
     const editable = (dateObj.getMonth() == today.getMonth() && dateObj.getFullYear() == today.getFullYear())
         && (isAdministratorOrHavePermissions([Permission.UpdateOthersTimeTracker]) || isMe)
+    console.log(tracks)
 
 
     let tableData = tracks.map(t => {
@@ -82,6 +86,14 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
                 if(canEditDateOrKind)
                     return <TrackKindEdit track={record} updateCallback={crudCallbacks.update}/>
                 return <TrackKindInfo kind={value}/>
+            }
+        },
+        {
+            title: 'Creation', dataIndex: 'creation', key: 'creation',
+            render: (value, record, index) => {
+                return(
+                    <TrackCreationInfo creation={value}/>
+                )
             }
         },
         {
