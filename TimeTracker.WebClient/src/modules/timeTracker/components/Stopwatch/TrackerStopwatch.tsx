@@ -67,7 +67,8 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
     } as ButtonProps
 
     useEffect(()=>{
-        if(track)
+        console.log('aaaa')
+        if(track.startTime)
             localStorage.setItem('currentTrackStartTime', track.startTime)
         track ? setButton(StopButton) : setButton(StartButton)
         track ? setButtonText('Stop') : setButtonText('Start')
@@ -110,7 +111,7 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
             </Form>
             <Divider/>
             {track ? (
-                <TrackerPanel track={track} crudCallbacks={{update: crudCallbacks.update, remove: crudCallbacks.remove}}/>
+                <TrackerPanel track={track} />
             ) : (<></>)}
         </>
     )

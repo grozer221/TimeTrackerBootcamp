@@ -13,31 +13,59 @@ import {
 import {PayloadAction} from "@reduxjs/toolkit";
 import {TrackTools} from "../Table/TrackTools";
 import {TrackTitle} from "../Table/TrackTitle";
+import {tracksAction} from "../../../tracks/store/tracks.slice";
+
+type timerProps = {
+    time: number
+}
 
 type trackerPanelProps = {
     track: Track,
-    crudCallbacks: {
+    /*crudCallbacks: {
         update: ((updateTrackInput: UpdateTrackInput) => PayloadAction<UpdateTrackInput, string>),
         remove: ((removeTrackInput: RemoveTrackInput) => PayloadAction<RemoveTrackInput, string>)
-    }
+    }*/
 }
 
-export const TrackerPanel: FC<trackerPanelProps> = ({track, crudCallbacks}) => {
-    const startDate = new Date(track.startTime)
-    const endDate = new Date()
-    let timerStartTime = (endDate.getTime() - startDate.getTime()) / 1000
-    const {time, start, pause, reset, status, advanceTime} = useTimer({});
+const Timer: FC<timerProps> =({time}) =>{
     const totalMilliseconds = time * 1000
     const totalDate = new Date(totalMilliseconds)
     const totalDateUTC = toUTCDateTime(totalDate)
     const clockTime = moment(totalDateUTC).format("HH:mm:ss")
 
+    return(
+        <>
+            {clockTime}
+        </>
+    )
+}
+
+export const TrackerPanel: FC<trackerPanelProps> = ({track/*, crudCallbacks*/}) => {
+    const startDate = new Date(track.startTime)
+    const endDate = new Date()
+    let timerStartTime = (endDate.getTime() - startDate.getTime()) / 1000
+    console.log(endDate)
+    const {time, start, pause, reset, status, advanceTime} = useTimer();
+
+
+    const update = (updateTrackInput: UpdateTrackInput) => {
+        return tracksAction.updateTrack(updateTrackInput)
+    }
+
+    /*const create = (createTrackInput: CreateTrackInput | CreateTrackForOtherUserInput) => {
+        return tracksAction.createTrack(createTrackInput as CreateTrackInput)
+    }*/
+
+    const remove = (removeTrackInput: RemoveTrackInput) => {
+        return tracksAction.removeTrack(removeTrackInput)
+    }
+
     useEffect(() => {
         if (track.endTime) {
             reset()
-            pause()
         }
-        if (track && time != timerStartTime && !track.endTime) {
+        if (time != timerStartTime && !track.endTime) {
+            console.log('f')
             reset()
             start()
             advanceTime(timerStartTime)
@@ -52,11 +80,10 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track, crudCallbacks}) => {
         <>
             <div className={s.current_track_panel}>
                 <div className={s.stopwatch}>
-                    {clockTime}
-
+                    <Timer time={time}/>
                     <div className={s.current_track_panel_row}>
-                        <TrackTitle track={track} updateCallback={crudCallbacks.update}/>
-                        <TrackTools id={track.id} removeCallback={crudCallbacks.remove}/>
+                        <TrackTitle track={track} updateCallback={update}/>
+                        <TrackTools id={track.id} removeCallback={remove}/>
                     </div>
                 </div>
             </div>

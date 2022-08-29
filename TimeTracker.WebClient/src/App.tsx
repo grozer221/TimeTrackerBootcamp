@@ -69,7 +69,7 @@ export const App = () => {
 
     return (
         <>
-            {/*<TitleClock />*/}
+            <TitleClock />
             <Settings/>
             <Notifications/>
             <NavigateTo/>

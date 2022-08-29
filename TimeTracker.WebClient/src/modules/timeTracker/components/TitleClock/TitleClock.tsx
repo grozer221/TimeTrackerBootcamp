@@ -14,10 +14,13 @@ export const TitleClock: FC = () => {
 
     useEffect(() => {
         console.log('a')
+        sleep(200)
         document.title = 'Time Tracker' + time
         const startTime = localStorage.getItem('currentTrackStartTime')
-        if (!startTime)
+        if (!startTime) {
+            console.log('...')
             return
+        }
         const startTimeDate = new Date(startTime)
         const now = new Date()
         const totalMillisecond = now.getTime() - startTimeDate.getTime()
