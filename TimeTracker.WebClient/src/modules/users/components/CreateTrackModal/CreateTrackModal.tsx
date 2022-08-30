@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {FC, useState} from 'react';
+import {FC} from 'react';
 import {DatePicker, Form, Input, Modal, Radio} from "antd";
 import Title from "antd/lib/typography/Title";
 import {nameof, uppercaseToWords} from "../../../../utils/stringUtils";
@@ -10,7 +10,7 @@ import {usersActions} from "../../store/users.slice";
 import {navigateActions} from "../../../navigate/store/navigate.slice";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
-import moment from "moment";
+import {TrackCreation} from "../../../../graphQL/enums/TrackCreation";
 
 type FormValues = {
     title: string,
@@ -40,6 +40,7 @@ export const CreateTrackModal: FC<Props> = () => {
                 userId: user?.id as string,
                 kind,
                 title,
+                creation: TrackCreation.Manually,
                 startTime: startTime.toISOString(),
                 endTime: endTime.toISOString()
             }))

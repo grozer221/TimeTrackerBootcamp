@@ -6,6 +6,8 @@ export const TRACK_FRAGMENT = gql`
         userId
         title
         kind
+        creation
+        editedBy
         startTime
         endTime
         createdAt

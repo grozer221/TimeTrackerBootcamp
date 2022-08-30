@@ -4,4 +4,5 @@
     bottom: 2px;
     opacity: 50%;
     font-size: 10px;
+    justify-content: flex-end;
 }

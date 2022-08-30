@@ -7,6 +7,7 @@ import moment from "moment";
 import {UpdateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {notificationsActions} from "../../../notifications/store/notifications.slice";
+import {useAppSelector} from "../../../../store/store";
 
 type Props = {
     track: Track,
@@ -16,6 +17,7 @@ type Props = {
 export const TrackStartTimeEdit: FC<Props> = ({track, updateCallback}) => {
     let startTime = track.startTime
     const startTimeMoment = moment(new Date(startTime))
+    const userEmail = useAppSelector(s => s.auth.authedUser?.email) as string
     const today = new Date()
     const dispatch = useDispatch()
     const [pickerValue, setPickerValue] = useState(startTimeMoment)
@@ -25,6 +27,8 @@ export const TrackStartTimeEdit: FC<Props> = ({track, updateCallback}) => {
             id: track.id,
             title: track.title,
             kind: track.kind,
+            creation: track.creation,
+            editedBy: userEmail,
             startTime: value!.utc().format('YYYY-MM-DDTHH:mm:ss'),
             endTime: track.endTime
         }

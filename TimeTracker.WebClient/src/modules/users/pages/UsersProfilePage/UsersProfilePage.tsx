@@ -109,7 +109,7 @@ export const UsersProfilePage = () => {
             </Descriptions>
         </Card>
         <Row style={{marginTop: 10, marginBottom: 10}}>
-            <Col span={20}></Col>
+            <Col span={20}/>
             <Col span={4}>
                 <DatePicker picker={"month"} defaultValue={moment(now())} onChange={e => {
                     if (e != null)

@@ -3,7 +3,7 @@ import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
 import {ColumnsType} from "antd/es/table";
-import {TrackTitle} from "../Table/TrackTitle";
+import {TrackTitleInput} from "../Table/TrackTitleInput";
 import {TrackKindInfo} from "../Table/TrackKindInfo";
 import {TrackStartTime} from "../Table/TrackStartTime";
 import {TrackEndTime} from "../Table/TrackEndTime";
@@ -24,12 +24,16 @@ import {
     UpdateTrackInput
 } from "../../../tracks/graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
+import {TrackCreation} from "../../../../graphQL/enums/TrackCreation";
+import {TrackCreationInfo} from "../Table/TrackCreationInfo";
 
 type DataType = {
     id: string
     userId: string,
     title: string,
     kind: TrackKind,
+    creation: TrackCreation,
+    editedBy: string,
     startTime: string,
     endTime: string,
     duration: string,
@@ -56,12 +60,13 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
     const isMe = useAppSelector(s => s.auth.authedUser?.id) as string == ownerId
     const editable = (dateObj.getMonth() == today.getMonth() && dateObj.getFullYear() == today.getFullYear())
         && (isAdministratorOrHavePermissions([Permission.UpdateOthersTimeTracker]) || isMe)
+    console.log(tracks)
 
 
-    let tableData = tracks.map(t => {
+    let tableData = tracks.map(track => {
         return {
-            ...t,
-            duration: getDifferenceBetweenDatesInTime(new Date(t.startTime), new Date(t.endTime))
+            ...track,
+            duration: getDifferenceBetweenDatesInTime(new Date(track.startTime), new Date(track.endTime))
         } as DataType
     })
 
@@ -70,10 +75,8 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
             title: 'Title', dataIndex: 'title', key: 'title',
             render: (value, record, index) => {
                 if (editable)
-                    return <TrackTitle track={record} updateCallback={crudCallbacks.update}/>
-                return <Typography.Paragraph>
-                    <EditOutlined className={s.icons}/>{' ' + value}
-                </Typography.Paragraph>
+                    return <TrackTitleInput track={record} updateCallback={crudCallbacks.update}/>
+                return <EditOutlined className={s.icons}>{' ' + value}</EditOutlined>
             }
         },
         {
@@ -82,6 +85,14 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
                 if(canEditDateOrKind)
                     return <TrackKindEdit track={record} updateCallback={crudCallbacks.update}/>
                 return <TrackKindInfo kind={value}/>
+            }
+        },
+        {
+            title: 'Creation', dataIndex: 'creation', key: 'creation',
+            render: (value, record, index) => {
+                return(
+                    <TrackCreationInfo creation={value}/>
+                )
             }
         },
         {

@@ -10,6 +10,7 @@ import {DayKind} from "../../../../graphQL/enums/DayKind";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {UpdateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
+import {useAppSelector} from "../../../../store/store";
 
 type Props = {
     track: Track,
@@ -18,19 +19,21 @@ type Props = {
 
 export const TrackKindEdit: FC<Props> = ({track, updateCallback}) => {
     let kind = track.kind
+    const userEmail = useAppSelector(s => s.auth.authedUser?.email) as string
     const dispatch = useDispatch()
 
     const onSelect = (value: TrackKind) => {
         kind = value
-        console.log(value)
+        console.log(userEmail)
         const updateTrackInput = {
             id: track.id,
             title: track.title,
             kind: value,
+            creation: track.creation,
+            editedBy: userEmail,
             startTime: track.startTime,
             endTime: track.endTime
         }
-        console.log(updateTrackInput)
         dispatch(updateCallback(updateTrackInput))
     }
 
@@ -44,9 +47,6 @@ export const TrackKindEdit: FC<Props> = ({track, updateCallback}) => {
 
     return (
         <>
-            {/*<Tag icon={trackKindIcon[kind]} style={{padding: '6px'}}>
-                {kind}
-            </Tag>*/}
             <Select className={'w-100'} defaultValue={track.kind} onChange={onSelect}>
                 {(Object.values(TrackKind) as Array<TrackKind>).map((value) => (
                     <Select.Option key={value} value={value}>

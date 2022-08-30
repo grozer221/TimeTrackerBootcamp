@@ -77,6 +77,7 @@ namespace TimeTracker.Server.Tasks
                     foreach (var user in users)
                     {
                         var trackKinds = new List<TrackKind>();
+                        var trackCreation = TrackCreation.Automatically;
                         var todayVacationRequest = await vacationRequestRepository.GetByDateAsync(dateTimeNow, user.Id);
                         if (todayVacationRequest != null)
                         {
@@ -99,6 +100,7 @@ namespace TimeTracker.Server.Tasks
                             {
                                 Id = Guid.NewGuid(),
                                 Title = "Auto created",
+                                Creation = trackCreation,
                                 StartTime = workdayStartAtDateTime,
                                 EndTime = workdayEndAtDateTime,
                                 Kind = trackKind,
@@ -113,6 +115,7 @@ namespace TimeTracker.Server.Tasks
                         Name = JobName,
                     };
                     await completedTaskRepository.CreateAsync(compeltedTask, connection, transaction);
+                    transaction.Commit();
                 }
             }
             

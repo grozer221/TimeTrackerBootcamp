@@ -2,6 +2,7 @@ import {gql} from "@apollo/client";
 import {TRACK_FRAGMENT} from "./tracks.fragments";
 import {Track} from "./tracks.types";
 import {TrackKind} from "../../../graphQL/enums/TrackKind";
+import {TrackCreation} from "../../../graphQL/enums/TrackCreation";
 
 export type CreateTrack = { tracks: {create: Track} }
 export type CreateTrackInput = {
@@ -40,6 +41,8 @@ export type UpdateTrackInput = {
     id: string,
     title: string,
     kind: TrackKind,
+    creation: TrackCreation,
+    editedBy: string,
     startTime: string,
     endTime: string
 }
@@ -60,6 +63,7 @@ export type CreateTrackForOtherUserInput = {
     userId: string,
     title: String,
     kind: TrackKind,
+    creation: TrackCreation,
     startTime: string,
     endTime: string,
 }
@@ -70,6 +74,16 @@ export const TRACK_CREATE_FOR_OTHER_USER_MUTATION = gql`
     mutation CreateTrackForOtherUser($TrackData: TrackOtherInputType!){
         tracks{
             createOther(trackInput: $TrackData){
+                ...TrackFragment
+            }
+        }
+    }
+`
+export const TRACK_STOP_MUTATION = gql`
+    ${TRACK_FRAGMENT}
+    mutation StopTrack($TrackData: TrackUpdateInputType!){
+        tracks{
+            stop(trackInput: $TrackData){
                 ...TrackFragment
             }
         }

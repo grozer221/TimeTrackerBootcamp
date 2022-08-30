@@ -1,7 +1,7 @@
 import React, {FC} from 'react';
 import s from '../../pages/TrackerPage/TrackerPage.module.css'
 import {Track} from "../../../tracks/graphQL/tracks.types";
-import {TrackTitle} from "./TrackTitle";
+import {TrackTitleInput} from "./TrackTitleInput";
 import {TrackKindInfo} from "./TrackKindInfo";
 import {TrackStartTime} from "./TrackStartTime";
 import {TrackEndTime} from './TrackEndTime';

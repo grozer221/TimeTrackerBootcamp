@@ -69,7 +69,7 @@ export const App = () => {
 
     return (
         <>
-            {/*<TitleClock clockTime={localStorage.getItem('clockTime')}/>*/}
+            <TitleClock />
             <Settings/>
             <Notifications/>
             <NavigateTo/>

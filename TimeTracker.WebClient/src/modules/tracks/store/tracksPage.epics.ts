@@ -16,7 +16,7 @@ import {
     RemoveTrack,
     RemoveTrackInputType,
     TRACK_CREATE_MUTATION,
-    TRACK_REMOVE_MUTATION,
+    TRACK_REMOVE_MUTATION, TRACK_STOP_MUTATION,
     TRACK_UPDATE_MUTATION,
     UpdateTrack,
     UpdateTrackInputType
@@ -40,12 +40,6 @@ export const getTracksEpic: Epic<ReturnType<typeof tracksAction.getTracksByUserI
                 mergeMap(response => [
                     tracksAction.addTracks(response.data.tracks.getTracksByUserIdAndDate),
                     tracksAction.setGetTracksInputData(action.payload)
-                    /*,
-                    tracksAction.updateTracksMetrics({
-                        total: response.data.tracks.getUserTracks.total,
-                        pageSize: response.data.tracks.getUserTracks.pageSize,
-                        trackKind: response.data.tracks.getUserTracks.trackKind
-                    })*/
                 ]),
                 catchError(error => of(notificationsActions.addError(error.message))),
                 startWith(tracksAction.setLoadingGet(true)),
@@ -121,9 +115,6 @@ export const updateTrackEpic: Epic<ReturnType<typeof tracksAction.updateTrack>, 
                         tracksAction.getCurrentAsync(),
                         notificationsActions.addInfo("Track update!")
                     ]
-                    /*return[
-                        notificationsActions.addInfo("Track update!")
-                    ]*/
                 })
             )
         ),
@@ -169,6 +160,31 @@ export const getTracksByUserIdAndDateEpic: Epic<ReturnType<typeof tracksAction.g
     )
 }
 
+export const stopTrackEpic: Epic<ReturnType<typeof tracksAction.stopTrack>, any, RootState> = (action$, state$) => {
+    return action$.pipe(
+        ofType(tracksAction.stopTrack.type),
+        mergeMap(action =>
+            from(client.mutate<UpdateTrack, UpdateTrackInputType>({
+                mutation: TRACK_STOP_MUTATION,
+                variables: {
+                    TrackData: action.payload
+                }
+            })).pipe(
+                mergeMap(response => {
+                    const tracksInputData = state$.value.tracks.getTracksInputData
+                    console.log(tracksInputData)
+                    return [
+                        tracksInputData && tracksAction.getTracksByUserIdAndDate(tracksInputData),
+                        tracksAction.getCurrentAsync(),
+                        notificationsActions.addInfo("Track stopped!")
+                    ]
+                })
+            )
+        ),
+        catchError(error => of(notificationsActions.addError(error.message))),
+    )
+}
+
 export const tracksPageEpics = combineEpics(
     getTracksEpic,
     // @ts-ignore
@@ -177,4 +193,5 @@ export const tracksPageEpics = combineEpics(
     updateTrackEpic,
     getCurrentTrackEpic,
     getTracksByUserIdAndDateEpic,
+    stopTrackEpic,
 )

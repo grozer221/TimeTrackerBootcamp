@@ -8,7 +8,7 @@ import {
 } from "../graphQL/tracks.mutations";
 import {GetTracksByUserIdAndDateInputType, GetTracksInputData} from "../graphQL/tracks.queries";
 import {TrackKind} from "../../../graphQL/enums/TrackKind";
-import {CalendarDay} from "../../calendarDays/graphQL/calendarDays.types";
+import {TrackCreation} from "../../../graphQL/enums/TrackCreation";
 
 
 type InitialState = {
@@ -36,6 +36,8 @@ const initialState: InitialState = {
         userId: "",
         title: "",
         kind: TrackKind.Working,
+        creation: TrackCreation.Manually,
+        editedBy: "",
         startTime: "",
         endTime: "",
         createdAt: "",
@@ -65,6 +67,7 @@ export  const  tracksSlice = createSlice({
         },
         createTrack: (state, action: PayloadAction<CreateTrackInput>) => state,
         updateTrack: (state, action: PayloadAction<UpdateTrackInput>) => state,
+        stopTrack: (state, action: PayloadAction<UpdateTrackInput>) => state,
         removeTrack: (state, action: PayloadAction<RemoveTrackInput>) => state,
         setGetTracksInputData: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => {
             state.getTracksInputData = action.payload
