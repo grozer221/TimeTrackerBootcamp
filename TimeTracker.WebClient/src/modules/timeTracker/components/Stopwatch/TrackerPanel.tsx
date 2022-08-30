@@ -12,7 +12,7 @@ import {
 } from "../../../tracks/graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {TrackTools} from "../Table/TrackTools";
-import {TrackTitle} from "../Table/TrackTitle";
+import {TrackTitleInput} from "../Table/TrackTitleInput";
 import {tracksAction} from "../../../tracks/store/tracks.slice";
 
 type timerProps = {
@@ -32,6 +32,10 @@ const Timer: FC<timerProps> =({time}) =>{
     const totalDate = new Date(totalMilliseconds)
     const totalDateUTC = toUTCDateTime(totalDate)
     const clockTime = moment(totalDateUTC).format("HH:mm:ss")
+
+    useEffect(()=>{
+        document.title = `Time Tracker (${clockTime})`
+    }, [time])
 
     return(
         <>
@@ -82,8 +86,7 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track/*, crudCallbacks*/}) 
                 <div className={s.stopwatch}>
                     <Timer time={time}/>
                     <div className={s.current_track_panel_row}>
-                        <TrackTitle track={track} updateCallback={update}/>
-                        <TrackTools id={track.id} removeCallback={remove}/>
+                        <TrackTitleInput track={track} updateCallback={update}/>
                     </div>
                 </div>
             </div>

@@ -3,7 +3,7 @@ import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {Track} from "../../../tracks/graphQL/tracks.types";
 import {getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
 import {ColumnsType} from "antd/es/table";
-import {TrackTitle} from "../Table/TrackTitle";
+import {TrackTitleInput} from "../Table/TrackTitleInput";
 import {TrackKindInfo} from "../Table/TrackKindInfo";
 import {TrackStartTime} from "../Table/TrackStartTime";
 import {TrackEndTime} from "../Table/TrackEndTime";
@@ -75,7 +75,7 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
             title: 'Title', dataIndex: 'title', key: 'title',
             render: (value, record, index) => {
                 if (editable)
-                    return <TrackTitle track={record} updateCallback={crudCallbacks.update}/>
+                    return <TrackTitleInput track={record} updateCallback={crudCallbacks.update}/>
                 return <EditOutlined className={s.icons}>{' ' + value}</EditOutlined>
             }
         },

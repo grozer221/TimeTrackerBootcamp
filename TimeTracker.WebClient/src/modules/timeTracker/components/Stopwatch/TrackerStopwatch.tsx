@@ -60,6 +60,7 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
             startTime: track.startTime,
             endTime: moment(endTimeUTC).format('YYYY-MM-DDTHH:mm:ss')
         }
+        document.title = 'Time Tracker'
         dispatch(tracksAction.stopTrack(newTrack))
     }
 

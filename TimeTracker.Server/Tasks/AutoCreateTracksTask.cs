@@ -115,6 +115,7 @@ namespace TimeTracker.Server.Tasks
                         Name = JobName,
                     };
                     await completedTaskRepository.CreateAsync(compeltedTask, connection, transaction);
+                    transaction.Commit();
                 }
             }
             

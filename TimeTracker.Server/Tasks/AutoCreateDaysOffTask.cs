@@ -82,6 +82,7 @@ namespace TimeTracker.Server.Tasks
                         Name = JobName,
                     };
                     await completedTaskRepository.CreateAsync(completedTask, connection, transaction);
+                    transaction.Commit();
                 }
             }
             
