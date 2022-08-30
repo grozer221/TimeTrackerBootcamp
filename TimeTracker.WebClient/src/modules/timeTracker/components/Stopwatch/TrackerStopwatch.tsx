@@ -18,6 +18,7 @@ import {TrackerPanel} from "./TrackerPanel";
 import s from './TrackerStopwatch.module.css'
 import {PayloadAction} from "@reduxjs/toolkit";
 import {TrackCreation} from "../../../../graphQL/enums/TrackCreation";
+import {tracksAction} from "../../../tracks/store/tracks.slice";
 
 type FormValues = {
     title: string,
@@ -55,10 +56,11 @@ export const Stopwatch: FC<stopwatchProps> = ({track, crudCallbacks}) => {
             title: track.title,
             kind: track.kind,
             creation: track.creation || TrackCreation.Manually,
+            editedBy: track.editedBy,
             startTime: track.startTime,
             endTime: moment(endTimeUTC).format('YYYY-MM-DDTHH:mm:ss')
         }
-        dispatch(crudCallbacks.update(newTrack))
+        dispatch(tracksAction.stopTrack(newTrack))
     }
 
     const StopButton = {

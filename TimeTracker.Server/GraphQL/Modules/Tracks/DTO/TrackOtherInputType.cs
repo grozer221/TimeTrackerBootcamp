@@ -12,6 +12,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
         public string? Title { get; set; }
         public TrackKind Kind { get; set; }
         public TrackCreation Creation { get; set; }
+        public string? EditedBy { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
 
@@ -23,6 +24,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
                 Title = this.Title,
                 Kind = this.Kind,
                 Creation = this.Creation,
+                EditedBy = this.EditedBy,
                 StartTime = this.StartTime,
                 EndTime = this.EndTime
             };
@@ -48,6 +50,10 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks.DTO
             Field<NonNullGraphType<TrackCreationType>, TrackCreation>()
                 .Name("Creation")
                 .Resolve(context => context.Source.Creation);
+
+            Field<StringGraphType, string?>()
+                .Name("EditedBy")
+                .Resolve(context => context.Source.EditedBy);
 
             Field<NonNullGraphType<DateTimeGraphType>, DateTime ?>()
                 .Name("StartTime")

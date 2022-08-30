@@ -7,6 +7,7 @@ export type Track = {
     title: string,
     kind: TrackKind,
     creation: TrackCreation,
+    editedBy: string,
     startTime: string,
     endTime: string,
     createdAt: string,

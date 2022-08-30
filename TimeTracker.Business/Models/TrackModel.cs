@@ -9,6 +9,7 @@ namespace TimeTracker.Business.Models
         public string? Title { get; set; }
         public TrackKind Kind { get; set; }
         public TrackCreation Creation { get; set; }
+        public string? EditedBy { get; set; }
         public DateTime? StartTime { get; set; }
         public DateTime? EndTime { get; set; }
 

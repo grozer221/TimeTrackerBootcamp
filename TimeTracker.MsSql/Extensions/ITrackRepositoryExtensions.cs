@@ -11,12 +11,13 @@ namespace TimeTracker.MsSql.Extensions
         {
             await trackRepository.StopAllAsync();
             model.CreatedAt = model.UpdatedAt = DateTime.UtcNow;
+            
             if (model.StartTime == null)
             {
                 model.StartTime = DateTime.UtcNow;
             }
             string query = @"INSERT INTO Tracks 
-                              (Id, Title, UserId, Kind, StartTime, EndTime, CreatedAt, UpdatedAt)
+                              (Id, Title, UserId, Kind, Creation, StartTime, EndTime, CreatedAt, UpdatedAt)
                               VALUES (@Id, @Title, @UserId, @Kind, @Creation, 
                               @StartTime, @EndTime, @CreatedAt, @UpdatedAt)";
 

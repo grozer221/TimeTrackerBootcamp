@@ -37,6 +37,7 @@ const initialState: InitialState = {
         title: "",
         kind: TrackKind.Working,
         creation: TrackCreation.Manually,
+        editedBy: "",
         startTime: "",
         endTime: "",
         createdAt: "",
@@ -66,6 +67,7 @@ export  const  tracksSlice = createSlice({
         },
         createTrack: (state, action: PayloadAction<CreateTrackInput>) => state,
         updateTrack: (state, action: PayloadAction<UpdateTrackInput>) => state,
+        stopTrack: (state, action: PayloadAction<UpdateTrackInput>) => state,
         removeTrack: (state, action: PayloadAction<RemoveTrackInput>) => state,
         setGetTracksInputData: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => {
             state.getTracksInputData = action.payload

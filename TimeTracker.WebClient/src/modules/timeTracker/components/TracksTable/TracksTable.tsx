@@ -33,6 +33,7 @@ type DataType = {
     title: string,
     kind: TrackKind,
     creation: TrackCreation,
+    editedBy: string,
     startTime: string,
     endTime: string,
     duration: string,
@@ -62,10 +63,10 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
     console.log(tracks)
 
 
-    let tableData = tracks.map(t => {
+    let tableData = tracks.map(track => {
         return {
-            ...t,
-            duration: getDifferenceBetweenDatesInTime(new Date(t.startTime), new Date(t.endTime))
+            ...track,
+            duration: getDifferenceBetweenDatesInTime(new Date(track.startTime), new Date(track.endTime))
         } as DataType
     })
 
@@ -75,9 +76,7 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
             render: (value, record, index) => {
                 if (editable)
                     return <TrackTitle track={record} updateCallback={crudCallbacks.update}/>
-                return <Typography.Paragraph>
-                    <EditOutlined className={s.icons}/>{' ' + value}
-                </Typography.Paragraph>
+                return <EditOutlined className={s.icons}>{' ' + value}</EditOutlined>
             }
         },
         {

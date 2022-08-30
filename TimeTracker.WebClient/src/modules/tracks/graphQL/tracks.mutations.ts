@@ -42,6 +42,7 @@ export type UpdateTrackInput = {
     title: string,
     kind: TrackKind,
     creation: TrackCreation,
+    editedBy: string,
     startTime: string,
     endTime: string
 }
@@ -73,6 +74,16 @@ export const TRACK_CREATE_FOR_OTHER_USER_MUTATION = gql`
     mutation CreateTrackForOtherUser($TrackData: TrackOtherInputType!){
         tracks{
             createOther(trackInput: $TrackData){
+                ...TrackFragment
+            }
+        }
+    }
+`
+export const TRACK_STOP_MUTATION = gql`
+    ${TRACK_FRAGMENT}
+    mutation StopTrack($TrackData: TrackUpdateInputType!){
+        tracks{
+            stop(trackInput: $TrackData){
                 ...TrackFragment
             }
         }

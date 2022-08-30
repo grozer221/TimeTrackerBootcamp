@@ -84,6 +84,33 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                     var currentUserId = httpContextAccessor.HttpContext.GetUserId();
                     await trackUpdateInputTypeValidator.ValidateAndThrowAsync(track);
                     var model = await trackRepository.GetByIdAsync(track.Id);
+                    model.UpdatedAt = DateTime.Now;
+                    if (track.Title != null)
+                        model.Title = track.Title;
+                    if (track.StartTime != null)
+                        model.StartTime = track.StartTime;
+                    if (track.EndTime != null)
+                        model.EndTime = track.EndTime;
+                    if(track.EditedBy != null)
+                        model.EditedBy = track.EditedBy;
+                    model.Kind = track.Kind;
+                    model.Creation = track.Creation;
+                    
+                    if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateOthersTimeTracker) && model.UserId != currentUserId)
+                        throw new ExecutionError("You do not have permissions for update others tracks");
+
+                    return await trackRepository.UpdateAsync(model);
+                }).AuthorizeWith(AuthPolicies.Authenticated);
+
+            Field<NonNullGraphType<TrackType>, TrackModel>()
+                .Name("Stop")
+                .Argument<NonNullGraphType<TrackUpdateInputType>, TrackUpdateInput>("TrackInput", "Argument for update track")
+                .ResolveAsync(async context =>
+                {
+                    var track = context.GetArgument<TrackUpdateInput>("TrackInput");
+                    var currentUserId = httpContextAccessor.HttpContext.GetUserId();
+                    await trackUpdateInputTypeValidator.ValidateAndThrowAsync(track);
+                    var model = await trackRepository.GetByIdAsync(track.Id);
 
                     if (track.Title != null)
                         model.Title = track.Title;
@@ -93,7 +120,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Tracks
                         model.EndTime = track.EndTime;
                     model.Kind = track.Kind;
                     model.Creation = track.Creation;
-                    
+
                     if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.UpdateOthersTimeTracker) && model.UserId != currentUserId)
                         throw new ExecutionError("You do not have permissions for update others tracks");
 

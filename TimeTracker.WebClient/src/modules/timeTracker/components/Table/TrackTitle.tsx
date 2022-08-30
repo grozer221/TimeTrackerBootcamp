@@ -16,6 +16,7 @@ type Props = {
 export const TrackTitle: FC<Props> = ({track, updateCallback}) => {
     const title = track.title == '' ? '. . .' : track.title
     const inputRef = createRef<InputRef>()
+    const editedBy = track.editedBy
     const dispatch = useDispatch()
     const [bordered, setBordered] = useState(false)
     const [content, setContent] = useState(title)
@@ -48,6 +49,7 @@ export const TrackTitle: FC<Props> = ({track, updateCallback}) => {
             title: newTitle,
             kind: track.kind,
             creation: track.creation,
+            editedBy: track.editedBy,
             startTime: track.startTime,
             endTime: track.endTime
         }
@@ -67,6 +69,7 @@ export const TrackTitle: FC<Props> = ({track, updateCallback}) => {
                 ref={inputRef}
                 readOnly={false}
             />
+            {editedBy ? <span className={s.edit_info} title={'Edited by ' + editedBy}>edited</span> : <></>}
         </>
     )
 }
