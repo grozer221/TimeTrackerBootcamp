@@ -21,6 +21,22 @@ export const AUTH_LOG_IN_MUTATION = gql`
     }
 `;
 
+export type AuthLoginGoogleData = { auth: { loginGoogle: { token: string, user: User } } }
+
+export const AUTH_LOG_IN_GOOGLE_MUTATION = gql`
+    ${USER_FRAGMENT}
+    mutation AuthGoogleLogin($googleJWT: String!) {
+        auth {
+            loginGoogle(googleJWT: $googleJWT) {
+                token
+                user {
+                    ...UserFragment
+                }
+            }
+        }
+    }
+`;
+
 export const AUTH_LOG_OUT_MUTATION = gql`
     mutation AuthLogout {
         auth {

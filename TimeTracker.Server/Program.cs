@@ -23,7 +23,6 @@ builder.Services.AddMsSql();
 builder.Services.AddCaching();
 builder.Services.AddTasks();
 
-
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment()) 

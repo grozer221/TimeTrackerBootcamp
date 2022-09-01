@@ -27,6 +27,7 @@ export const authSlice = createSlice({
     initialState,
     reducers: {
         userLoginAsync: (state, action: PayloadAction<AuthLoginInputType>) => state,
+        userLoginGoogleAsync: (state, action: PayloadAction<String>) => state,
         meAsync: (state, action: PayloadAction) => state,
         setLoadingMe: (state, action: PayloadAction<boolean>) => {
             state.loadingMe = action.payload;

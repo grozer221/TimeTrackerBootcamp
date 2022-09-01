@@ -17,6 +17,25 @@ export const AuthLoginPage: FC = () => {
             navigate(-1);
     }, [isAuth])
 
+    function handleCallbackResponse(response: { credential: String }) {
+        console.log(response.credential)
+        dispatch(authActions.userLoginGoogleAsync(response.credential))
+    }
+
+    useEffect(()=>{
+        // @ts-ignore
+        google.accounts.id.initialize({
+            client_id: "988882606161-213a1m96g0m00so07uhkvhv41o1hci2b.apps.googleusercontent.com",
+            callback: handleCallbackResponse
+        })
+
+        // @ts-ignore
+        google.accounts.id.renderButton(
+            document.getElementById("signInDiv"),
+            {theme: "outline", size: "medium"}
+            )
+    }, [])
+
     const onFinish = (values: AuthLoginInputType) => {
         dispatch(authActions.userLoginAsync(values))
     };
@@ -59,7 +78,9 @@ export const AuthLoginPage: FC = () => {
                         LOGIN
                     </Button>
                 </Form.Item>
-
+                <Form.Item>
+                    <div id="signInDiv"></div>
+                </Form.Item>
             </Form>
         </div>
     )

@@ -139,7 +139,6 @@ export const App = () => {
                             <Route path={'time-tracker/*'}>
                                 {/*<Route path={'create'} element={<TrackCreatePage/>}/>*/}
                             </Route>
-
                         </Routes>
                     )}
                 </AppLayout>

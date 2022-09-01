@@ -4,14 +4,14 @@ import {catchError, endWith, from, mergeMap, of, startWith} from "rxjs";
 import {authActions} from "./auth.slice";
 import {client} from "../../../graphQL/client";
 import {
-    AUTH_CHANGE_PASSWORD_MUTATION,
+    AUTH_CHANGE_PASSWORD_MUTATION, AUTH_LOG_IN_GOOGLE_MUTATION,
     AUTH_LOG_IN_MUTATION,
     AUTH_LOG_OUT_MUTATION,
     AUTH_REQUEST_RESET_PASSWORD_MUTATION,
     AUTH_RESET_PASSWORD_MUTATION,
     AuthChangePasswordData,
     AuthChangePasswordVars,
-    AuthLoginData,
+    AuthLoginData, AuthLoginGoogleData,
     AuthLoginVars,
     AuthRequestResetData,
     AuthRequestResetVars,
@@ -55,6 +55,29 @@ export const loginEpic: Epic<ReturnType<typeof authActions.userLoginAsync>, any,
             )
         )
     );
+
+export const loginGoogleEpic: Epic<ReturnType<typeof authActions.userLoginGoogleAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType(authActions.userLoginGoogleAsync.type),
+        mergeMap(action =>
+            from(client.mutate<AuthLoginGoogleData>({
+                mutation: AUTH_LOG_IN_GOOGLE_MUTATION,
+                variables: {googleJWT: action.payload}
+            })).pipe(
+                mergeMap(response => [
+                    settingsActions.getForAdministratorOrHavePermissionUpdateAsync(),
+                    authActions.setAuthedUser({
+                        user: response.data?.auth.loginGoogle.user,
+                        token: response.data?.auth.loginGoogle.token
+                    }),
+                    navigateActions.navigate(-2),
+                    getSettingsAction(response.data?.auth.loginGoogle.user.role, response.data?.auth.loginGoogle.user.permissions),
+                ]),
+                catchError(error => of(notificationsActions.addError(error.message))),
+            )
+        )
+    );
+
 
 export const meEpic: Epic<ReturnType<typeof authActions.meAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
@@ -153,4 +176,5 @@ export const authEpics = combineEpics(
     requestResetPasswordEpic,
     resetPasswordEpic,
     changePasswordEpic,
+    loginGoogleEpic
 )
