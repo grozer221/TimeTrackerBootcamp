@@ -7,7 +7,6 @@ export const ButtonGoogleSignIn = () => {
     const dispatch = useDispatch()
 
     function handleCallbackResponse(response: { credential: String }) {
-        console.log(response.credential)
         dispatch(authActions.userLoginGoogleAsync(response.credential))
     }
 
