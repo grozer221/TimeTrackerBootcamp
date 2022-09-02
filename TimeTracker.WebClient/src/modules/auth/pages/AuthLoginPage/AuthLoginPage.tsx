@@ -6,6 +6,7 @@ import {AuthLoginInputType} from "../../graphQL/auth.mutations";
 import './AuthLoginPage.css'
 import {RootState} from "../../../../store/store";
 import {Link, useNavigate} from "react-router-dom";
+import {ButtonGoogleSignIn} from "../../../../components/ButtonGoogleSignIn";
 
 export const AuthLoginPage: FC = () => {
     const dispatch = useDispatch()
@@ -16,25 +17,6 @@ export const AuthLoginPage: FC = () => {
         if (isAuth)
             navigate(-1);
     }, [isAuth])
-
-    function handleCallbackResponse(response: { credential: String }) {
-        console.log(response.credential)
-        dispatch(authActions.userLoginGoogleAsync(response.credential))
-    }
-
-    useEffect(()=>{
-        // @ts-ignore
-        google.accounts.id.initialize({
-            client_id: "988882606161-213a1m96g0m00so07uhkvhv41o1hci2b.apps.googleusercontent.com",
-            callback: handleCallbackResponse
-        })
-
-        // @ts-ignore
-        google.accounts.id.renderButton(
-            document.getElementById("signInDiv"),
-            {theme: "outline", size: "medium"}
-            )
-    }, [])
 
     const onFinish = (values: AuthLoginInputType) => {
         dispatch(authActions.userLoginAsync(values))
@@ -79,7 +61,7 @@ export const AuthLoginPage: FC = () => {
                     </Button>
                 </Form.Item>
                 <Form.Item>
-                    <div id="signInDiv"></div>
+                    <ButtonGoogleSignIn/>
                 </Form.Item>
             </Form>
         </div>
