@@ -6,6 +6,7 @@ import {AuthLoginInputType} from "../../graphQL/auth.mutations";
 import './AuthLoginPage.css'
 import {RootState} from "../../../../store/store";
 import {Link, useNavigate} from "react-router-dom";
+import {ButtonGoogleSignIn} from "../../../../components/ButtonGoogleSignIn";
 
 export const AuthLoginPage: FC = () => {
     const dispatch = useDispatch()
@@ -59,7 +60,9 @@ export const AuthLoginPage: FC = () => {
                         LOGIN
                     </Button>
                 </Form.Item>
-
+                <Form.Item>
+                    <ButtonGoogleSignIn/>
+                </Form.Item>
             </Form>
         </div>
     )

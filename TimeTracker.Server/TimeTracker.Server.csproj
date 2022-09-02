@@ -26,6 +26,8 @@
 		<PackageReference Include="FluentMigrator.Runner.SqlServer" Version="3.3.2" />
 		<PackageReference Include="FluentValidation" Version="11.1.0" />
 		<PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="11.1.0" />
+		<PackageReference Include="Google.Apis" Version="1.57.0" />
+		<PackageReference Include="Google.Apis.Oauth2.v2" Version="1.57.0.1869" />
 		<PackageReference Include="GraphQL" Version="4.7.1" />
 		<PackageReference Include="GraphQL.Server.Authorization.AspNetCore" Version="5.2.0" />
 		<PackageReference Include="GraphQL.Server.Transports.AspNetCore" Version="5.2.0" />

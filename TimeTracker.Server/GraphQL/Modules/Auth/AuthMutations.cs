@@ -9,6 +9,7 @@ using TimeTracker.Server.Extensions;
 using Microsoft.Net.Http.Headers;
 using FluentValidation;
 using TimeTracker.Server.Abstractions;
+using Google.Apis.Auth;
 
 namespace TimeTracker.Server.GraphQL.Modules.Auth
 {
@@ -43,6 +44,37 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         UserId = user.Id,
                     };
                     accessToken = await aceessTokenRepository.CreateAsync(accessToken);
+                    return new AuthResponse()
+                    {
+                        Token = accessToken.Token,
+                        User = user,
+                    };
+                });
+
+            Field<NonNullGraphType<AuthResponseType>, AuthResponse>()
+                .Name("LoginGoogle")
+                .Argument<NonNullGraphType<StringGraphType>, string>("GoogleJWT", "Argument for login User")
+                .ResolveAsync(async context =>
+                {
+                    string token = context.GetArgument<string>("GoogleJWT");
+                    var validateToken = await GoogleJsonWebSignature.ValidateAsync(token);
+
+                    if (validateToken == null)
+                        throw new Exception("Bad credentials");
+
+                    var user = await userRepository.GetByEmailAsync(validateToken.Email);
+
+                    if (user == null)
+                        throw new Exception("This email don`t registered in website");
+
+                    AceessTokenModel accessToken = new AceessTokenModel
+                    {
+                        Token = authService.GenerateAccessToken(user.Id, user.Email, user.Role, user.Permissions),
+                        UserId = user.Id,
+                    };
+
+                    accessToken = await aceessTokenRepository.CreateAsync(accessToken);
+
                     return new AuthResponse()
                     {
                         Token = accessToken.Token,
