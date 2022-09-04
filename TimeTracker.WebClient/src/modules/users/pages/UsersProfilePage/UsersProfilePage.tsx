@@ -5,7 +5,7 @@ import {Link, useLocation, useNavigate, useParams} from "react-router-dom";
 import {useDispatch, useSelector} from "react-redux";
 import {usersActions} from "../../store/users.slice";
 import {Loading} from "../../../../components/Loading/Loading";
-import {Button, Card, Col, DatePicker, Descriptions, Row, Space, Tag} from "antd";
+import {Button, Card, Col, DatePicker, Descriptions, Divider, Row, Space, Tag} from "antd";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import Title from "antd/lib/typography/Title";
@@ -19,6 +19,7 @@ import {
     RemoveTrackInput,
     UpdateTrackInput
 } from "../../../tracks/graphQL/tracks.mutations";
+import {PlateOfHoursWorked} from "../../components/PlateOfHoursWorked/PlateOfHoursWorked";
 
 
 export const UsersProfilePage = () => {
@@ -117,6 +118,10 @@ export const UsersProfilePage = () => {
                 }}/>
             </Col>
         </Row>
+        <Card title={<Title level={5}>Worked days time: </Title>}>
+            <PlateOfHoursWorked tracks={tracks} date={date}/>
+        </Card>
+        <Divider/>
         <Card size={"small"}
               title={
                   <Row justify="space-between" align={'middle'}>
