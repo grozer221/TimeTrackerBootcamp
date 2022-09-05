@@ -14,6 +14,6 @@ export const SICK_LEAVE_FRAGMENT = gql`
         user{
             ...UserFragment
         }
-        
+        files
     }
 `

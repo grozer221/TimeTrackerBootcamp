@@ -12,10 +12,16 @@ import {
     SickLeaveGetData, SickLeaveGetVars
 } from "../graphQL/sickLeave.queries";
 import {
-    SICK_LEAVE_CREATE_MUTATION, SICK_LEAVE_REMOVE_MUTATION, SICK_LEAVE_UPDATE_MUTATION,
+    SICK_LEAVE_CREATE_MUTATION,
+    SICK_LEAVE_REMOVE_MUTATION,
+    SICK_LEAVE_UPDATE_MUTATION,
+    SICK_LEAVE_UPLOAD_FILES_MUTATION,
     SickLeaveCreateData,
-    SickLeaveCreateVars, SickLeaveRemoveData, SickLeaveRemoveVars,
-    SickLeaveUpdateData, SickLeaveUpdateVars
+    SickLeaveCreateVars,
+    SickLeaveRemoveData,
+    SickLeaveRemoveVars,
+    SickLeaveUpdateData,
+    SickLeaveUpdateVars, SickLeaveUploadFilesData, SickLeaveUploadFilesVars
 } from "../graphQL/sickLeave.mutation";
 import {vacationRequestsActions} from "../../vacationRequests/store/vacationRequests.slice";
 
@@ -105,6 +111,30 @@ export const updateAsyncEpic: Epic<ReturnType<typeof sickLeaveActions.updateAsyn
         )
     );
 
+export const uploadFilesAsyncEpic: Epic<ReturnType<typeof sickLeaveActions.uploadFilesAsync>, any, RootState> = (action$, state$) =>
+    action$.pipe(
+        ofType(sickLeaveActions.uploadFilesAsync.type),
+        mergeMap(action =>
+            from(client.query<SickLeaveUploadFilesData, SickLeaveUploadFilesVars>({
+                query: SICK_LEAVE_UPLOAD_FILES_MUTATION,
+                variables: {sickLeaveUploadFilesInputType: action.payload}
+            })).pipe(
+                mergeMap(response => {
+                    const sickLeaveGetInputType = state$.value.sickLeave.sickLeaveGetInputType;
+                    return response.errors?.length
+                        ? response.errors.map(error => notificationsActions.addError(error.message))
+                        : [
+                            sickLeaveGetInputType && sickLeaveActions.getAsync(sickLeaveGetInputType),
+                            navigateActions.navigate(-1),
+                        ]
+                }),
+                catchError(error => of(notificationsActions.addError(error.message))),
+                startWith(sickLeaveActions.setLoadingUpdate(true)),
+                endWith(sickLeaveActions.setLoadingUpdate(false)),
+            )
+        )
+    );
+
 
 export const removeAsyncEpic: Epic<ReturnType<typeof sickLeaveActions.removeAsync>, any, RootState> = (action$, state$) =>
     action$.pipe(
@@ -136,5 +166,6 @@ export const sickLeaveEpics = combineEpics(
     createAsyncEpic,
     getByIdAsyncEpic,
     updateAsyncEpic,
+    uploadFilesAsyncEpic,
     removeAsyncEpic,
 )

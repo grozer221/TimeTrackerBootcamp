@@ -13,5 +13,6 @@ namespace TimeTracker.Business.Repositories
         Task<SickLeaveModel> CreateAsync(SickLeaveModel model);
         Task<SickLeaveModel> UpdateAsync(SickLeaveModel model);
         Task RemoveAsync(Guid id);
+        Task UpdateFilesAsync(Guid id, IEnumerable<string> files);
     }
 }

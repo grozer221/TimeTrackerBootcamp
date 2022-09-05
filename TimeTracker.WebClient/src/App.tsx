@@ -50,6 +50,7 @@ import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage
 import {UsersProfilePage} from "./modules/users/pages/UsersProfilePage/UsersProfilePage";
 import {CreateTrackModal} from "./modules/users/components/CreateTrackModal/CreateTrackModal";
 import {TitleClock} from "./modules/timeTracker/components/TitleClock/TitleClock";
+import {SickLeaveUploadFilesPage} from "./modules/sickLeave/pages/SickLeaveUploadFilesPage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -135,6 +136,7 @@ export const App = () => {
                             <Route path={'sick-leave-days/*'}>
                                 <Route path={'create'} element={<SickLeaveCreatePage/>}/>
                                 <Route path={'update/:id'} element={<SickLeaveUpdatePage/>}/>
+                                <Route path={'upload-files/:id'} element={<SickLeaveUploadFilesPage/>}/>
                             </Route>
                             <Route path={'time-tracker/*'}>
                                 {/*<Route path={'create'} element={<TrackCreatePage/>}/>*/}

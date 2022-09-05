@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -63,9 +64,6 @@ namespace TimeTracker.MsSql.Repositories
                 query = "SELECT * FROM SickLeave WHERE userId = @userId ORDER BY StartDate DESC OFFSET @skip ROWS FETCH NEXT @pageSize ROWS ONLY";
                 total = await db.QueryFirstOrDefaultAsync<int>("SELECT COUNT(*) FROM SickLeave WHERE userId = @userId", new { userId });
             }
-                
-
-            
 
             models = await db.QueryAsync<SickLeaveModel>(query, new { skip, pageSize, userId});
             
@@ -111,6 +109,17 @@ namespace TimeTracker.MsSql.Repositories
             using var db = dapperContext.CreateConnection();
             await db.QueryAsync<TrackModel>(query, model);
             return model;
+        }
+
+        public async Task UpdateFilesAsync(Guid id, IEnumerable<string> files)
+        {
+            string query = @"update SickLeave
+                            SET FilesString = @FilesString
+                            WHERE Id = @Id";
+            using (var connection = dapperContext.CreateConnection())
+            {
+                await connection.ExecuteAsync(query, new { id, filesString = JsonConvert.SerializeObject(files) });
+            }
         }
     }
 }

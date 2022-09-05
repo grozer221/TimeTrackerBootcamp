@@ -35,6 +35,10 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave
                    var userId = context.Source.UserId;
                    return await userRepository.GetByIdAsync(userId);
                });
+
+            Field<NonNullGraphType<ListGraphType<StringGraphType>>, IEnumerable<string>>()
+               .Name("Files")
+               .Resolve(context => context.Source.Files);
         }
     }
 }

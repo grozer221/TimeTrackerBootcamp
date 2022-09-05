@@ -40,6 +40,24 @@ export const SICK_LEAVE_UPDATE_MUTATION = gql`
     }
 `;
 
+export type SickLeaveUploadFilesData = { sickLeave: { uploadFiles: SickLeaveType } }
+export type SickLeaveUploadFilesVars = { sickLeaveUploadFilesInputType: SickLeaveUploadFilesInputType }
+export type SickLeaveUploadFilesInputType = {
+    id: string,
+    uploadedFiles: string[]
+    uploadFiles: File[]
+}
+export const SICK_LEAVE_UPLOAD_FILES_MUTATION = gql`
+    ${SICK_LEAVE_FRAGMENT}
+    mutation SickLeaveUploadFiles($sickLeaveUploadFilesInputType: SickLeaveUploadFilesInputType!){
+        sickLeave {
+            uploadFiles(sickLeaveUploadFilesInputType: $sickLeaveUploadFilesInputType) {
+                ...SickLeaveFragment
+            }
+        }
+    }
+`;
+
 export type SickLeaveRemoveData = { sickLeave: { remove: boolean } }
 export type SickLeaveRemoveVars = { id: string }
 export const SICK_LEAVE_REMOVE_MUTATION = gql`
