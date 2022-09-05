@@ -40,9 +40,6 @@ export const PlateOfHoursWorked: FC<Props> = memo(({tracks, date}) => {
         value={dateObj}
         dateCellRender={(date: Moment) => {
             let dayKindClass;
-            if (date.format('ddd') === "Sat" || date.format('ddd') === "Sun")
-                dayKindClass = s.weekend
-
             let thisDayTracks = mappedTracks.filter((t) => date.format('YYYY/MM/DD') === t.startTime.format('YYYY/MM/DD'))
             if (thisDayTracks.length === 0) return <div className={[s.day, dayKindClass].join(' ')}></div>
 
