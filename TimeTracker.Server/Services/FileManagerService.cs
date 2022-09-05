@@ -9,11 +9,13 @@ namespace TimeTracker.Server.Services
     public class FileManagerService 
     {
         public const string UsersAvatarsFolder = "Images/UsersAvatars";
+        public const string SickLeavesFolder = "SickLeaves";
         public List<string> ProtectedFolders
         {
             get => new List<string>
             {
-                UsersAvatarsFolder
+                UsersAvatarsFolder,
+                SickLeavesFolder,
             };
         }
 
@@ -63,11 +65,14 @@ namespace TimeTracker.Server.Services
             await cloudinary.CreateFolderAsync(folderPath);
         }
 
-        public async Task<FileManagerItem> UploadFileAsync(string folderPath, IFormFile file)
+        public async Task<FileManagerItem> UploadFileAsync(string folderPath, IFormFile file, bool withHash = false)
         {
-            string fileNameWithoutExtention = GetPublicIdFromFilaName(file.FileName);
+            string fileName = file.FileName;
+            if (withHash)
+                fileName = Guid.NewGuid() + "_" + fileName;
+            string fileNameWithoutExtention = GetPublicIdFromFilaName(fileName);
             string publicId = String.IsNullOrEmpty(folderPath) ? fileNameWithoutExtention : $"{folderPath}/{fileNameWithoutExtention}";
-            string filePath = String.IsNullOrEmpty(folderPath) ? file.FileName : $"{folderPath}/{file.FileName}";
+            string filePath = String.IsNullOrEmpty(folderPath) ? fileName : $"{folderPath}/{fileName}";
             Stream stream = file.OpenReadStream();
             var uploadParams = new RawUploadParams
             {

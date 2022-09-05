@@ -7,7 +7,7 @@ import {nameof} from "../../../utils/stringUtils";
 import {isAdministratorOrHavePermissions} from "../../../utils/permissions";
 import {Permission} from "../../../graphQL/enums/Permission";
 import {ButtonUpdate} from "../../../components/ButtonUpdate";
-import {DeleteOutlined, UsergroupAddOutlined, UserOutlined} from "@ant-design/icons";
+import {DeleteOutlined, EditOutlined, UploadOutlined, UsergroupAddOutlined, UserOutlined} from "@ant-design/icons";
 import {sickLeaveActions} from "../store/sickLeave.slice";
 import {SickLeaveFilterKind, SickLeaveType} from "../sickLeaveType";
 import {ButtonCreate} from "../../../components/ButtonCreate";
@@ -67,9 +67,26 @@ export const SickLeaveIndexPage: FC = () => {
             dataIndex: nameof<SickLeaveType>('user'),
             key: nameof<SickLeaveType>('user'),
             render: (_, sickLeaveDays) =>
-                <Link to={`/users/${sickLeaveDays.user.email}`}>
+                <Link to={`/users/profile/${sickLeaveDays.user.email}`}>
                     {sickLeaveDays.user.firstName} {sickLeaveDays.user.lastName}
                 </Link>,
+            width: '20%',
+        },
+        {
+            title: "Files",
+            dataIndex: nameof<SickLeaveType>('files'),
+            key: nameof<SickLeaveType>('files'),
+            render: (_, sickLeaveDays) =>
+                sickLeaveDays.files.map(file => (
+                    <div style={{
+                        maxWidth: '400px',
+                        overflow: 'hidden',
+                        textOverflow: "ellipsis",
+                        whiteSpace: 'nowrap',
+                    }}>
+                        <a href={file} target={'_blank'}>{file.split('/').pop()}</a>
+                    </div>
+                )),
             width: '30%',
         },
         {
@@ -82,6 +99,9 @@ export const SickLeaveIndexPage: FC = () => {
                         {(isAdministratorOrHavePermissions([Permission.NoteTheAbsenceAndVacation])
                         ) && <ButtonUpdate to={`update/${sickLeaveDays.id}`} popup={location}/>
                         }
+                        <Link to={`upload-files/${sickLeaveDays.id}`} state={{popup: location}}>
+                            <Button shape="circle" type="primary" icon={<UploadOutlined />} size={'small'}/>
+                        </Link>
                         {(isAdministratorOrHavePermissions([Permission.NoteTheAbsenceAndVacation])
                         ) && <Popconfirm
                             title={'Sure to remove?'}

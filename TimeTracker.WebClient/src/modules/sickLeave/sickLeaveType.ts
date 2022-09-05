@@ -9,6 +9,7 @@ export type SickLeaveType = {
     createdAt: string,
     updatedAt: string,
     user: User
+    files: string[]
 }
 
 export type SickLeaveFilter = {

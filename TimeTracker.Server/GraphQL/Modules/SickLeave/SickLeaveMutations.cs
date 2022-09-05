@@ -6,7 +6,10 @@ using TimeTracker.Business.Models;
 using TimeTracker.Business.Repositories;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL.Modules.Auth;
+using TimeTracker.Server.GraphQL.Modules.FileManager.DTO;
+using TimeTracker.Server.GraphQL.Modules.FileManager;
 using TimeTracker.Server.GraphQL.Modules.SickLeave.DTO;
+using TimeTracker.Server.Services;
 
 namespace TimeTracker.Server.GraphQL.Modules.SickLeave
 {
@@ -16,7 +19,8 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave
             IHttpContextAccessor httpContextAccessor,
             ISickLeaveRepository sickLeaveRepository,
             IValidator<SickLeaveCreateInput> sickLeaveInputValidator,
-            IValidator<SickLeaveUpdateInput> sickLeaveUpdateInputValidator
+            IValidator<SickLeaveUpdateInput> sickLeaveUpdateInputValidator,
+            FileManagerService fileManagerService
             )
         {
             Field<NonNullGraphType<SickLeaveType>, SickLeaveModel>()
@@ -63,11 +67,40 @@ namespace TimeTracker.Server.GraphQL.Modules.SickLeave
                   var sickLeaveUpdateInput = context.GetArgument<SickLeaveUpdateInput>("SickLeaveUpdateInputType");
                   sickLeaveUpdateInputValidator.ValidateAndThrow(sickLeaveUpdateInput);
 
+                  if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.NoteTheAbsenceAndVacation))
+                      throw new ExecutionError("You do not have permissions for update sick leave days");
+
                   var sickLeave = sickLeaveUpdateInput.ToModel();
                   sickLeave = await sickLeaveRepository.UpdateAsync(sickLeave);
 
                   return await sickLeaveRepository.GetByIdAsync(sickLeave.Id);
+              })
+              .AuthorizeWith(AuthPolicies.Authenticated);
+            
+            Field<NonNullGraphType<SickLeaveType>, SickLeaveModel>()
+              .Name("UploadFiles")
+              .Argument<NonNullGraphType<SickLeaveUploadFilesInputType>, SickLeaveUploadFilesInput>("SickLeaveUploadFilesInputType", "")
+              .ResolveAsync(async context =>
+              {
+                  var sickLeaveUploadFilesInput = context.GetArgument<SickLeaveUploadFilesInput>("SickLeaveUploadFilesInputType");
+                  var oldSickLeave = await sickLeaveRepository.GetByIdAsync(sickLeaveUploadFilesInput.Id);
 
+                  if(oldSickLeave == null)
+                      throw new ExecutionError("Sick leave with current id does not exists");
+
+                  var currentUserId = httpContextAccessor.HttpContext.GetUserId();
+                  if (oldSickLeave.UserId != currentUserId)
+                      if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions(Permission.NoteTheAbsenceAndVacation))
+                          throw new ExecutionError("You do not have permissions for update sick leave");
+                  var files = new List<string>();
+                  files.AddRange(sickLeaveUploadFilesInput.UploadedFiles);
+                  foreach (var file in sickLeaveUploadFilesInput.UploadFiles)
+                  {
+                      var fileManagerItem = await fileManagerService.UploadFileAsync(FileManagerService.SickLeavesFolder, file, true);
+                      files.Add(fileManagerItem.Path);
+                  }
+                  await sickLeaveRepository.UpdateFilesAsync(sickLeaveUploadFilesInput.Id, files);
+                  return await sickLeaveRepository.GetByIdAsync(sickLeaveUploadFilesInput.Id);
               })
               .AuthorizeWith(AuthPolicies.Authenticated);
 
