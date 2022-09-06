@@ -25,6 +25,8 @@ import {excelEpics} from "../modules/excelExport/store/excelExport.epics";
 import {sickLeaveReducer} from "../modules/sickLeave/store/sickLeave.slice";
 import {sickLeaveEpics} from "../modules/sickLeave/store/sickLeave.epics";
 import {usersProfilePageEpics} from "../modules/users/store/usersProfilePage.epics.";
+import {statisticReducer, statisticSlice} from "../modules/timeTracker/userStatistic/store/statistic.slice";
+import {statisticEpics} from "../modules/timeTracker/userStatistic/store/statistic.epics";
 
 
 const epicMiddleware = createEpicMiddleware();
@@ -42,6 +44,7 @@ export const store = configureStore({
         users: usersReducer,
         vacationRequests: vacationRequestsReducer,
         tracks: tracksReducer,
+        statistic: statisticReducer,
         excel: excelExportReducer,
         sickLeave: sickLeaveReducer
     },
@@ -59,6 +62,7 @@ const rootEpic = combineEpics(
     fileManagerEpics,
     vacationRequestsEpics,
     tracksPageEpics,
+    statisticEpics,
     excelEpics,
     sickLeaveEpics,
     usersProfilePageEpics,

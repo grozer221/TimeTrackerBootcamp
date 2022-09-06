@@ -1,14 +1,14 @@
 {
   "files": {
-    "main.css": "/static/css/main.52164f3e.css",
-    "main.js": "/static/js/main.cdd8d16b.js",
+    "main.css": "/static/css/main.12428e23.css",
+    "main.js": "/static/js/main.c956a49a.js",
     "static/media/clockify-logo-with-title.png": "/static/media/clockify-logo-with-title.644df1dc1989132f2c53.png",
     "index.html": "/index.html",
-    "main.52164f3e.css.map": "/static/css/main.52164f3e.css.map",
-    "main.cdd8d16b.js.map": "/static/js/main.cdd8d16b.js.map"
+    "main.12428e23.css.map": "/static/css/main.12428e23.css.map",
+    "main.c956a49a.js.map": "/static/js/main.c956a49a.js.map"
   },
   "entrypoints": [
-    "static/css/main.52164f3e.css",
-    "static/js/main.cdd8d16b.js"
+    "static/css/main.12428e23.css",
+    "static/js/main.c956a49a.js"
   ]
 }

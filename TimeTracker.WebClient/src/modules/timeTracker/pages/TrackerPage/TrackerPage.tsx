@@ -17,6 +17,8 @@ import {
     UpdateTrackInput
 } from "../../../tracks/graphQL/tracks.mutations";
 import {Employment} from "../../../../graphQL/enums/Employment";
+import {TracksStatistic} from "../../components/Statistic/TracksStatistic";
+import {statisticAction} from "../../userStatistic/store/statistic.slice";
 
 type DataType = {
     id: string
@@ -66,6 +68,10 @@ export const TrackerPage: React.FC = () => {
             navigate('/auth/login');
     }, [isAuth])
 
+    useEffect(() => {
+        dispatch(statisticAction.setGetStatisticInputData({UserId: userId, Date: date}))
+        dispatch(statisticAction.getAsync({UserId: userId, Date: date}))
+    }, [tracks])
 
     useEffect(() => {
         dispatch(tracksAction.getCurrentAsync())
@@ -86,7 +92,7 @@ export const TrackerPage: React.FC = () => {
                 <Stopwatch track={currentTrack} crudCallbacks={{create, update, remove}}/> :
                 <></>}
             <Row style={{marginTop: 10, marginBottom: 10}}>
-                <Col span={20}></Col>
+                <Col span={20}><TracksStatistic userId={userId} date={date}/></Col>
                 <Col span={4}>
                     <DatePicker className={s.date_picker} picker={"month"} defaultValue={moment(now())} onChange={e => {
                         if (e != null)

@@ -76,7 +76,7 @@ export const TracksTable: React.FC<Props> = React.memo(({tracks, date, loading, 
             render: (value, record, index) => {
                 if (editable)
                     return <TrackTitleInput track={record} updateCallback={crudCallbacks.update}/>
-                return <EditOutlined className={s.icons}>{' ' + value}</EditOutlined>
+                return <><EditOutlined className={s.icons}/>{' ' + value}</>
             }
         },
         {
