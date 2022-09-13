@@ -69,7 +69,6 @@ export const TrackerPanel: FC<trackerPanelProps> = ({track/*, crudCallbacks*/}) 
             reset()
         }
         if (time != timerStartTime && !track.endTime) {
-            console.log('f')
             reset()
             start()
             advanceTime(timerStartTime)

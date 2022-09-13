@@ -20,6 +20,8 @@ import {
     UpdateTrackInput
 } from "../../../tracks/graphQL/tracks.mutations";
 import {PlateOfHoursWorked} from "../../components/PlateOfHoursWorked/PlateOfHoursWorked";
+import {statisticAction} from "../../../timeTracker/userStatistic/store/statistic.slice";
+import {TracksStatistic} from "../../../timeTracker/components/Statistic/TracksStatistic";
 
 
 export const UsersProfilePage = () => {
@@ -67,7 +69,13 @@ export const UsersProfilePage = () => {
     }, [isAuth])
 
     useEffect(() => {
+        if (userProfile != null){
+            dispatch(statisticAction.setGetStatisticInputData({UserId: userProfile!.id, Date: date}))
+            dispatch(statisticAction.getAsync({UserId: userProfile!.id, Date: date}))
+        }
+    }, [tracks])
 
+    useEffect(() => {
         dispatch(usersActions.getUserByEmailAsync(email))
     }, [])
 
@@ -125,10 +133,13 @@ export const UsersProfilePage = () => {
         <Card size={"small"}
               title={
                   <Row justify="space-between" align={'middle'}>
-                      <Col>
+                      <Col >
                           <Title level={5}>Tracks: </Title>
                       </Col>
-                      <Col>
+                      <Col span={20}>
+                          <TracksStatistic/>
+                      </Col>
+                      <Col >
                           {
                               editable ?
                                   <Link to={"create-track"} state={{popup: location}}>
