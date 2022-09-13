@@ -92,7 +92,7 @@ export const TrackerPage: React.FC = () => {
                 <Stopwatch track={currentTrack} crudCallbacks={{create, update, remove}}/> :
                 <></>}
             <Row style={{marginTop: 10, marginBottom: 10}}>
-                <Col span={20}><TracksStatistic userId={userId} date={date}/></Col>
+                <Col span={20}><b><TracksStatistic /></b></Col>
                 <Col span={4}>
                     <DatePicker className={s.date_picker} picker={"month"} defaultValue={moment(now())} onChange={e => {
                         if (e != null)

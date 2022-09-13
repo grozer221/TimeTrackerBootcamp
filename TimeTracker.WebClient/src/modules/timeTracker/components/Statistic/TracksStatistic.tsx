@@ -1,39 +1,33 @@
-import React, {FC, useEffect} from 'react';
-import {CalendarOutlined} from '@ant-design/icons';
-import s from '../../pages/TrackerPage/TrackerPage.module.css'
+import React, {FC} from 'react';
 import moment from "moment";
-import {Track} from "../../../tracks/graphQL/tracks.types";
 import {useAppSelector} from "../../../../store/store";
-import {useDispatch} from "react-redux";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
-import {statisticAction} from "../../userStatistic/store/statistic.slice";
 import {Col, Row} from "antd";
-import {toUTCDateTime} from "../../../../convertors/toUTCDateTime";
 
-type Props = {
-    userId: string,
-    date: string
-}
 
-export const TracksStatistic: FC<Props> = ({userId, date}) => {
+export const TracksStatistic: FC = () => {
     const statistic = useAppSelector(s=>s.statistic.statistic)
-    const workerHoursInDate = new Date(statistic.workerHours * 60 * 60 * 1000)
-    const workerHours = moment(workerHoursInDate).utc().format('HH:mm:ss')
-    const monthHours = statistic.monthHours
-    const needToWork =Math.ceil( statistic.monthHours - statistic.workerHours)
+    const totalWorkerHours = Math.floor(statistic.workerHours)
+    const workerHoursMilliseconds = statistic.workerHours * 60 * 60 * 1000
+    const workerHours = totalWorkerHours.toString().padStart(2, '0') + moment(workerHoursMilliseconds).format(':mm:ss')
+    const monthHours = statistic.monthHours + ':00:00'
+    const needToWorkNum = statistic.monthHours - statistic.workerHours
+    const needToWorkHours =Math.floor(needToWorkNum)
+    const needToWorkMilliseconds = needToWorkNum * 60 * 60 * 1000
+    const needToWork = needToWorkHours.toString().padStart(2, '0') + moment(needToWorkMilliseconds).format(':mm:ss')
 
     return (
         <>
             <Row>
                 <Col span={4}>
-                    <p>Total time: {workerHours}</p>
+                    Total time: {workerHours}
                 </Col>
                 <Col span={4}>
-                    <p>Month hours: {monthHours}</p>
+                    Month hours: {monthHours}
                 </Col>
+                {workerHours < monthHours ?
                 <Col span={4}>
-                    <p>Need to work: {needToWork}</p>
-                </Col>
+                    Need to work:  {needToWork}
+                </Col> : <></>}
             </Row>
         </>
     )

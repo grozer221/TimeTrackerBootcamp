@@ -49,7 +49,6 @@ import {SickLeaveCreatePage} from "./modules/sickLeave/pages/SickLeaveCreatePage
 import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage";
 import {UsersProfilePage} from "./modules/users/pages/UsersProfilePage/UsersProfilePage";
 import {CreateTrackModal} from "./modules/users/components/CreateTrackModal/CreateTrackModal";
-import {TitleClock} from "./modules/timeTracker/components/TitleClock/TitleClock";
 import {SickLeaveUploadFilesPage} from "./modules/sickLeave/pages/SickLeaveUploadFilesPage";
 
 export const App = () => {
@@ -70,7 +69,6 @@ export const App = () => {
 
     return (
         <>
-            <TitleClock />
             <Settings/>
             <Notifications/>
             <NavigateTo/>
