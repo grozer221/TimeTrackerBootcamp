@@ -31,7 +31,12 @@ namespace TimeTracker.Server.Middlewares
 
         protected override async Task<AuthenticateResult> HandleAuthenticateAsync()
         {
+            
             string token = Request.Headers[HeaderNames.Authorization];
+            if (token == null)
+            {
+                token = Context.Request.Query["access_token"];
+            }
             var handler = new JwtSecurityTokenHandler();
             var validations = new TokenValidationParameters
             {

@@ -2,6 +2,7 @@
 using GraphQL;
 using GraphQL.Server;
 using GraphQL.SystemTextJson;
+using Microsoft.AspNetCore.SignalR;
 using Quartz;
 using System.Reflection;
 using System.Security.Claims;
@@ -12,6 +13,7 @@ using TimeTracker.Server.GraphQL;
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.Middlewares;
 using TimeTracker.Server.Services;
+using TimeTracker.Server.SignalR;
 using TimeTracker.Server.Tasks;
 
 namespace TimeTracker.Server.Extensions
@@ -63,6 +65,7 @@ namespace TimeTracker.Server.Extensions
             services.AddSingleton<INotificationService, EmailNotificationService>();
             services.AddScoped<VacationRequestsService>();
             services.AddScoped<CalendarDaysService>();
+            services.AddSingleton<IUserIdProvider, UserIdProvider>();
             return services;
         }
 
