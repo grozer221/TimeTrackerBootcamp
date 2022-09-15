@@ -2,6 +2,7 @@ using TimeTracker.Caching.Extensions;
 using TimeTracker.MsSql.Extensions;
 using TimeTracker.Server.Extensions;
 using TimeTracker.Server.GraphQL;
+using TimeTracker.Server.SignalR.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,9 +11,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("DefaultPolicy", builder =>
     {
         builder.AllowAnyHeader()
-               .WithMethods("POST")
                .WithOrigins("http://localhost:3000")
-               .AllowCredentials();
+               .AllowCredentials()
+               .AllowAnyMethod();
     });
 });
 
@@ -22,6 +23,7 @@ builder.Services.AddJwtAuthorization();
 builder.Services.AddMsSql();
 builder.Services.AddCaching();
 builder.Services.AddTasks();
+builder.Services.AddSignalR(options => options.EnableDetailedErrors = true);
 
 var app = builder.Build();
 
@@ -43,5 +45,7 @@ app.UseSpa(spa =>
 {
     spa.Options.SourcePath = "wwwroot";
 });
+
+app.MapHub<ChatHub>("/chathub");
 
 app.Run();

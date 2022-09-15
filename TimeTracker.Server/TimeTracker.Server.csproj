@@ -38,6 +38,7 @@
 		<PackageReference Include="GraphQL.Upload.AspNetCore" Version="2.0.0" />
 		<PackageReference Include="MailKit" Version="3.3.0" />
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.6" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
 		<PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="6.0.6" />
 		<PackageReference Include="Microsoft.Data.SqlClient" Version="4.1.0" />
 		<PackageReference Include="Quartz" Version="3.4.0" />

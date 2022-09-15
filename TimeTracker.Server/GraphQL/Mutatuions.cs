@@ -2,6 +2,7 @@
 using TimeTracker.Server.GraphQL.Modules.Auth;
 using TimeTracker.Server.GraphQL.Modules.Cache;
 using TimeTracker.Server.GraphQL.Modules.CalendarDays;
+using TimeTracker.Server.GraphQL.Modules.Chat;
 using TimeTracker.Server.GraphQL.Modules.FileManager;
 using TimeTracker.Server.GraphQL.Modules.Settings;
 using TimeTracker.Server.GraphQL.Modules.SickLeave;
@@ -49,6 +50,10 @@ namespace TimeTracker.Server.GraphQL
 
             Field<NonNullGraphType<SickLeaveMutations>>()
                 .Name("SickLeave")
+                .Resolve(_ => new { });
+
+            Field<NonNullGraphType<ChatMutation>>()
+                .Name("Chat")
                 .Resolve(_ => new { });
         }
     }

@@ -27,6 +27,7 @@ import {sickLeaveEpics} from "../modules/sickLeave/store/sickLeave.epics";
 import {usersProfilePageEpics} from "../modules/users/store/usersProfilePage.epics.";
 import {statisticReducer, statisticSlice} from "../modules/timeTracker/userStatistic/store/statistic.slice";
 import {statisticEpics} from "../modules/timeTracker/userStatistic/store/statistic.epics";
+import {chatReducer} from "../modules/chat/store/chat.slice";
 
 
 const epicMiddleware = createEpicMiddleware();
@@ -46,7 +47,8 @@ export const store = configureStore({
         tracks: tracksReducer,
         statistic: statisticReducer,
         excel: excelExportReducer,
-        sickLeave: sickLeaveReducer
+        sickLeave: sickLeaveReducer,
+        chat: chatReducer
     },
     middleware: getDefaultMiddleware => getDefaultMiddleware({thunk: false}).concat(epicMiddleware),
     devTools: true,

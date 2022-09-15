@@ -50,6 +50,7 @@ import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage
 import {UsersProfilePage} from "./modules/users/pages/UsersProfilePage/UsersProfilePage";
 import {CreateTrackModal} from "./modules/users/components/CreateTrackModal/CreateTrackModal";
 import {SickLeaveUploadFilesPage} from "./modules/sickLeave/pages/SickLeaveUploadFilesPage";
+import {ChatPage} from "./modules/chat/pages/ChatPage";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -101,6 +102,7 @@ export const App = () => {
                         <Route path={'error'} element={<Error/>}/>
                         <Route path={'error/:statusCode'} element={<Error/>}/>
                         <Route path={'*'} element={<Error/>}/>
+                        <Route path={'chat'} element={<ChatPage/>}/>
                     </Routes>
                     {popup && (
                         <Routes>

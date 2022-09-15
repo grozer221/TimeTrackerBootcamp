@@ -44,6 +44,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         UserId = user.Id,
                     };
                     accessToken = await aceessTokenRepository.CreateAsync(accessToken);
+                    httpContextAccessor.HttpContext.Response.Cookies.Append(HeaderNames.Authorization, accessToken.Token);
                     return new AuthResponse()
                     {
                         Token = accessToken.Token,
@@ -74,6 +75,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     };
 
                     accessToken = await aceessTokenRepository.CreateAsync(accessToken);
+                    httpContextAccessor.HttpContext.Response.Cookies.Append(HeaderNames.Authorization, accessToken.Token);
 
                     return new AuthResponse()
                     {
@@ -89,6 +91,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                     var userId = httpContextAccessor.HttpContext.GetUserId();
                     var token = httpContextAccessor.HttpContext.Request.Headers[HeaderNames.Authorization];
                     await aceessTokenRepository.RemoveAsync(userId, token);
+                    httpContextAccessor.HttpContext.Response.Cookies.Delete(HeaderNames.Authorization);
                     return true;
                 })
                 .AuthorizeWith(AuthPolicies.Authenticated);
@@ -116,6 +119,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Auth
                         UserId = user.Id,
                     };
                     token = await aceessTokenRepository.CreateAsync(token);
+                    httpContextAccessor.HttpContext.Response.Cookies.Append(HeaderNames.Authorization, token.Token);
                     return new AuthResponse()
                     {
                         Token = token.Token,
