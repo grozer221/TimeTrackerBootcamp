@@ -79,7 +79,6 @@ export const FullChat: FC<Props> = ({connection}) => {
         if (users) {
             {
                 users.map((user, index) => {
-                    const count = messages.filter((obj) => obj.isRead === false && obj.userIdFrom === user.id && obj.userIdTo === userId).length;
                     if (user.id !== userId)
                         items.push(
                             {

@@ -145,7 +145,6 @@ export const App = () => {
                             </Routes>
                         )}
                     </AppLayout>
-                    <Chat/>
                 </>
 
                 : <Routes>
@@ -157,6 +156,7 @@ export const App = () => {
                     <Route path={'*'} element={<Navigate to={'/auth/login'}/>}/>
                 </Routes>
             }
+            <Chat/>
         </>
     );
 }
