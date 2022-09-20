@@ -1,9 +1,9 @@
 export type MessageType = {
-    id: string,
+    id?: string,
     userIdTo: string,
-    userIdFrom: string,
+    userIdFrom?: string,
     message: string,
-    isRead: boolean,
-    createdAt: string,
-    updatedAt: string
+    isRead?: boolean,
+    createdAt?: string,
+    updatedAt?: string
 }

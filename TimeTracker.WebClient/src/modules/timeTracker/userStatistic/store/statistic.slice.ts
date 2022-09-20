@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {Track} from "../../../tracks/graphQL/tracks.types";
-import {GetTracksByUserIdAndDateInputType, GetTracksInputData} from "../../../tracks/graphQL/tracks.queries";
+import {Track} from "../../graphQL/tracks.types";
+import {GetTracksByUserIdAndDateInputType, GetTracksInputData} from "../../graphQL/tracks.queries";
 import {Statistic} from "../graphQL/statistic.type";
 import {GetStatisticInputType} from "../graphQL/statistic.queries";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
@@ -10,7 +10,7 @@ import {
     CreateTrackInput,
     RemoveTrackInput,
     UpdateTrackInput
-} from "../../../tracks/graphQL/tracks.mutations";
+} from "../../graphQL/tracks.mutations";
 
 type InitialState = {
     statistic: Statistic,
@@ -44,7 +44,6 @@ export  const  statisticSlice = createSlice({
         setLoadingGet: (state, action: PayloadAction<boolean>) => {
             state.loadingGet = action.payload
         },
-
         setGetStatisticInputData: (state, action: PayloadAction<GetTracksByUserIdAndDateInputType>) => {
             state.getStatisticInputData = action.payload
         },

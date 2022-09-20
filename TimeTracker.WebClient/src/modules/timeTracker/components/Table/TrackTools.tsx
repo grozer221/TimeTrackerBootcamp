@@ -3,9 +3,9 @@ import {DeleteOutlined} from '@ant-design/icons';
 import {Button, Form} from 'antd';
 import s from '../../pages/TrackerPage/TrackerPage.module.css'
 import {useDispatch} from "react-redux";
-import {RemoveTrackInput} from "../../../tracks/graphQL/tracks.mutations";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {RemoveTrackInput} from "../../graphQL/tracks.mutations";
+import {tracksAction} from "../../store/tracks.slice";
+import {Track} from "../../graphQL/tracks.types";
 import {PayloadAction} from "@reduxjs/toolkit";
 
 type Props = {

@@ -3,12 +3,12 @@ import {AlertOutlined, CarOutlined, CodeSandboxOutlined, DownOutlined} from '@an
 import {Button, Dropdown, Menu, MenuProps, Select, Space, Tag} from 'antd';
 import s from '../../pages/TrackerPage/TrackerPage.module.css'
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {tracksAction} from "../../store/tracks.slice";
 import {useDispatch} from "react-redux";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 import {DayKind} from "../../../../graphQL/enums/DayKind";
 import {uppercaseToWords} from "../../../../utils/stringUtils";
-import {UpdateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
+import {UpdateTrackInput} from "../../graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {useAppSelector} from "../../../../store/store";
 

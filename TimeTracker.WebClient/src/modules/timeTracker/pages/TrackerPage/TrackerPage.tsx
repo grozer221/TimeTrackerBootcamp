@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {useNavigate, useSearchParams} from "react-router-dom";
 import {Col, DatePicker, Row} from 'antd';
 import {useDispatch} from "react-redux";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {tracksAction} from "../../store/tracks.slice";
 import {useAppSelector} from "../../../../store/store";
 import {isAuthenticated} from "../../../../utils/permissions";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
@@ -15,7 +15,7 @@ import {
     CreateTrackInput,
     RemoveTrackInput,
     UpdateTrackInput
-} from "../../../tracks/graphQL/tracks.mutations";
+} from "../../graphQL/tracks.mutations";
 import {Employment} from "../../../../graphQL/enums/Employment";
 import {TracksStatistic} from "../../components/Statistic/TracksStatistic";
 import {statisticAction} from "../../userStatistic/store/statistic.slice";

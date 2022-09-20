@@ -31,8 +31,6 @@ namespace TimeTracker.Server.GraphQL.Modules.Chat
                     var user = httpContextAccessor.HttpContext.GetUserId();
                     var user1 = context.GetArgument<Guid>("User1");
                     var user2 = context.GetArgument<Guid>("User2");
-                    if (!httpContextAccessor.HttpContext.User.Claims.IsAdministratOrHavePermissions() || (user != user1 || user != user2))
-                        throw new ExecutionError("You do not have permissions for get messages");
                     var messages = await messageRepository.GetDialogAsync(user1, user2);
                     return messages;
                 }).AuthorizeWith(AuthPolicies.Authenticated);

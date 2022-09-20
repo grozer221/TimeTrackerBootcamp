@@ -2,7 +2,7 @@ import React, {FC} from 'react';
 import {CalendarOutlined} from '@ant-design/icons';
 import s from '../../pages/TrackerPage/TrackerPage.module.css'
 import moment from "moment";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 
 type Props = {
     startTime: string

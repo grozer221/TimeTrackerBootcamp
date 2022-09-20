@@ -9,7 +9,7 @@ import {useAppSelector} from "../../../../store/store";
 import {usersActions} from "../../store/users.slice";
 import {navigateActions} from "../../../navigate/store/navigate.slice";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {tracksAction} from "../../../timeTracker/store/tracks.slice";
 import {TrackCreation} from "../../../../graphQL/enums/TrackCreation";
 
 type FormValues = {

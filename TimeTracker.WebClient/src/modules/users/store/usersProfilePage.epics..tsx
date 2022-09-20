@@ -13,8 +13,8 @@ import {
     GET_TRACKS_BY_USER_ID_AND_DATE,
     GetTracksByUserIdAndDateInputType,
     GetTracksByUserIdAndDateResponseType
-} from "../../tracks/graphQL/tracks.queries";
-import {tracksAction} from "../../tracks/store/tracks.slice";
+} from "../../timeTracker/graphQL/tracks.queries";
+import {tracksAction} from "../../timeTracker/store/tracks.slice";
 import {
     CreateTrackForOtherUserInput,
     CreateTrackForOtherUserInputType,
@@ -25,7 +25,7 @@ import {
     TRACK_UPDATE_MUTATION,
     UpdateTrack,
     UpdateTrackInputType
-} from "../../tracks/graphQL/tracks.mutations";
+} from "../../timeTracker/graphQL/tracks.mutations";
 import {navigateActions} from "../../navigate/store/navigate.slice";
 
 

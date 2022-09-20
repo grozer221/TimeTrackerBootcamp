@@ -3,7 +3,7 @@ import moment, {Moment, now} from "moment";
 import {Calendar, Typography} from "antd";
 import {FC, memo} from "react";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../../timeTracker/graphQL/tracks.types";
 import s from './PlateOfHoursWorked.module.css';
 import {uppercaseToWords} from "../../../../utils/stringUtils";
 

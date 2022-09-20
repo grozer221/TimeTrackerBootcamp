@@ -1,6 +1,6 @@
 import React from 'react';
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 import {getDifferenceBetweenDatesInTime} from "../../../../utils/dateUtils";
 import {ColumnsType} from "antd/es/table";
 import {TrackTitleInput} from "../Table/TrackTitleInput";
@@ -22,7 +22,7 @@ import {
     CreateTrackInput,
     RemoveTrackInput,
     UpdateTrackInput
-} from "../../../tracks/graphQL/tracks.mutations";
+} from "../../graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {TrackCreation} from "../../../../graphQL/enums/TrackCreation";
 import {TrackCreationInfo} from "../Table/TrackCreationInfo";

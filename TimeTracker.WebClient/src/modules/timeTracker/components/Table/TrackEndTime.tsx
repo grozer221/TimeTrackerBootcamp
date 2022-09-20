@@ -3,7 +3,7 @@ import {CalendarOutlined, SyncOutlined} from '@ant-design/icons';
 import {Tag} from 'antd';
 import s from '../../pages/TrackerPage/TrackerPage.module.css'
 import moment from "moment";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 
 type Props = {
     endTime: string

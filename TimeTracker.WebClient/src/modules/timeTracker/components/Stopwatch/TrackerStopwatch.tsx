@@ -1,6 +1,6 @@
 import React, {FC, useEffect, useState} from "react";
 import {Button, ButtonProps, Col, Divider, Form, Input, Row} from "antd";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 import {useDispatch} from "react-redux";
 import moment from "moment";
 import {toUTCDateTime} from "../../../../convertors/toUTCDateTime";
@@ -13,12 +13,12 @@ import {
     CreateTrackInput,
     RemoveTrackInput,
     UpdateTrackInput
-} from "../../../tracks/graphQL/tracks.mutations";
+} from "../../graphQL/tracks.mutations";
 import {TrackerPanel} from "./TrackerPanel";
 import s from './TrackerStopwatch.module.css'
 import {PayloadAction} from "@reduxjs/toolkit";
 import {TrackCreation} from "../../../../graphQL/enums/TrackCreation";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {tracksAction} from "../../store/tracks.slice";
 
 type FormValues = {
     title: string,

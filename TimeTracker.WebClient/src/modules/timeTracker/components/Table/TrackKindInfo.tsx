@@ -3,7 +3,7 @@ import {AlertOutlined, CarOutlined, CodeSandboxOutlined} from '@ant-design/icons
 import {Tag} from 'antd';
 import s from '../../pages/TrackerPage/TrackerPage.module.css'
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 
 type Props = {
     kind: TrackKind

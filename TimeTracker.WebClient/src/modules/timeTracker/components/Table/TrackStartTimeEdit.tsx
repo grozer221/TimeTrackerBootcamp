@@ -1,10 +1,10 @@
 import React, {FC, useState} from 'react';
 import {DatePicker, DatePickerProps} from 'antd';
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {tracksAction} from "../../store/tracks.slice";
 import {useDispatch} from "react-redux";
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 import moment from "moment";
-import {UpdateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
+import {UpdateTrackInput} from "../../graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {notificationsActions} from "../../../notifications/store/notifications.slice";
 import {useAppSelector} from "../../../../store/store";
