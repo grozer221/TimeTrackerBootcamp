@@ -1,10 +1,10 @@
 import React, {FC} from 'react';
 import {Pagination, PaginationProps} from 'antd';
 import s from '../../pages/TrackerPage/TrackerPage.module.css'
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 import {TracksHeader} from "./TracksHeader";
 import {useAppSelector} from "../../../../store/store";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {tracksAction} from "../../store/tracks.slice";
 import {TrackKind} from "../../../../graphQL/enums/TrackKind";
 import {useDispatch} from "react-redux";
 import {useNavigate} from "react-router-dom";

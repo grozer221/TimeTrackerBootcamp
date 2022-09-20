@@ -34,7 +34,7 @@ namespace TimeTracker.Server.GraphQL.Modules.Chat.DTO
                 .Resolve(context => context.Source.Message);
 
             Field<BooleanGraphType, bool>()
-                .Name("UserIdTo")
+                .Name("IsRead")
                 .Resolve(context => context.Source.IsRead);
         }
     }

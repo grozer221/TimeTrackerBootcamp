@@ -1,8 +1,8 @@
 import {gql} from '@apollo/client';
 import {User, UserFilter} from "./users.types";
 import {USER_WITH_USERS_WHICH_CAN_APPROVE_VACATION_REQUESTS_FRAGMENT} from "./users.fragments";
-import {TRACK_FRAGMENT} from "../../tracks/graphQL/tracks.fragments";
-import {Track} from "../../tracks/graphQL/tracks.types";
+import {TRACK_FRAGMENT} from "../../timeTracker/graphQL/tracks.fragments";
+import {Track} from "../../timeTracker/graphQL/tracks.types";
 
 export type GetUsersDataType = { users: { get: { entities: User[], total: number, pageSize: number } } }
 export type GetUsersInputType = { FilterData: UserFilter, take: number, skip: number }

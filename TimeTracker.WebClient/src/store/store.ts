@@ -18,8 +18,8 @@ import {fileManagerReducer} from "../modules/fileManager/store/fileManager.slice
 import {usersReducer} from "../modules/users/store/users.slice";
 import {vacationRequestsEpics} from "../modules/vacationRequests/store/vacationRequests.epics";
 import {vacationRequestsReducer} from "../modules/vacationRequests/store/vacationRequests.slice";
-import {tracksReducer} from "../modules/tracks/store/tracks.slice";
-import {tracksPageEpics} from "../modules/tracks/store/tracksPage.epics";
+import {tracksReducer} from "../modules/timeTracker/store/tracks.slice";
+import {tracksPageEpics} from "../modules/timeTracker/store/tracksPage.epics";
 import {excelExportReducer} from "../modules/excelExport/store/excelExport.slice";
 import {excelEpics} from "../modules/excelExport/store/excelExport.epics";
 import {sickLeaveReducer} from "../modules/sickLeave/store/sickLeave.slice";
@@ -28,6 +28,7 @@ import {usersProfilePageEpics} from "../modules/users/store/usersProfilePage.epi
 import {statisticReducer, statisticSlice} from "../modules/timeTracker/userStatistic/store/statistic.slice";
 import {statisticEpics} from "../modules/timeTracker/userStatistic/store/statistic.epics";
 import {chatReducer} from "../modules/chat/store/chat.slice";
+import {chatEpics} from "../modules/chat/store/chat.epics";
 
 
 const epicMiddleware = createEpicMiddleware();
@@ -68,6 +69,7 @@ const rootEpic = combineEpics(
     excelEpics,
     sickLeaveEpics,
     usersProfilePageEpics,
+    chatEpics
 );
 // @ts-ignore
 epicMiddleware.run(rootEpic);

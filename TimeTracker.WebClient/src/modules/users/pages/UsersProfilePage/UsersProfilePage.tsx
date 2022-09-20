@@ -13,12 +13,12 @@ import moment, {now} from "moment/moment";
 import {TracksTable} from "../../../timeTracker/components/TracksTable/TracksTable";
 import {PlusOutlined} from "@ant-design/icons";
 import {Permission} from "../../../../graphQL/enums/Permission";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {tracksAction} from "../../../timeTracker/store/tracks.slice";
 import {
     CreateTrackForOtherUserInput, CreateTrackInput,
     RemoveTrackInput,
     UpdateTrackInput
-} from "../../../tracks/graphQL/tracks.mutations";
+} from "../../../timeTracker/graphQL/tracks.mutations";
 import {PlateOfHoursWorked} from "../../components/PlateOfHoursWorked/PlateOfHoursWorked";
 import {statisticAction} from "../../../timeTracker/userStatistic/store/statistic.slice";
 import {TracksStatistic} from "../../../timeTracker/components/Statistic/TracksStatistic";

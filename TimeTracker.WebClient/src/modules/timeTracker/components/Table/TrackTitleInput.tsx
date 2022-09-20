@@ -2,10 +2,10 @@ import React, {createRef, FC, FormEvent, useEffect, useState} from 'react';
 import {EditOutlined} from '@ant-design/icons';
 import {Input, InputRef} from 'antd';
 import s from './TrackerTable.module.css'
-import {Track} from "../../../tracks/graphQL/tracks.types";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {Track} from "../../graphQL/tracks.types";
+import {tracksAction} from "../../store/tracks.slice";
 import {useDispatch} from "react-redux";
-import {UpdateTrackInput} from "../../../tracks/graphQL/tracks.mutations";
+import {UpdateTrackInput} from "../../graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
 
 type Props = {

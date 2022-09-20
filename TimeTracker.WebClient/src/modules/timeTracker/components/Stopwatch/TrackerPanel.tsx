@@ -1,7 +1,7 @@
 import React, {FC, useEffect, useState} from "react";
 import {Card, Divider} from "antd";
 import s from './TrackerStopwatch.module.css'
-import {Track} from "../../../tracks/graphQL/tracks.types";
+import {Track} from "../../graphQL/tracks.types";
 import moment from "moment";
 import {useTimer} from "use-timer";
 import {toUTCDateTime} from "../../../../convertors/toUTCDateTime";
@@ -9,11 +9,11 @@ import {
     CreateTrackForOtherUserInput,
     CreateTrackInput, RemoveTrackInput,
     UpdateTrackInput
-} from "../../../tracks/graphQL/tracks.mutations";
+} from "../../graphQL/tracks.mutations";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {TrackTools} from "../Table/TrackTools";
 import {TrackTitleInput} from "../Table/TrackTitleInput";
-import {tracksAction} from "../../../tracks/store/tracks.slice";
+import {tracksAction} from "../../store/tracks.slice";
 
 type timerProps = {
     time: number

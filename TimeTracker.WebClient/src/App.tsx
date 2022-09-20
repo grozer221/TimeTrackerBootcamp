@@ -50,7 +50,7 @@ import {SickLeaveUpdatePage} from "./modules/sickLeave/pages/SickLeaveUpdatePage
 import {UsersProfilePage} from "./modules/users/pages/UsersProfilePage/UsersProfilePage";
 import {CreateTrackModal} from "./modules/users/components/CreateTrackModal/CreateTrackModal";
 import {SickLeaveUploadFilesPage} from "./modules/sickLeave/pages/SickLeaveUploadFilesPage";
-import {ChatPage} from "./modules/chat/pages/ChatPage";
+import {Chat} from "./modules/chat/components/Chat";
 
 export const App = () => {
     const initialised = useSelector((state: RootState) => state.app.initialised)
@@ -74,76 +74,80 @@ export const App = () => {
             <Notifications/>
             <NavigateTo/>
             {isAuth
-                ? <AppLayout>
-                    <Routes location={popup || location}>
-                        <Route index element={<Navigate to={'/time-tracker'}/>}/>
-                        <Route path={'calendar/*'} element={<CalendarPage/>}>
-                            <Route path={'*'} element={<Error/>}/>
-                        </Route>
-                        <Route path={'users/*'}>
-                            <Route index element={<UsersPage />}/>
-                            <Route path={'profile/:email'}  element={<UsersProfilePage/>}/>
-                            <Route path={'*'} element={<Error/>}/>
-                        </Route>
-                        <Route path={'settings/:tab'} element={<SettingsPage/>}/>
-                        <Route path={'my-settings/:tab'} element={<MySettingsPage/>}/>
-                        <Route path={"auth/*"}>
-                            <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
-                            <Route path="reset-password/:token" element={<Navigate to={'/time-tracker'}/>}/>
-                        </Route>
-                        <Route path={"tools/*"}>
-                            <Route path={"file-manager/*"}>
-                                <Route index element={<FileManagerGetInFolderPage/>}/>
-                            </Route>
-                        </Route>
-                        <Route path={'time-tracker/*'} element={<TrackerPage/>}/>
-                        <Route path={"vacation-requests/*"} element={<VacationRequestsIndexPage/>}/>
-                        <Route path={"sick-leave-days/*"} element={<SickLeaveIndexPage/>}/>
-                        <Route path={'error'} element={<Error/>}/>
-                        <Route path={'error/:statusCode'} element={<Error/>}/>
-                        <Route path={'*'} element={<Error/>}/>
-                        <Route path={'chat'} element={<ChatPage/>}/>
-                    </Routes>
-                    {popup && (
-                        <Routes>
-                            <Route path={'calendar/*'}>
-                                <Route path={'days/*'}>
-                                    <Route path=":date" element={<CalendarDaysViewPage/>}/>
-                                    <Route path="create" element={<CalendarDaysCreatePage/>}/>
-                                    <Route path="update/:date" element={<CalendarDaysUpdatePage/>}/>
-                                    <Route path="remove" element={<CalendarDaysRemovePage/>}/>
-                                    <Route path="remove/:date" element={<CalendarDaysRemovePage/>}/>
-                                </Route>
+                ?<>
+                    <AppLayout>
+                        <Routes location={popup || location}>
+                            <Route index element={<Navigate to={'/time-tracker'}/>}/>
+                            <Route path={'calendar/*'} element={<CalendarPage/>}>
+                                <Route path={'*'} element={<Error/>}/>
                             </Route>
                             <Route path={'users/*'}>
-                                <Route path="create" element={<CreateUserModal/>}/>
-                                <Route path="remove/:email" element={<RemoveUserModal/>}/>
-                                <Route path="update/:email" element={<UpdateUserModal/>}/>
-                                <Route path="reset-password/:id" element={<ResetPasswordUserModal/>}/>
-                                <Route path="profile/:email/create-track" element={<CreateTrackModal/>}/>
-                                <Route path="createReport" element={<CreateReportModal/>}/>
+                                <Route index element={<UsersPage />}/>
+                                <Route path={'profile/:email'}  element={<UsersProfilePage/>}/>
+                                <Route path={'*'} element={<Error/>}/>
+                            </Route>
+                            <Route path={'settings/:tab'} element={<SettingsPage/>}/>
+                            <Route path={'my-settings/:tab'} element={<MySettingsPage/>}/>
+                            <Route path={"auth/*"}>
+                                <Route path="login" element={<Navigate to={'/time-tracker'}/>}/>
+                                <Route path="reset-password/:token" element={<Navigate to={'/time-tracker'}/>}/>
                             </Route>
                             <Route path={"tools/*"}>
                                 <Route path={"file-manager/*"}>
-                                    <Route path="create-folder" element={<FileManagerCreateFolder/>}/>
-                                    <Route path="upload-files" element={<FileManagerUploadFile/>}/>
+                                    <Route index element={<FileManagerGetInFolderPage/>}/>
                                 </Route>
                             </Route>
-                            <Route path={"vacation-requests/*"}>
-                                <Route path={'create'} element={<VacationRequestsCreatePage/>}/>
-                                <Route path={'update/:id'} element={<VacationRequestsUpdatePage/>}/>
-                            </Route>
-                            <Route path={'sick-leave-days/*'}>
-                                <Route path={'create'} element={<SickLeaveCreatePage/>}/>
-                                <Route path={'update/:id'} element={<SickLeaveUpdatePage/>}/>
-                                <Route path={'upload-files/:id'} element={<SickLeaveUploadFilesPage/>}/>
-                            </Route>
-                            <Route path={'time-tracker/*'}>
-                                {/*<Route path={'create'} element={<TrackCreatePage/>}/>*/}
-                            </Route>
+                            <Route path={'time-tracker/*'} element={<TrackerPage/>}/>
+                            <Route path={"vacation-requests/*"} element={<VacationRequestsIndexPage/>}/>
+                            <Route path={"sick-leave-days/*"} element={<SickLeaveIndexPage/>}/>
+                            <Route path={'error'} element={<Error/>}/>
+                            <Route path={'error/:statusCode'} element={<Error/>}/>
+                            <Route path={'*'} element={<Error/>}/>
+                            <Route path={'chat'} element={<Chat/>}/>
                         </Routes>
-                    )}
-                </AppLayout>
+                        {popup && (
+                            <Routes>
+                                <Route path={'calendar/*'}>
+                                    <Route path={'days/*'}>
+                                        <Route path=":date" element={<CalendarDaysViewPage/>}/>
+                                        <Route path="create" element={<CalendarDaysCreatePage/>}/>
+                                        <Route path="update/:date" element={<CalendarDaysUpdatePage/>}/>
+                                        <Route path="remove" element={<CalendarDaysRemovePage/>}/>
+                                        <Route path="remove/:date" element={<CalendarDaysRemovePage/>}/>
+                                    </Route>
+                                </Route>
+                                <Route path={'users/*'}>
+                                    <Route path="create" element={<CreateUserModal/>}/>
+                                    <Route path="remove/:email" element={<RemoveUserModal/>}/>
+                                    <Route path="update/:email" element={<UpdateUserModal/>}/>
+                                    <Route path="reset-password/:id" element={<ResetPasswordUserModal/>}/>
+                                    <Route path="profile/:email/create-track" element={<CreateTrackModal/>}/>
+                                    <Route path="createReport" element={<CreateReportModal/>}/>
+                                </Route>
+                                <Route path={"tools/*"}>
+                                    <Route path={"file-manager/*"}>
+                                        <Route path="create-folder" element={<FileManagerCreateFolder/>}/>
+                                        <Route path="upload-files" element={<FileManagerUploadFile/>}/>
+                                    </Route>
+                                </Route>
+                                <Route path={"vacation-requests/*"}>
+                                    <Route path={'create'} element={<VacationRequestsCreatePage/>}/>
+                                    <Route path={'update/:id'} element={<VacationRequestsUpdatePage/>}/>
+                                </Route>
+                                <Route path={'sick-leave-days/*'}>
+                                    <Route path={'create'} element={<SickLeaveCreatePage/>}/>
+                                    <Route path={'update/:id'} element={<SickLeaveUpdatePage/>}/>
+                                    <Route path={'upload-files/:id'} element={<SickLeaveUploadFilesPage/>}/>
+                                </Route>
+                                <Route path={'time-tracker/*'}>
+                                    {/*<Route path={'create'} element={<TrackCreatePage/>}/>*/}
+                                </Route>
+                            </Routes>
+                        )}
+                    </AppLayout>
+                    <Chat/>
+                </>
+
                 : <Routes>
                     <Route path={"auth/*"}>
                         <Route path="login" element={<AuthLoginPage/>}/>

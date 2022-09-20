@@ -63,7 +63,7 @@ namespace TimeTracker.MsSql.Repositories
             using var connection = dapperContext.CreateConnection();
 
             var messages = await connection.QueryAsync<MessageModel>(@"SELECT * FROM Messages WHERE (UserIdFrom = @user1 AND userIdTo = @user2) 
-                                                                      OR (UserIdFrom = @user2 AND userIdTo = @user1) BY createdAt", new { user1, user2 });
+                                                                      OR (UserIdFrom = @user2 AND userIdTo = @user1) ORDER BY createdAt", new { user1, user2 });
 
             return messages;
         }
